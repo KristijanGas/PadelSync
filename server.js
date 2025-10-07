@@ -22,7 +22,13 @@ app.use(session({
 
 // Middleware to log session data
 app.use((req, res, next) => {
-    //console.log('Session yass:', req.session.id);
+    //console.log('Session id example :', req.session.id);
+
+
+    // IMPLEMENTIRATI LOGGING U BAZU!!!! //
+
+
+
     next();
 });
 
@@ -31,12 +37,15 @@ app.get('/', (req, res) => {
     res.redirect('/home');
 });
 
+// routes
 
-const homeRouter = require('./routes/home.routes');
-const cartRouter = require('./routes/cart.routes');
-// routes 
+const homeRouter = require('./routes/home.routes'); // pocetna stranica
+const profileRouter = require('./routes/profiles.routes');
+const kalendarRouter = require('./routes/kalendar.routes');
+
 app.use('/home', homeRouter);
-app.use('/cart', cartRouter);
+app.use('/profiles', profileRouter);
+app.use('/kalendar', kalendarRouter);
 
 
 app.listen(port, () => {

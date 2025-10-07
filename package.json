@@ -1,0 +1,21 @@
+{
+  "name": "padel_app",
+  "version": "1.0.0",
+  "description": "Aplikacija za rezerviranje termina za sport padel.",
+  "homepage": "https://github.com/KristijanGas/progi_g12_4#readme",
+  "bugs": {
+    "url": "https://github.com/KristijanGas/progi_g12_4/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KristijanGas/progi_g12_4.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  }
+}
