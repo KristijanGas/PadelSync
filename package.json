@@ -1,6 +1,13 @@
 {
   "name": "padel_app",
   "version": "1.0.0",
+    "dependencies": {
+    "corepack": "^0.32.0",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "npm": "^10.9.2"
+  },
   "description": "Aplikacija za rezerviranje termina za sport padel.",
   "homepage": "https://github.com/KristijanGas/progi_g12_4#readme",
   "bugs": {
@@ -17,5 +24,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
-  }
+  },
+  "keywords": []
 }
