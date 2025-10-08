@@ -40,12 +40,21 @@ app.get('/', (req, res) => {
 // routes
 
 const homeRouter = require('./routes/home.routes'); // pocetna stranica
-//const profileRouter = require('./routes/profiles.routes');
-//const kalendarRouter = require('./routes/kalendar.routes');
-
+const userRouter = require('./routes/user.routes');
+const user_searchRouter = require('./routes/user_search.routes');
+const terrainRouter = require('./routes/terrain.routes');
+const terrain_searchRouter = require('./routes/terrain_search.routes');
 app.use('/home', homeRouter);
-//app.use('/profiles', profileRouter);
-//app.use('/kalendar', kalendarRouter);
+app.use('/user_search', user_searchRouter);
+app.use('/user', userRouter);
+app.use('/terrain_search', terrain_searchRouter);
+app.use('/terrain', terrainRouter);
+
+const registrationRouter = require('./routes/registration.routes');
+const loginRouter = require('./routes/login.routes');
+app.use('/login', loginRouter);
+app.use('/registration', registrationRouter);
+
 
 
 app.listen(port, () => {
