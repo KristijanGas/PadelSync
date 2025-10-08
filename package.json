@@ -1,5 +1,5 @@
 {
-  "name": "padel_app",
+  "name": "padelsync",
   "version": "1.0.0",
   "dependencies": {
     "corepack": "^0.32.0",
