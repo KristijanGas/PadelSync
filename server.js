@@ -55,6 +55,22 @@ const loginRouter = require('./routes/login.routes');
 app.use('/login', loginRouter);
 app.use('/registration', registrationRouter);
 
+const calendarRouter = require('./routes/calendar.routes');
+app.use('/calendar', calendarRouter);
+
+const adminloginRouter = require('./routes/adminlogin.routes');
+app.use('/adminlogin', adminloginRouter);
+
+const adminRouter = require('./routes/adminlogin.routes');
+app.use('/admin', adminRouter);
+
+const edituserRouter = require('./routes/edituser.routes');
+app.use('/edituser', edituserRouter);
+
+const editterrainRouter = require('./routes/editterrain.routes');
+app.use('/editterrain', editterrainRouter);
+
+// start server
 
 
 app.listen(port, () => {
