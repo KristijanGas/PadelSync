@@ -8,3 +8,5 @@ moj prvi commit Andjela
 yay :DD
 
 evo i mene, antonio...
+
+1239
