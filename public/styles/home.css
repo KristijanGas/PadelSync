@@ -1,4 +1,16 @@
-* {
-    font-family: monospace;
-    font-size: 40px;
+body {
+    padding: 0px;
+}
+
+div.HomePageHeader {
+    width: 100%;
+    padding: 2%;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-end;
+    background-color: rgb(56, 117, 174)
+}
+
+div.HomePageHeader > a {
+    margin: 5px;
 }
