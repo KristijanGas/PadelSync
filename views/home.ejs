@@ -10,12 +10,22 @@
         <div class="HomePageTitle">PadelSync</div>
 
         <div class="HomePageHeader">
-            <a href="/login">
+            <%if(!isAuthenticated) {%>
+                <a href="/login">
                 <button class="loginButton">Login</button>
-            </a>
-            <a href="/registration">
-                <button class="registerButton">Register</button>
-            </a>
+                </a>
+                <!--Auth0 does not separate signin and signup, they deal with that in their pop up window-->
+                <!-- <a href="/registration">
+                    <button class="registerButton">Register</button>
+                </a> -->
+            <%}else{%>
+                <a href="/logout">
+                    <button class="logoutButton">Logout</button>
+                </a>
+                
+            <%}%>
+            
+            <a href="/myprofile">MyProfile</a>
         </div>
 
     </div>
@@ -58,7 +68,9 @@
 
         </div>
 
-
+        <pre><%= JSON.stringify(user, null, 2)%></pre>
+        <pre><%= JSON.stringify(session, null, 2)%></pre>
+        <pre><%= JSON.stringify(oidcWhole, null, 2)%></pre>
 
     </div>
 
