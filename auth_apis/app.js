@@ -16,9 +16,10 @@ app.get("/public", (req, res) => {
         })
 })
 
+
 app.get("/private", jwtCheck, (req, res) => {
         res.json({
-                type:"private"
+                emailVerified: req.auth.payload['https://myapp/email_verified']
         })
 })
 

@@ -5,7 +5,6 @@ const{ requiresAuth } = require('express-openid-connect')
 const axios = require('axios')
 
 router.get('/', requiresAuth(), async (req, res) => {
-        console.log("here");
         let data = {}
 
         const {token_type, access_token} = req.oidc.accessToken
@@ -20,9 +19,13 @@ router.get('/', requiresAuth(), async (req, res) => {
                 )
                 data = apiResponse.data
         }catch(e){
-                console.log(e);
         }
-        res.render("edituser", {
+        console.log(data);
+        if(!data.emailVerified){
+                /* this view needs to be made */
+                res.render("verifyEmail")
+        }else{
+                res.render("edituser", {
                 username: req.oidc.user["https://yourapp.com/username"],
                 isAuthenticated: req.oidc.isAuthenticated(),
                 session: req.session,
@@ -30,6 +33,8 @@ router.get('/', requiresAuth(), async (req, res) => {
                 oidcWhole: req.oidc,
                 tokenInfo: req.oidc.accessToken
         })
+        }
+        
 })
 
 module.exports = router;

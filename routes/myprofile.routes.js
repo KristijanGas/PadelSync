@@ -22,14 +22,19 @@ router.get('/', requiresAuth(), async (req, res) => {
         }catch(e){
                 console.log(e);
         }
-        res.render("myprofile", {
-                title: "my profile",
+        if(!data.emailVerified){
+                /* this view needs to be made */
+                res.render("verifyEmail")
+        }else{
+                res.render("edituser", {
+                username: req.oidc.user["https://yourapp.com/username"],
                 isAuthenticated: req.oidc.isAuthenticated(),
                 session: req.session,
                 user: req.oidc.user,
                 oidcWhole: req.oidc,
                 tokenInfo: req.oidc.accessToken
         })
+        }
 })
 
 module.exports = router;
