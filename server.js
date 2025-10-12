@@ -69,10 +69,10 @@ app.use('/user', userRouter);
 app.use('/terrain_search', terrain_searchRouter);
 app.use('/terrain', terrainRouter);
 
-const registrationRouter = require('./routes/registration.routes');
+/* const registrationRouter = require('./routes/registration.routes');
 const loginRouter = require('./routes/login.routes');
 app.use('/login', loginRouter);
-app.use('/registration', registrationRouter);
+app.use('/registration', registrationRouter); */
 
 const calendarRouter = require('./routes/calendar.routes');
 app.use('/calendar', calendarRouter);
@@ -92,6 +92,13 @@ app.use('/editterrain', editterrainRouter);
 const myprofileRouter = require('./routes/myprofile.routes');
 app.use('/myprofile', myprofileRouter);
 
+app.use('/signup', (req, res) => {
+  res.oidc.login({
+    authorizationParams: {
+      screen_hint: 'signup'
+    }
+  })
+})
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
