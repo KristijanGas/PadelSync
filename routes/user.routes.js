@@ -1,8 +1,6 @@
 const express = require('express');
 var sqlite3 = require('sqlite3').verbose();
-async function fetchAll(db, sql, params = []) {
-    return db.all(sql, params);
-}
+
 const router = express.Router()
 
 // podstranica za pretraživanje klubova, igrača

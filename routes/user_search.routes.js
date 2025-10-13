@@ -9,10 +9,29 @@ router.get('/', (req, res) => {
 });
 
 //search by is player or club | username | max price
-router.get('/club/:username/:minrating', (req, res) => {
-    let SQLQuery = 'SELECT * FROM klub'
-    + ' WHERE username LIKE \"%' + req.params.username + '%\" AND rating >= ' + req.params.minrating + ' AND is_player = 0;';
-    res.render('user_search');
+router.get('/klub/:username', (req, res) => {
+    let SQLQuery = 'SELECT * FROM KLUB'
+    + ' WHERE (lower(username) LIKE \"%' + req.params.username + '%\")'
+    + ' OR (lower(imeklub) LIKE \"%' + req.params.username + '%\")';
+    const db = new sqlite3.Database("database.db");
+    db.all(SQLQuery, [], (err, rows) => {
+        if (err) {
+            console.error(err.message);
+            res.status(500).send("Internal Server Error");
+            return;
+        }
+        if (!rows) {
+            res.status(404).send("User Not Found");
+            return;
+        }
+        let klubovi = [];
+        for(let i=0; i<rows.length; i++){
+            klubovi.push({'username':rows[i].username, 'imeKlub':rows[i].imeKlub});
+        }
+        res.render('user_search', {klubovi: klubovi, session: req.session});
+    });
+    db.close();
+    
 });
 
 router.get('/igrac/:username', (req, res) => {
@@ -31,12 +50,11 @@ router.get('/igrac/:username', (req, res) => {
             res.status(404).send("User Not Found");
             return;
         }
-        let users = [];
+        let igraci = [];
         for(let i=0; i<rows.length; i++){
-            users.push({'username':rows[i].username, 'imeIgrac':rows[i].imeIgrac, 'prezimeIgrac':rows[i].prezimeIgrac});
+            igraci.push({'username':rows[i].username, 'imeIgrac':rows[i].imeIgrac, 'prezimeIgrac':rows[i].prezimeIgrac});
         }
-        console.log(users);
-        res.render('user_search', {users: users, session: req.session});
+        res.render('user_search', {igraci: igraci, session: req.session});
     });
     db.close();
     
