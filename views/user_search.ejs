@@ -5,4 +5,18 @@
 
 <body>
     <p>This page will upport searching through CLUBS OR PLAYERS</p>
+    <p>Search results for: <%= session.search_query %></p>
+    <% if (typeof users !== 'undefined' && users.length > 0) { %>
+        <ul>
+            <% users.forEach(function(user) { %>
+                <li>
+                    <a href="/user/<%= user.username %>">
+                        <%= user.imeIgrac %> <%= user.prezimeIgrac %> (Username: <%= user.username %>)
+                    </a>
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p>No users found.</p>
+    <% } %>
 </body>
