@@ -7,6 +7,7 @@ async function verifyProfile(req){
 
         const {token_type, access_token} = req.oidc.accessToken;
 
+        
         try{
                 const apiResponse = await axios.get('http://localhost:5000/private',
                         {
