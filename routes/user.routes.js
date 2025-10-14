@@ -5,25 +5,6 @@ const router = express.Router()
 
 // podstranica za pretraživanje klubova, igrača
 
-router.get('/', (req, res) => {
-    //res.render('user');
-    if(req.session.user){
-        res.redirect(`/user/${req.session.user.username}`);
-    } 
-    else {
-        res.redirect('/login');
-    }
-
-});
-router.post('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.redirect('/home');
-        }
-    });
-});
 
 router.get('/:username', async (req, res) => {
     const db = new sqlite3.Database("database.db");
