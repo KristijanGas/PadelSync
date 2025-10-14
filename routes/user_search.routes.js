@@ -5,12 +5,8 @@ const router = express.Router()
 // podstranica za pretraživanje klubova, igrača
 
 router.get('/', (req, res) => {
-    console.log(req.oidc.isAuthenticated())
     res.render('user_search', { 
-        isAuthenticated: req.oidc.isAuthenticated(),
-        user: req.oidc.user,
-        session: req.session,
-        oidcWhole: req.oidc
+        isAuthenticated: req.oidc.isAuthenticated()
     });
 });
 
@@ -34,7 +30,7 @@ router.get('/klub/:username', (req, res) => {
         for(let i=0; i<rows.length; i++){
             klubovi.push({'username':rows[i].username, 'imeKlub':rows[i].imeKlub});
         }
-        res.render('user_search', {klubovi: klubovi, session: req.session});
+        res.render('user_search', {klubovi: klubovi, session: req.session, isAuthenticated: req.oidc.isAuthenticated()});
     });
     db.close();
     
@@ -60,7 +56,7 @@ router.get('/igrac/:username', (req, res) => {
         for(let i=0; i<rows.length; i++){
             igraci.push({'username':rows[i].username, 'imeIgrac':rows[i].imeIgrac, 'prezimeIgrac':rows[i].prezimeIgrac});
         }
-        res.render('user_search', {igraci: igraci, session: req.session});
+        res.render('user_search', {igraci: igraci, session: req.session, isAuthenticated: req.oidc.isAuthenticated()});
     });
     db.close();
     
