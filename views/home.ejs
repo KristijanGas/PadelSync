@@ -9,25 +9,7 @@
 
         <div class="HomePageTitle">PadelSync</div>
 
-        <div class="HomePageHeader">
-            <%if(!isAuthenticated) {%>
-                <a href="/login">
-                <button class="loginButton">Login</button>
-                </a>
-                <!--Auth0 does not separate signin and signup, they deal with that in their pop up window-->
-                <a href="/signup">
-                    <button class="registerButton">Register</button>
-                </a>
-            <%}else{%>
-                <a href="/logout">
-                    <button class="logoutButton">Logout</button>
-                    <a href="/myprofile">MyProfile</a>
-                </a>
-                
-            <%}%>
-            
-            
-        </div>
+       <%- include("./partials/header") %>
 
     </div>
 

@@ -5,7 +5,13 @@ const router = express.Router()
 // podstranica za pretraživanje klubova, igrača
 
 router.get('/', (req, res) => {
-    res.render('user_search');
+    console.log(req.oidc.isAuthenticated())
+    res.render('user_search', { 
+        isAuthenticated: req.oidc.isAuthenticated(),
+        user: req.oidc.user,
+        session: req.session,
+        oidcWhole: req.oidc
+    });
 });
 
 //search by is player or club | username | max price
