@@ -93,12 +93,17 @@ const myprofileRouter = require('./routes/myprofile.routes');
 app.use('/myprofile', myprofileRouter);
 
 app.use('/signup', (req, res) => {
-  res.oidc.login({
+  if(!req.oidc.isAuthenticated()){
+     res.oidc.login({
     authorizationParams: {
       screen_hint: 'signup'
     }
   })
+  }else{
+    res.redirect("/");
+  }
 })
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
