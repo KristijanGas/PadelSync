@@ -3,10 +3,25 @@ const express = require('express');
 const app = express();
 const port = 3000;
 app.use(express.static("public"));
+require("dotenv").config();
 
 const session = require('express-session')
+const { auth } = require('express-openid-connect');
 
-
+const config = {
+  authRequired: false,
+  auth0Logout: true,
+  secret: process.env.SECRET,
+  baseURL: process.env.BASEURL,
+  clientID: process.env.CLIENTID,
+  issuerBaseURL: process.env.ISSUER,
+  clientSecret: process.env.CLIENTSECRET,
+  authorizationParams: {
+    response_type: 'code',
+    audience: 'https://www.padelsync-api.com',
+    scope: 'openid profile email username'
+  }
+};
 
 app.set('views','./views');
 app.set('view engine', 'ejs');
@@ -32,6 +47,10 @@ app.use((req, res, next) => {
     next();
 });
 
+//place auth0 middleware here
+app.use(auth(config));
+
+
 
 app.get('/', (req, res) => {
     res.redirect('/home');
@@ -50,10 +69,10 @@ app.use('/user', userRouter);
 app.use('/terrain_search', terrain_searchRouter);
 app.use('/terrain', terrainRouter);
 
-const registrationRouter = require('./routes/registration.routes');
+/* const registrationRouter = require('./routes/registration.routes');
 const loginRouter = require('./routes/login.routes');
 app.use('/login', loginRouter);
-app.use('/registration', registrationRouter);
+app.use('/registration', registrationRouter); */
 
 const calendarRouter = require('./routes/calendar.routes');
 app.use('/calendar', calendarRouter);
@@ -70,9 +89,16 @@ app.use('/edituser', edituserRouter);
 const editterrainRouter = require('./routes/editterrain.routes');
 app.use('/editterrain', editterrainRouter);
 
-// start server
+const myprofileRouter = require('./routes/myprofile.routes');
+app.use('/myprofile', myprofileRouter);
 
-
+app.use('/signup', (req, res) => {
+  res.oidc.login({
+    authorizationParams: {
+      screen_hint: 'signup'
+    }
+  })
+})
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });

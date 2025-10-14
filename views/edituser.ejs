@@ -4,5 +4,18 @@
 </head>
 
 <body>
-    <p>Ovdje se prikazuje forma za uređivanje korisničkih podataka</p>
+    <h1>Hello, <%=username%>! Edit your profile</h1>
+        <br>
+
+        <form>
+                <input type="radio" id="player" name="userType" value="player">
+                <label for="player">Player</label><br>
+                 <input type="radio" id="club" name="userType" value="club">
+                <label for="club">Club</label><br> 
+        </form>
+        <pre><%= JSON.stringify(user, null, 2)%></pre>
+        <pre><%= JSON.stringify(session, null, 2)%></pre>
+        <pre><%= JSON.stringify(oidcWhole, null, 2)%></pre>
+        <pre><%= JSON.stringify(tokenInfo, null, 2)%></pre>
+        <p>sad se pravi profil</p>
 </body>
