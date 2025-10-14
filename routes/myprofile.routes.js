@@ -11,7 +11,7 @@ router.get('/', requiresAuth(), async (req, res) => {
                 const isVerified = await verifyProfile(req);
                 if(!isVerified){
                         /* this view needs to be made */
-                        res.render("verifyEmail")
+                        res.render("verifymail")
                 }else{
                         res.render("myprofile", {
                         username: req.oidc.user["https://yourapp.com/username"],
