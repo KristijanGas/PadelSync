@@ -76,5 +76,13 @@ INSERT INTO ADMIN (prezimeAdmin, imeAdmin, username)
 	('Synkovic', 'Padel', 'padelsynkovic');
 	
 
-
+INSERT INTO RECENZIJA (komentar, ocjena, datumRecenzija, username, terenID)
+    VALUES
+    ('odlican teren', 5, '21.10.2024.', 'marko10', 1),
+    ('nestalo struje', 2, '1.1.2025.', 'padelmaster3000', 1),
+    ('nije lose', 3, '23.7.2024.', 'padelina', 1),
+    ('', 4, '21.10.2024.', 'aaaaa100', 2),
+    ('savrsenstvo', 5, '22.11.2024.', 'marko10', 3),
+    ('odlicno', 5, '13.2.2025.', 'padelmaster3000', 4),
+    ('solidan teren', 4, '2.7.2024.', 'ivor_je_zakon', 4);
 
