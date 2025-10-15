@@ -15,10 +15,12 @@ router.get('/', requiresAuth(), async (req, res) => {
                         res.render("verifymail")
                 } else {
                         const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
+                        //console.log("profile in db:", profileInDB);
                         if (profileInDB === "UserDidntChoose") {
                                 //redirect them to choose
                         }
                         if (profileInDB === "CorruptedDB") {
+                                console.error("Corrupted database, user is both player and club or more");
                                 res.status(500).send("Corrupted database, contact admin");
                                 return;
                         }

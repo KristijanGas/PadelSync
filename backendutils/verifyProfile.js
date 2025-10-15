@@ -56,6 +56,7 @@ async function verifyDBProfile(username,email,res){
     }
     //user exists and now we check if he is a player or club
     let isPlayer = 0;
+    let isAdmin = 0;
     let isClub = 0;
     SQLQuery = "SELECT count(*) as cnt FROM igrac WHERE username = ?;"
     row = await getRow(SQLQuery, [username]);
@@ -67,12 +68,17 @@ async function verifyDBProfile(username,email,res){
     if (row && row.cnt > 0) {
         isClub = 1;
     }
+
+    SQLQuery = "SELECT count(*) as cnt FROM admin WHERE username = ?;"
+    row = await getRow(SQLQuery, [username]);
+    if (row && row.cnt > 0) {
+        isAdmin = 1;
+    }
     db.close();
-
-    //console.log(isPlayer,isClub);
-
+    //console.log(isPlayer,isClub,isAdmin);
+    if(isPlayer + isClub + isAdmin > 1) return "CorruptedDB";
+    if(isAdmin === 1) return "Admin";
     if(isPlayer === 0 && isClub === 0) return "UserDidntChoose";
-    if(isPlayer === 1 && isClub === 1) return "CorruptedDB";
     if(isPlayer === 1) return "Player";
     if(isClub === 1) return "Club";
 }
