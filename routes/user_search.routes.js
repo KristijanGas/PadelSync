@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
     });
 });
 
-//search by is player or club | username | max price
+//search by is player or club by  username
 router.get('/klub/:username', (req, res) => {
     let SQLQuery = 'SELECT * FROM KLUB'
     + ' WHERE (lower(username) LIKE \"%' + req.params.username + '%\")'

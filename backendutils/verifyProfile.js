@@ -1,5 +1,6 @@
 const{ requiresAuth } = require('express-openid-connect')
 const axios = require('axios')
+const sqlite3 = require('sqlite3').verbose();
 
 
 async function verifyProfile(req){
@@ -20,14 +21,79 @@ async function verifyProfile(req){
         }catch(e){
                 //console.log(e); //ERROR DOES ACTUALLY HAPPEN HERE PLZ FIX
         }
-        console.log(data);
+        //console.log(data);
         return data.emailVerified;
 }
 
 //checks if profile is verified in our database
-async function verifyDBProfile(req){
-    let SQL = `SELECT emailVerified FROM users WHERE auth0id = ?`;
+async function verifyDBProfile(username,email,res){
+    let SQLQuery = "SELECT count(*) as cnt FROM korisnik WHERE username = ?;";
+
+    const db = new sqlite3.Database("database.db");
+    let userExists = 1;
+
+    const getRow = (sql, params) => new Promise((resolve, reject) => {
+        db.get(sql, params, (err, row) => {
+            if (err) return reject(err);
+            resolve(row);
+        });
+    });
+
+    try{
+        const row = await getRow(SQLQuery, [username]);
+        if (!row || row.cnt == 0) {
+            userExists = 0;
+        }
+    }catch(err){
+        console.error(err.message);
+        if(res) res.status(500).send("Internal Server Error");
+        db.close();
+        return null;
+    }
+    //console.log("user existance: ",userExists);
+    if(userExists === 0){
+        await addUserToDB(username,email,res);
+    }
+    //user exists and now we check if he is a player or club
+    let isPlayer = 0;
+    let isClub = 0;
+    SQLQuery = "SELECT count(*) as cnt FROM igrac WHERE username = ?;"
+    row = await getRow(SQLQuery, [username]);
+    if (row && row.cnt > 0) {
+        isPlayer = 1;
+    }
+    SQLQuery = "SELECT count(*) as cnt FROM klub WHERE username = ?;"
+    row = await getRow(SQLQuery, [username]);
+    if (row && row.cnt > 0) {
+        isClub = 1;
+    }
+    db.close();
+
+    //console.log(isPlayer,isClub);
+
+    if(isPlayer === 0 && isClub === 0) return "UserDidntChoose";
+    if(isPlayer === 1 && isClub === 1) return "CorruptedDB";
+    if(isPlayer === 1) return "Player";
+    if(isClub === 1) return "Club";
 }
 
-module.exports = verifyProfile;
-module.exports = verifyDBProfile;
+async function addUserToDB(username,email,res){
+    const db = new sqlite3.Database("database.db");
+    const SQLQuery = 'INSERT INTO korisnik (username,email,passwordHash) VALUES (?,?,?)';
+
+    return new Promise((resolve, reject) => {
+        db.run(SQLQuery, [username, email, 'zasadnista'], function(err) {
+            if (err) {
+                console.error('addUserToDB error:', err.message);
+                if (res) res.status(500).send("Internal Server Error adding");
+                db.close();
+                return reject(err);
+            }
+            console.log(`A row has been inserted with rowid ${this.lastID}`);
+            db.close();
+            resolve(this.lastID);
+        });
+    });
+}
+
+module.exports = {verifyProfile, verifyDBProfile};
