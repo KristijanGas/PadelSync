@@ -18,10 +18,16 @@ async function verifyProfile(req){
                 )
                 data = apiResponse.data
         }catch(e){
-                console.log(e);
+                //console.log(e); //ERROR DOES ACTUALLY HAPPEN HERE PLZ FIX
         }
+        console.log(data);
         return data.emailVerified;
 }
 
+//checks if profile is verified in our database
+async function verifyDBProfile(req){
+    let SQL = `SELECT emailVerified FROM users WHERE auth0id = ?`;
+}
 
 module.exports = verifyProfile;
+module.exports = verifyDBProfile;
