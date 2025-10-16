@@ -19,7 +19,7 @@ const config = {
   authorizationParams: {
     response_type: 'code',
     audience: 'https://www.padelsync-api.com',
-    scope: 'openid profile email username'
+    scope: 'openid profile email username offline_access'
   }
 };
 
@@ -98,7 +98,7 @@ app.use('/signup', (req, res) => {
   if(!req.oidc.isAuthenticated()){
      res.oidc.login({
     authorizationParams: {
-      screen_hint: 'signup'
+      screen_hint: 'signup offline_access'
     }
   })
   }else{
