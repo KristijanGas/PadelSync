@@ -57,15 +57,46 @@ router.post('/chooseType', requiresAuth(), async (req, res) => {
                 await runQuery(SQLQuery, [req.oidc.user.nickname]);
         }catch(err){
                 console.error(err.message);
-                res.status(500).send("Internal Server Error");
+                res.status(500).send("Internal Server Error setting profile type");
                 db.close();
                 return;
         }
         db.close();
-        console.log("User type set to:", userType,"name",req.oidc.user.nickname,SQLQuery);
         // Save the userType to the database or session
         req.session.userType = userType;
         res.redirect("/edituser");
 });
 
+router.post('/eraseType', requiresAuth(), async (req, res) => {
+        let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
+        if(profileInDB === "Admin"){
+                return res.status(400).send("You can't erase your profile type because you are an admin.");
+        }
+        if(profileInDB !== "Player" && profileInDB !== "Club"){
+                return res.status(400).send("You can't erase your profile type because you didnt even set it.");
+        }
+        let SQLQuery = "";
+        if(profileInDB === "Player"){
+                SQLQuery = "DELETE FROM igrac WHERE username = ?;";
+        }else if(profileInDB === "Club"){
+                SQLQuery = "DELETE FROM klub WHERE username = ?;";
+        }
+        const db = new sqlite3.Database("database.db");
+        const runQuery = (sql, params) => new Promise((resolve, reject) => {
+                db.run(sql, params, function(err) {
+                        if (err) return reject(err);
+                        resolve(this);
+                });
+        });
+        try{
+                await runQuery(SQLQuery, [req.oidc.user.nickname]);
+        }catch(err){
+                console.error(err.message);
+                res.status(500).send("Internal Server Error removing profile type");
+                db.close();
+                return;
+        }
+        db.close();
+        res.redirect("/edituser");
+});
 module.exports = router;

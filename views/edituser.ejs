@@ -16,8 +16,13 @@
         </form>
     <!-- Form now uses POST method; JS redirect removed -->
 
-        <% } %>
+        <% } else { %>
 
+        <form id="eraseType" method="POST" action="/edituser/eraseType">
+                <button type="button" onclick="if(confirm('Are you sure you want to erase your profile and choose your type again?')) 
+                { document.getElementById('eraseType').submit(); }">eraseProfile</button>
+        </form>
+        <% } %>
     </script>
         
         <pre><%= JSON.stringify(user, null, 2)%></pre>
