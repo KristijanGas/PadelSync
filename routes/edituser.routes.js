@@ -62,6 +62,7 @@ router.post('/chooseType', requiresAuth(), async (req, res) => {
                 return;
         }
         db.close();
+        console.log("User type set to:", userType,"name",req.oidc.user.nickname,SQLQuery);
         // Save the userType to the database or session
         req.session.userType = userType;
         res.redirect("/edituser");
