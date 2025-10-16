@@ -32,13 +32,13 @@ CREATE TABLE IGRAC
 CREATE TABLE KLUB
 (
   svlacionice INT,
-  imeKlub VARCHAR NOT NULL,
+  imeKlub VARCHAR,
   najamReketa INT,
   pravilaKlub VARCHAR,
-  klubRadiDo DATE NOT NULL,
-  klubRadiOd DATE NOT NULL,
+  klubRadiDo DATE,
+  klubRadiOd DATE,
   tusevi INT,
-  adresaKlub VARCHAR NOT NULL,
+  adresaKlub VARCHAR,
   prostorZaOdmor INT,
   opisKluba VARCHAR,
   username VARCHAR NOT NULL,

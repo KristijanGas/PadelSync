@@ -17,25 +17,24 @@ router.get('/', requiresAuth(), async (req, res) => {
                         const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
                         //console.log("profile in db:", profileInDB);
                         if (profileInDB === "UserDidntChoose") {
+                                res.redirect("/edituser");
                                 //redirect them to choose
                         }
-                        if (profileInDB === "CorruptedDB") {
+                        else if (profileInDB === "CorruptedDB") {
                                 console.error("Corrupted database, user is both player and club or more");
                                 res.status(500).send("Corrupted database, contact admin");
                                 return;
                         }
-                        if (profileInDB === "Player" || profileInDB === "Club") {
-                                //all good
+                        else if (profileInDB === "Player" || profileInDB === "Club") {
+                                res.render("myprofile", {
+                                        username: req.oidc.user["https://yourapp.com/username"],
+                                        isAuthenticated: req.oidc.isAuthenticated(),
+                                        session: req.session,
+                                        user: req.oidc.user,
+                                        oidcWhole: req.oidc,
+                                        tokenInfo: req.oidc.accessToken
+                                })
                         }
-                        console.log(profileInDB);
-                        res.render("myprofile", {
-                                username: req.oidc.user["https://yourapp.com/username"],
-                                isAuthenticated: req.oidc.isAuthenticated(),
-                                session: req.session,
-                                user: req.oidc.user,
-                                oidcWhole: req.oidc,
-                                tokenInfo: req.oidc.accessToken
-                        })
                 }
         } catch (err) {
                 res.status(500).send("internal server error");

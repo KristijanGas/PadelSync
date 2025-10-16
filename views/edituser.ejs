@@ -6,13 +6,20 @@
 <body>
     <h1>Hello, <%=username%>! Edit your profile</h1>
         <br>
-
-        <form>
-                <input type="radio" id="player" name="userType" value="player">
-                <label for="player">Player</label><br>
-                 <input type="radio" id="club" name="userType" value="club">
-                <label for="club">Club</label><br> 
+        <% if (profileType === "UserDidntChoose") { %>
+    <form id="chooseType" method="POST" action="/edituser/chooseType">
+            <input type="radio" id="player" name="userType" value="Player" required>
+            <label for="player">Player</label><br>
+            <input type="radio" id="club" name="userType" value="Club" required>
+            <label for="club">Club</label><br>
+            <button type="submit">Submit</button>
         </form>
+    <!-- Form now uses POST method; JS redirect removed -->
+
+        <% } %>
+
+    </script>
+        
         <pre><%= JSON.stringify(user, null, 2)%></pre>
         <pre><%= JSON.stringify(session, null, 2)%></pre>
         <pre><%= JSON.stringify(oidcWhole, null, 2)%></pre>

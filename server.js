@@ -26,7 +26,9 @@ const config = {
 app.set('views','./views');
 app.set('view engine', 'ejs');
 app.engine('html', require('ejs').renderFile);
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(session({
     secret: 'verysecretyesyes', // used to sign the session ID cookie

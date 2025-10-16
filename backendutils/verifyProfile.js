@@ -5,7 +5,6 @@ const sqlite3 = require('sqlite3').verbose();
 
 async function verifyProfile(req){
         let data = {}
-
         const {token_type, access_token} = req.oidc.accessToken;
 
         
@@ -102,4 +101,4 @@ async function addUserToDB(username,email,res){
     });
 }
 
-module.exports = {verifyProfile, verifyDBProfile};
+module.exports = {verifyProfile, verifyDBProfile,addUserToDB};
