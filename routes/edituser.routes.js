@@ -31,6 +31,7 @@ router.get('/', requiresAuth(), async (req, res) => {
 
                                 try{
                                         const row = await getRow(SQLQuery, [req.oidc.user.nickname]);
+                                        db.close();
                                          res.render("edituser", {
                                         username: req.oidc.user["https://yourapp.com/username"],
                                         isAuthenticated: req.oidc.isAuthenticated(),
@@ -62,7 +63,8 @@ router.get('/', requiresAuth(), async (req, res) => {
 
                                 try{
                                         const row = await getRow(SQLQuery, [req.oidc.user.nickname]);
-                                         res.render("edituser", {
+                                        db.close();
+                                        res.render("edituser", {
                                         username: req.oidc.user["https://yourapp.com/username"],
                                         isAuthenticated: req.oidc.isAuthenticated(),
                                         session: req.session,
@@ -164,4 +166,81 @@ router.post('/eraseType', requiresAuth(), async (req, res) => {
         db.close();
         res.redirect("/edituser");
 });
+
+router.post('/insertPlayerInfo', requiresAuth(), async (req, res) => {
+        let SQLQuery = `UPDATE igrac
+                        SET     brojMob = ?,
+                                prefVrijeme = ?,
+                                razZnanjaPadel = ?,
+                                prezimeIgrac = ?,
+                                imeIgrac = ?
+                        WHERE 
+                                username = ?;`;
+        const db = new sqlite3.Database("database.db");
+        const runQuery = (sql, params) => new Promise((resolve, reject) => {
+                db.run(sql, params, function(err) {
+                        if (err) return reject(err);
+                        resolve(this);
+                });
+        });
+         try{
+                await runQuery(SQLQuery, [req.body.brojMob, 
+                                        req.body.prefVrijeme, 
+                                        req.body.razZnanjaPadel, 
+                                        req.body.prezimeIgrac, 
+                                        req.body.imeIgrac, 
+                                        req.oidc.user.nickname]);
+        }catch(err){
+                console.error(err.message);
+                res.status(500).send("Internal Server Error removing profile type");
+                db.close();
+                return;
+        }
+        db.close();
+        res.redirect("/myprofile");
+});
+
+router.post('/insertClubInfo', requiresAuth(), async (req, res) => {
+        let SQLQuery = `UPDATE klub
+                        SET     svlacionice = ?,
+                                imeKlub = ?,
+                                najamReketa = ?,
+                                pravilaKlub = ?,
+                                klubRadiDo = ?,
+                                klubRadiOd = ?,
+                                tusevi = ?,
+                                adresaKlub = ?,
+                                prostorZaOdmor = ?,
+                                opisKluba = ?
+                        WHERE 
+                                username = ?;`;
+        const db = new sqlite3.Database("database.db");
+        const runQuery = (sql, params) => new Promise((resolve, reject) => {
+                db.run(sql, params, function(err) {
+                        if (err) return reject(err);
+                        resolve(this);
+                });
+        });
+         try{
+                await runQuery(SQLQuery, [req.body.svlacionice, 
+                                        req.body.imeKlub, 
+                                        req.body.najamReketa,
+                                        req.body.pravilaKlub, 
+                                        req.body.klubRadiDo, 
+                                        req.body.klubRadiOd, 
+                                        req.body.tusevi,
+                                        req.body.adresaKlub,
+                                        req.body.prostorZaOdmor,
+                                        req.body.opisKluba,
+                                        req.oidc.user.nickname]);
+        }catch(err){
+                console.error(err.message);
+                res.status(500).send("Internal Server Error removing profile type");
+                db.close();
+                return;
+        }
+        db.close();
+        res.redirect("/myprofile");
+});
+
 module.exports = router;
