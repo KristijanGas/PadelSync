@@ -16,15 +16,80 @@ router.get('/', requiresAuth(), async (req, res) => {
                         /* this view needs to be made */
                         res.render("verifymail")
                 }else{
-                        res.render("edituser", {
-                        username: req.oidc.user["https://yourapp.com/username"],
-                        isAuthenticated: req.oidc.isAuthenticated(),
-                        session: req.session,
-                        user: req.oidc.user,
-                        oidcWhole: req.oidc,
-                        tokenInfo: req.oidc.accessToken,
-                        profileType: profileInDB
-                        })
+                         let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
+                        if(profileInDB === "Player"){
+                                let SQLQuery = "SELECT * FROM igrac WHERE username = ?;";
+
+                                const db = new sqlite3.Database("database.db");
+
+                                const getRow = (sql, params) => new Promise((resolve, reject) => {
+                                        db.get(sql, params, (err, row) => {
+                                        if (err) return reject(err);
+                                        resolve(row);
+                                        });
+                                });
+
+                                try{
+                                        const row = await getRow(SQLQuery, [req.oidc.user.nickname]);
+                                         res.render("edituser", {
+                                        username: req.oidc.user["https://yourapp.com/username"],
+                                        isAuthenticated: req.oidc.isAuthenticated(),
+                                        session: req.session,
+                                        user: req.oidc.user,
+                                        oidcWhole: req.oidc,
+                                        tokenInfo: req.oidc.accessToken,
+                                        profileType: profileInDB,
+                                        playerInfo: row
+                                        })
+                                }catch(err){
+                                        console.error(err.message);
+                                        if(res) res.status(500).send("Internal Server Error");
+                                        db.close();
+                                        return null;
+                                }
+
+                        }else if(profileInDB === "Club"){
+                                let SQLQuery = "SELECT * FROM klub WHERE username = ?;";
+
+                                const db = new sqlite3.Database("database.db");
+
+                                const getRow = (sql, params) => new Promise((resolve, reject) => {
+                                        db.get(sql, params, (err, row) => {
+                                        if (err) return reject(err);
+                                        resolve(row);
+                                        });
+                                });
+
+                                try{
+                                        const row = await getRow(SQLQuery, [req.oidc.user.nickname]);
+                                         res.render("edituser", {
+                                        username: req.oidc.user["https://yourapp.com/username"],
+                                        isAuthenticated: req.oidc.isAuthenticated(),
+                                        session: req.session,
+                                        user: req.oidc.user,
+                                        oidcWhole: req.oidc,
+                                        tokenInfo: req.oidc.accessToken,
+                                        profileType: profileInDB,
+                                        clubInfo: row
+                                        })
+                                }catch(err){
+                                        console.error(err.message);
+                                        if(res) res.status(500).send("Internal Server Error");
+                                        db.close();
+                                        return null;
+                                }
+
+                        }else{
+                                res.render("edituser", {
+                                username: req.oidc.user["https://yourapp.com/username"],
+                                isAuthenticated: req.oidc.isAuthenticated(),
+                                session: req.session,
+                                user: req.oidc.user,
+                                oidcWhole: req.oidc,
+                                tokenInfo: req.oidc.accessToken,
+                                profileType: profileInDB
+                                })
+                        }
                 }
         }catch(err){
                 res.status(500).send("internal server error");

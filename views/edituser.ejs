@@ -22,7 +22,48 @@
                 <button type="button" onclick="if(confirm('Are you sure you want to erase your profile and choose your type again?')) 
                 { document.getElementById('eraseType').submit(); }">eraseProfile</button>
         </form>
-        <% } %>
+
+        <!-- actual form for --> 
+        <%if(profileType === "Player")%>
+        <form id="playerInfo" method="POST" action="/edituser/insertInfo">
+            <label for="phoneNum">Broj mobitela:</label>
+            <input type="text" id="phoneNum" name="phoneNum" value=<%=playerInfo.brojMob%>><br><br>
+            <label for="prefVrijeme">Preferirano vrijeme:</label>
+            <select id="cars" name="cars">
+                <!-- need to select one as was with the user before -->
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </select><br><br>
+            <label for="lastName">Prezime:</label>
+            <input type="text" id="lastName" name="lastName" value=<%=playerInfo.prezimeIgrac%>><br><br>
+            <label for="firstName">Ime:</label>
+            <input type="text" id="firstName" name="firstName" value=<%=playerInfo.imeIgrac%>><br><br>
+            <button type="submit">Submit</button>
+        </form>
+        <%}if(profileType === "Club"){%>
+            <form id="clubInfo" method="POST" action="/edituser/insertInfo">
+                <label for="svlacionice">Broj svlacionica:</label>
+                <input type="text" id="svlacionice" name="svlacionice" value=<%=clubInfo.svlacionice%>><br><br>
+                <label for="imeKlub">Ime kluba:</label>
+                <input type="text" id="imeKlub" name="imeKlub" value=<%=clubInfo.imeKlub%>><br><br>
+                <label for="najamReketa">Najam reketa:</label>
+                <input type="text" id="najamReketa" name="najamReketa" value=<%=clubInfo.najamReketa%>><br><br>
+                <label for="klubRadiDo">Do kada klub radi:</label>
+                <input type="text" id="klubRadiDo" name="klubRadiDo" value=<%=clubInfo.klubRadiDo%>><br><br>
+                <label for="klubRadiOd">Od kada klub radi:</label>
+                <input type="text" id="klubRadiOd" name="klubRadiOd" value=<%=clubInfo.klubRadiOd%>><br><br>
+                <label for="tusevi">Koliko tuševa imate:</label>
+                <input type="text" id="tusevi" name="tusevi" value=<%=clubInfo.tusevi%>><br><br>
+                <label for="adresaKlub">Adresa kluba:</label>
+                <input type="text" id="adresaKlub" name="adresaKlub" value=<%=clubInfo.adresaKlub%>><br><br>
+                <label for="prostorZaOdmor">Prostor za odmor:</label>
+                <input type="text" id="prostorZaOdmor" name="prostorZaOdmor" value=<%=clubInfo.prostorZaOdmor%>><br><br>
+                <label for="opisKluba">opis Kluba:</label>
+                <input type="text" id="opisKluba" name="opisKluba" value=<%=clubInfo.opisKluba%>><br><br>
+                <button type="submit">Submit</button>
+            </form>
+        <%}%>
     </script>
         
         <pre><%= JSON.stringify(user, null, 2)%></pre>
