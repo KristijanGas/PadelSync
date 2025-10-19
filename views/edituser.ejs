@@ -4,7 +4,7 @@
 </head>
 
 <body>
-    <h1>Hello, <%=username%>! Edit your profile</h1>
+    <h1>Hello, editing <%=usernameOfEditedUser%> profile</h1>
         <br>
         <% if (profileType === "UserDidntChoose") { %>
     <form id="chooseType" method="POST" action="/edituser/chooseType">
@@ -24,12 +24,12 @@
         </form>
 
         <!-- actual form for editing info--> 
-        <%if(profileType === "Player"){%>
-        <form id="playerInfo" method="POST" action="/edituser/insertPlayerInfo">
+        <%if(profileTypeOfEditedUser === "Player"){%>
+        <form id="userInfo" method="POST" action="/edituser/insertPlayerInfo">
             <label for="brojMob">Broj mobitela:</label>
-            <input type="text" id="brojMob" name="brojMob" value=<%=playerInfo.brojMob%>><br><br>
+            <input type="text" id="brojMob" name="brojMob" value=<%=userInfo.brojMob%>><br><br>
             <label for="prefVrijeme">Preferirano vrijeme:</label>
-            <input type="date" id="prefVrijeme" name="prefVrijeme" value=<%=playerInfo.prefVrijeme%>><br><br>
+            <input type="date" id="prefVrijeme" name="prefVrijeme" value=<%=userInfo.prefVrijeme%>><br><br>
             <label for="razZnanjaPadel">Razina znanja padela:</label>
             <select id="razZnanjaPadel" name="razZnanjaPadel">
                 <!-- ovdje moramo odluciti kakve ce to biti razine, ap onda napraviti da pokazuje na prethodno spremljenu -->
@@ -38,41 +38,39 @@
                 <option value="3">3</option>
             </select><br><br>
             <label for="prezimeIgrac">Prezime:</label>
-            <input type="text" id="prezimeIgrac" name="prezimeIgrac" value=<%=playerInfo.prezimeIgrac%>><br><br>
+            <input type="text" id="prezimeIgrac" name="prezimeIgrac" value=<%=userInfo.prezimeIgrac%>><br><br>
             <label for="imeIgrac">Ime:</label>
-            <input type="text" id="imeIgrac" name="imeIgrac" value=<%=playerInfo.imeIgrac%>><br><br>
+            <input type="text" id="imeIgrac" name="imeIgrac" value=<%=userInfo.imeIgrac%>><br><br>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" value=<%=userInfo.username%> readonly><br><br>
             <button type="submit">Submit</button>
         </form>
-        <%}else if(profileType === "Club"){%>
-            <form id="clubInfo" method="POST" action="/edituser/insertClubInfo">
+        <%}else if(profileTypeOfEditedUser === "Club"){%>
+            <form id="userInfo" method="POST" action="/edituser/insertClubInfo">
                 <label for="svlacionice">Broj svlacionica:</label>
-                <input type="number" id="svlacionice" name="svlacionice" value=<%=clubInfo.svlacionice%>><br><br>
+                <input type="number" id="svlacionice" name="svlacionice" value=<%=userInfo.svlacionice%>><br><br>
                 <label for="imeKlub">Ime kluba:</label>
-                <input type="text" id="imeKlub" name="imeKlub" value=<%=clubInfo.imeKlub%>><br><br>
+                <input type="text" id="imeKlub" name="imeKlub" value=<%=userInfo.imeKlub%>><br><br>
                 <label for="najamReketa">Najam reketa:</label>
-                <input type="number" id="najamReketa" name="najamReketa" value=<%=clubInfo.najamReketa%>><br><br>
+                <input type="number" id="najamReketa" name="najamReketa" value=<%=userInfo.najamReketa%>><br><br>
                 <label for="pravilaKlub">Pravila kluba:</label>
-                <input type="textarea" id="pravilaKlub" name="pravilaKlub" value=<%=clubInfo.najamReketa%>><br><br>
+                <input type="textarea" id="pravilaKlub" name="pravilaKlub" value=<%=userInfo.najamReketa%>><br><br>
                 <label for="klubRadiDo">Do kada klub radi:</label>
-                <input type="date" id="klubRadiDo" name="klubRadiDo" value=<%=clubInfo.klubRadiDo%>><br><br>
+                <input type="date" id="klubRadiDo" name="klubRadiDo" value=<%=userInfo.klubRadiDo%>><br><br>
                 <label for="klubRadiOd">Od kada klub radi:</label>
-                <input type="date" id="klubRadiOd" name="klubRadiOd" value=<%=clubInfo.klubRadiOd%>><br><br>
+                <input type="date" id="klubRadiOd" name="klubRadiOd" value=<%=userInfo.klubRadiOd%>><br><br>
                 <label for="tusevi">Koliko tuševa imate:</label>
-                <input type="number" id="tusevi" name="tusevi" value=<%=clubInfo.tusevi%>><br><br>
+                <input type="number" id="tusevi" name="tusevi" value=<%=userInfo.tusevi%>><br><br>
                 <label for="adresaKlub">Adresa kluba:</label>
-                <input type="text" id="adresaKlub" name="adresaKlub" value=<%=clubInfo.adresaKlub%>><br><br>
+                <input type="text" id="adresaKlub" name="adresaKlub" value=<%=userInfo.adresaKlub%>><br><br>
                 <label for="prostorZaOdmor">Prostor za odmor:</label>
-                <input type="number" id="prostorZaOdmor" name="prostorZaOdmor" value=<%=clubInfo.prostorZaOdmor%>><br><br>
+                <input type="number" id="prostorZaOdmor" name="prostorZaOdmor" value=<%=userInfo.prostorZaOdmor%>><br><br>
                 <label for="opisKluba">opis Kluba:</label>
-                <input type="textarea" id="opisKluba" name="opisKluba" value=<%=clubInfo.opisKluba%>><br><br>
+                <input type="textarea" id="opisKluba" name="opisKluba" value=<%=userInfo.opisKluba%>><br><br>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" value=<%=userInfo.username%> readonly><br><br>
                 <button type="submit">Submit</button>
             </form>
         <%}}%>
     </script>
-        
-        <pre><%= JSON.stringify(user, null, 2)%></pre>
-        <pre><%= JSON.stringify(session, null, 2)%></pre>
-        <pre><%= JSON.stringify(oidcWhole, null, 2)%></pre>
-        <pre><%= JSON.stringify(tokenInfo, null, 2)%></pre>
-        <p>sad se pravi profil</p>
 </body>

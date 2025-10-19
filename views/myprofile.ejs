@@ -6,12 +6,12 @@
         <title>Document</title>
 </head>
 <body>
-        <a href="/edituser"><button>Edit profile</button></a>
+        <a href="/edituser/<%=user.nickname%>"><button>Edit profile</button></a>
 
         <%if(profileType === "Player"){%>
-                <pre> <%= JSON.stringify(playerInfo, null, 2)%></pre>
+                <pre> <%= JSON.stringify(userInfo, null, 2)%></pre>
         <%}else if(profileType === "Club"){%>
-                <pre> <%= JSON.stringify(clubInfo, null, 2)%></pre>
+                <pre> <%= JSON.stringify(userInfo, null, 2)%></pre>
         <%}%>
         <pre><%= JSON.stringify(user, null, 2)%></pre>
         <pre><%= JSON.stringify(session, null, 2)%></pre>

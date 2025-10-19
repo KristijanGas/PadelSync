@@ -3,11 +3,11 @@ const router = express.Router();
 
 const{ requiresAuth } = require('express-openid-connect')
 
-const { verifyProfile, verifyDBProfile } = require("../backendutils/verifyProfile");
+const { verifyProfile, verifyDBProfile, findUserType } = require("../backendutils/verifyProfile");
 const axios = require('axios')
 const sqlite3 = require('sqlite3').verbose();
 
-router.get('/', requiresAuth(), async (req, res) => {
+router.get('/:username', requiresAuth(), async (req, res) => {
         try{
                 const isVerified = await verifyProfile(req);
                 let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
@@ -16,9 +16,21 @@ router.get('/', requiresAuth(), async (req, res) => {
                         /* this view needs to be made */
                         res.render("verifymail")
                 }else{
-                         let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
-                        if(profileInDB === "Player"){
-                                let SQLQuery = "SELECT * FROM igrac WHERE username = ?;";
+                        if(profileInDB === "Player" || profileInDB === "Club" || profileInDB === "Admin"){
+                                //a non-admin user is trying to alter another users info! 
+                                if(req.params.username !== req.oidc.user.nickname && profileInDB !== "Admin"){
+                                        res.status(500).send(`You cannot edit this users info. This is not your profile and you are not an admin!`)
+                                }
+                                let SQLQuery;
+                                let profileTypeOfEditedUser = await findUserType(req.params.username);
+                                if(profileTypeOfEditedUser === "Player"){
+                                        SQLQuery = `SELECT * FROM igrac WHERE username = ?;`;
+                                }else if(profileTypeOfEditedUser === "Club"){
+                                        SQLQuery = `SELECT * FROM klub WHERE username = ?;`;
+                                }else{
+                                        res.status(500).send("User does not exist or cannot be edited?");
+                                }
+                                
 
                                 const db = new sqlite3.Database("database.db");
 
@@ -30,49 +42,14 @@ router.get('/', requiresAuth(), async (req, res) => {
                                 });
 
                                 try{
-                                        const row = await getRow(SQLQuery, [req.oidc.user.nickname]);
+                                        const row = await getRow(SQLQuery, [req.params.username]);
                                         db.close();
                                          res.render("edituser", {
                                         username: req.oidc.user["https://yourapp.com/username"],
-                                        isAuthenticated: req.oidc.isAuthenticated(),
-                                        session: req.session,
-                                        user: req.oidc.user,
-                                        oidcWhole: req.oidc,
-                                        tokenInfo: req.oidc.accessToken,
                                         profileType: profileInDB,
-                                        playerInfo: row
-                                        })
-                                }catch(err){
-                                        console.error(err.message);
-                                        if(res) res.status(500).send("Internal Server Error");
-                                        db.close();
-                                        return null;
-                                }
-
-                        }else if(profileInDB === "Club"){
-                                let SQLQuery = "SELECT * FROM klub WHERE username = ?;";
-
-                                const db = new sqlite3.Database("database.db");
-
-                                const getRow = (sql, params) => new Promise((resolve, reject) => {
-                                        db.get(sql, params, (err, row) => {
-                                        if (err) return reject(err);
-                                        resolve(row);
-                                        });
-                                });
-
-                                try{
-                                        const row = await getRow(SQLQuery, [req.oidc.user.nickname]);
-                                        db.close();
-                                        res.render("edituser", {
-                                        username: req.oidc.user["https://yourapp.com/username"],
-                                        isAuthenticated: req.oidc.isAuthenticated(),
-                                        session: req.session,
-                                        user: req.oidc.user,
-                                        oidcWhole: req.oidc,
-                                        tokenInfo: req.oidc.accessToken,
-                                        profileType: profileInDB,
-                                        clubInfo: row
+                                        profileTypeOfEditedUser: profileTypeOfEditedUser,
+                                        usernameOfEditedUser: req.params.username,
+                                        userInfo: row
                                         })
                                 }catch(err){
                                         console.error(err.message);
@@ -84,12 +61,8 @@ router.get('/', requiresAuth(), async (req, res) => {
                         }else{
                                 res.render("edituser", {
                                 username: req.oidc.user["https://yourapp.com/username"],
-                                isAuthenticated: req.oidc.isAuthenticated(),
-                                session: req.session,
-                                user: req.oidc.user,
-                                oidcWhole: req.oidc,
-                                tokenInfo: req.oidc.accessToken,
-                                profileType: profileInDB
+                                profileType: profileInDB,
+                                usernameOfEditedUser: req.params.username,
                                 })
                         }
                 }
@@ -131,7 +104,7 @@ router.post('/chooseType', requiresAuth(), async (req, res) => {
         db.close();
         // Save the userType to the database or session
         req.session.userType = userType;
-        res.redirect("/edituser");
+        res.redirect(`/edituser/${req.oidc.user.nickname}`);
 });
 
 router.post('/eraseType', requiresAuth(), async (req, res) => {
@@ -164,7 +137,7 @@ router.post('/eraseType', requiresAuth(), async (req, res) => {
                 return;
         }
         db.close();
-        res.redirect("/edituser");
+        res.redirect(`/edituser/${req.oidc.user.nickname}`);
 });
 
 router.post('/insertPlayerInfo', requiresAuth(), async (req, res) => {
@@ -189,15 +162,20 @@ router.post('/insertPlayerInfo', requiresAuth(), async (req, res) => {
                                         req.body.razZnanjaPadel, 
                                         req.body.prezimeIgrac, 
                                         req.body.imeIgrac, 
-                                        req.oidc.user.nickname]);
+                                        req.body.username]);
         }catch(err){
                 console.error(err.message);
-                res.status(500).send("Internal Server Error removing profile type");
+                res.status(500).send("Internal Server Error updating player info");
                 db.close();
                 return;
         }
         db.close();
-        res.redirect("/myprofile");
+        if(req.oidc.user.nickname === req.body.username){
+                res.redirect("/myprofile");
+        }else{
+                res.redirect("/");
+        }
+        
 });
 
 router.post('/insertClubInfo', requiresAuth(), async (req, res) => {
@@ -232,15 +210,19 @@ router.post('/insertClubInfo', requiresAuth(), async (req, res) => {
                                         req.body.adresaKlub,
                                         req.body.prostorZaOdmor,
                                         req.body.opisKluba,
-                                        req.oidc.user.nickname]);
+                                        req.body.username]);
         }catch(err){
                 console.error(err.message);
-                res.status(500).send("Internal Server Error removing profile type");
+                res.status(500).send("Internal Server Error updating club info");
                 db.close();
                 return;
         }
         db.close();
-        res.redirect("/myprofile");
+        if(req.oidc.user.nickname === req.body.username){
+                res.redirect("/myprofile");
+        }else{
+                res.redirect("/");
+        }
 });
 
 module.exports = router;
