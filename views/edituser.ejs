@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <head>
-    <link rel="stylesheet" type="text/css" href="styles/home.css">
+    <link rel="stylesheet"  href="/styles/edituser.css">
 </head>
 
 <body>
-    <h1>Hello, editing <%=usernameOfEditedUser%> profile</h1>
+
+    <div class="BackgroundTop">
+        <h1>Hello, editing <%=usernameOfEditedUser%> profile</h1>
+    </div>
+
+    <div class="SettingsMenu">
         <br>
         <% if (profileType === "UserDidntChoose") { %>
-    <form id="chooseType" method="POST" action="/edituser/chooseType">
+        
+        <form id="chooseType" method="POST" action="/edituser/chooseType">
             <input type="radio" id="player" name="userType" value="Player" required>
             <label for="player">Player</label><br>
             <input type="radio" id="club" name="userType" value="Club" required>
@@ -69,8 +75,10 @@
                 <input type="textarea" id="opisKluba" name="opisKluba" value=<%=userInfo.opisKluba%>><br><br>
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" value=<%=userInfo.username%> readonly><br><br>
-                <button type="submit">Submit</button>
+                <button type="submit">Save settings</button>
             </form>
         <%}}%>
-    </script>
+        </script>
+    </div>
+    <div class="BottomSpace"></div>
 </body>
