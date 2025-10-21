@@ -7,4 +7,9 @@
     <p>This page will show info for a SPECIFIC CLUB OR PLAYER from the database</p>
     <p>Username: <%= user.username %></p>
     <p>Email: <%= user.email %></p>
+
+    <% for(let teren of tereni) {%>
+        <p>Teren ime: <%= teren.imeTeren%></p>
+        <p>Tip podloge: <%= teren.tipPodloge%></p>
+    <% }%>
 </body>
