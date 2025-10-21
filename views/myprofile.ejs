@@ -6,7 +6,14 @@
         <title>Document</title>
 </head>
 <body>
-         <pre><%= JSON.stringify(user, null, 2)%></pre>
+        <a href="/edituser/<%=user.nickname%>"><button>Edit profile</button></a>
+
+        <%if(profileType === "Player"){%>
+                <pre> <%= JSON.stringify(userInfo, null, 2)%></pre>
+        <%}else if(profileType === "Club"){%>
+                <pre> <%= JSON.stringify(userInfo, null, 2)%></pre>
+        <%}%>
+        <pre><%= JSON.stringify(user, null, 2)%></pre>
         <pre><%= JSON.stringify(session, null, 2)%></pre>
         <pre><%= JSON.stringify(oidcWhole, null, 2)%></pre>
         <pre><%= JSON.stringify(tokenInfo, null, 2)%></pre>

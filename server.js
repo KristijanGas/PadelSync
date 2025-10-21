@@ -52,6 +52,9 @@ app.use((req, res, next) => {
 //place auth0 middleware here
 app.use(auth(config));
 
+app.get('/login/google', (req, res) => {
+  res.redirect('/login?connection=google-oauth2');
+});
 
 
 app.get('/', (req, res) => {
