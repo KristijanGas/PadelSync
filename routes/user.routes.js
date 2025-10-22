@@ -10,8 +10,8 @@ router.get('/:username', async (req, res) => {
     const db = new sqlite3.Database("database.db");
     let tereni;
     const username = req.params.username;
-    let tereniQuery = 'SELECT * FROM teren WHERE username = \"' + username + '\";';
-     db.all(tereniQuery, [], (err, rows) => {
+    let tereniQuery = 'SELECT * FROM teren WHERE username = ?';
+    db.all(tereniQuery, [username], (err, rows) => {
         if (err) {
             console.error(err.message);
             res.status(500).send("Internal Server Error");
@@ -23,8 +23,8 @@ router.get('/:username', async (req, res) => {
         }
         tereni = rows;
     });
-    let SQLQuery = 'SELECT * FROM korisnik WHERE username = \"' + username + '\";';
-    db.get(SQLQuery, [], (err, row) => {
+    let SQLQuery = 'SELECT * FROM korisnik WHERE username = ?';
+    db.get(SQLQuery, [username], (err, row) => {
         if (err) {
             console.error(err.message);
             res.status(500).send("Internal Server Error");
