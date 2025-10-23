@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <head>
     <link rel="stylesheet"  href="/styles/edituser.css">
+    <script src="/scripts/visualizeImage.js" defer></script>
 </head>
 
 <body>
@@ -52,7 +53,7 @@
             <button type="submit">Submit</button>
         </form>
         <%}else if(profileTypeOfEditedUser === "Club"){%>
-            <form id="userInfo" method="POST" action="/edituser/insertClubInfo">
+            <form id="userInfo" method="POST" action="/edituser/insertClubInfo" enctype="multipart/form-data">
                 <label for="svlacionice">Broj svlacionica:</label>
                 <input type="number" id="svlacionice" name="svlacionice" min="0" value=<%=userInfo.svlacionice%>><br><br>
                 <label for="imeKlub">Ime kluba:</label>
@@ -60,7 +61,7 @@
                 <label for="najamReketa">Najam reketa:</label>
                 <input type="number" id="najamReketa" name="najamReketa" min="0" value=<%=userInfo.najamReketa%>><br><br>
                 <label for="pravilaKlub">Pravila kluba:</label>
-                <textarea id="pravilaKlub" name="pravilaKlub" rows="6" cols="40"><%=userInfo.pravilaKlub%></textarea><br><br>
+                <textarea id="pravilaKlub" name="pravilaKlub" rows="6" cols="40" value=<%=userInfo.pravilaKlub%>></textarea><br><br>
                 <label for="klubRadiDo">Do kada klub radi:</label>
                 <input type="date" id="klubRadiDo" name="klubRadiDo" value=<%=userInfo.klubRadiDo%>><br><br>
                 <label for="klubRadiOd">Od kada klub radi:</label>
@@ -77,6 +78,9 @@
                 <input type="textarea" id="opisKluba" name="opisKluba" value=<%=userInfo.opisKluba%>><br><br>
                 <label for="pravilaKlub">Pravila kluba:</label>
                 <input type="textarea" id="pravilaKlub" name="pravilaKlub" rows="10" cols="20" wrap="hard" value=<%=userInfo.najamReketa%>><br><br>
+                <label for="slike">Slike:</label>
+                <input type="file" id="slike" name="slike" multiple accept="image/jbeg"><br><br>
+                <div id="photosContainer" data-club-photos='<%-JSON.stringify(clubPhotos)%>'></div>
                 <button type="submit">Save settings</button>
             </form>
         <%}}%>
