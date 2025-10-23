@@ -1,7 +1,1 @@
-# progi_g12_4
-works on pc yay
-now i try laptop
-trying again
-and again
-and again
-and again
+App still in development

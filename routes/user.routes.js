@@ -8,9 +8,23 @@ const router = express.Router()
 
 router.get('/:username', async (req, res) => {
     const db = new sqlite3.Database("database.db");
+    let tereni;
     const username = req.params.username;
-    let SQLQuery = 'SELECT * FROM korisnik WHERE username = \"' + username + '\";';
-    db.get(SQLQuery, [], (err, row) => {
+    let tereniQuery = 'SELECT * FROM teren WHERE username = ?';
+    db.all(tereniQuery, [username], (err, rows) => {
+        if (err) {
+            console.error(err.message);
+            res.status(500).send("Internal Server Error");
+            return;
+        }
+        if (!rows) {
+            res.status(404).send("Field Not Found");
+            return;
+        }
+        tereni = rows;
+    });
+    let SQLQuery = 'SELECT * FROM korisnik WHERE username = ?';
+    db.get(SQLQuery, [username], (err, row) => {
         if (err) {
             console.error(err.message);
             res.status(500).send("Internal Server Error");
@@ -25,7 +39,7 @@ router.get('/:username', async (req, res) => {
             first_name: row.first_name,
             email: row.email,
         };
-        res.render('user', { user: user, session: req.session });
+        res.render('user', { user: user, session: req.session, tereni: tereni });
     });
     db.close();
 });

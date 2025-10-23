@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <head>
-    <link rel="stylesheet" type="text/css" href="styles/home.css">
+    <link rel="stylesheet"  href="/styles/edituser.css">
+    <script src="/scripts/visualizeImage.js" defer></script>
 </head>
 
 <body>
-    <h1>Hello, <%=username%>! Edit your profile</h1>
+
+    <div class="BackgroundTop">
+        <h1>Hello, editing <%=usernameOfEditedUser%> profile</h1>
+    </div>
+
+    <div class="SettingsMenu">
         <br>
         <% if (profileType === "UserDidntChoose") { %>
-    <form id="chooseType" method="POST" action="/edituser/chooseType">
+        
+        <form id="chooseType" method="POST" action="/edituser/chooseType">
             <input type="radio" id="player" name="userType" value="Player" required>
             <label for="player">Player</label><br>
             <input type="radio" id="club" name="userType" value="Club" required>
@@ -22,12 +29,62 @@
                 <button type="button" onclick="if(confirm('Are you sure you want to erase your profile and choose your type again?')) 
                 { document.getElementById('eraseType').submit(); }">eraseProfile</button>
         </form>
-        <% } %>
-    </script>
-        
-        <pre><%= JSON.stringify(user, null, 2)%></pre>
-        <pre><%= JSON.stringify(session, null, 2)%></pre>
-        <pre><%= JSON.stringify(oidcWhole, null, 2)%></pre>
-        <pre><%= JSON.stringify(tokenInfo, null, 2)%></pre>
-        <p>sad se pravi profil</p>
+
+        <!-- actual form for editing info--> 
+        <%if(profileTypeOfEditedUser === "Player"){%>
+        <form id="playerInfo" method="POST" action="/edituser/insertPlayerInfo">
+            <label for="brojMob">Broj mobitela:</label>
+            <input type="text" id="brojMob" min="0" name="brojMob" value=<%=userInfo.brojMob%>><br><br>
+            <label for="prefVrijeme">Preferirano vrijeme:</label>
+            <input type="date" id="prefVrijeme" name="prefVrijeme" value=<%=userInfo.prefVrijeme%>><br><br>
+            <label for="razZnanjaPadel">Razina znanja padela:</label>
+            <select id="razZnanjaPadel" name="razZnanjaPadel">
+                <!-- ovdje moramo odluciti kakve ce to biti razine, ap onda napraviti da pokazuje na prethodno spremljenu -->
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </select><br><br>
+            <label for="prezimeIgrac">Prezime:</label>
+            <input type="text" id="prezimeIgrac" name="prezimeIgrac" value=<%=userInfo.prezimeIgrac%>><br><br>
+            <label for="imeIgrac">Ime:</label>
+            <input type="text" id="imeIgrac" name="imeIgrac" value=<%=userInfo.imeIgrac%>><br><br>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" value=<%=userInfo.username%> readonly><br><br>
+            <button type="submit">Submit</button>
+        </form>
+        <%}else if(profileTypeOfEditedUser === "Club"){%>
+            <form id="clubInfo" method="POST" action="/edituser/insertClubInfo" enctype="multipart/form-data">
+                <label for="svlacionice">Broj svlacionica:</label>
+                <input type="number" id="svlacionice" name="svlacionice" min="0" value=<%=userInfo.svlacionice%>><br><br>
+                <label for="imeKlub">Ime kluba:</label>
+                <input type="text" id="imeKlub" name="imeKlub" value=<%=userInfo.imeKlub%>><br><br>
+                <label for="najamReketa">Najam reketa:</label>
+                <input type="number" id="najamReketa" name="najamReketa" min="0" value=<%=userInfo.najamReketa%>><br><br>
+                <label for="pravilaKlub">Pravila kluba:</label>
+                <textarea id="pravilaKlub" name="pravilaKlub" rows="6" cols="40" value=<%=userInfo.pravilaKlub%>></textarea><br><br>
+                <label for="klubRadiDo">Do kada klub radi:</label>
+                <input type="date" id="klubRadiDo" name="klubRadiDo" value=<%=userInfo.klubRadiDo%>><br><br>
+                <label for="klubRadiOd">Od kada klub radi:</label>
+                <input type="date" id="klubRadiOd" name="klubRadiOd" value=<%=userInfo.klubRadiOd%>><br><br>
+                <label for="tusevi">Koliko tuševa imate:</label>
+                <input type="number" id="tusevi" min = "0" name="tusevi" value=<%=userInfo.tusevi%>><br><br>
+                <label for="adresaKlub">Adresa kluba:</label>
+                <input type="text" id="adresaKlub" name="adresaKlub" value=<%=userInfo.adresaKlub%>><br><br>
+                <label for="prostorZaOdmor">Prostor za odmor:</label>
+                <input type="number" id="prostorZaOdmor" min="0" name="prostorZaOdmor" value=<%=userInfo.prostorZaOdmor%>><br><br>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" value=<%=userInfo.username%> readonly><br><br>
+                <label for="opisKluba">opis Kluba:</label>
+                <input type="textarea" id="opisKluba" name="opisKluba" value=<%=userInfo.opisKluba%>><br><br>
+                <label for="pravilaKlub">Pravila kluba:</label>
+                <input type="textarea" id="pravilaKlub" name="pravilaKlub" rows="10" cols="20" wrap="hard" value=<%=userInfo.najamReketa%>><br><br>
+                <label for="slike">Slike:</label>
+                <input type="file" id="slike" name="slike" multiple accept="image/jbeg"><br><br>
+                <div id="photosContainer" data-club-photos='<%-JSON.stringify(clubPhotos)%>'></div>
+                <button type="submit">Save settings</button>
+            </form>
+        <%}}%>
+        </script>
+    </div>
+    <div class="BottomSpace"></div>
 </body>
