@@ -59,7 +59,7 @@
                 <% klubovi.forEach(function(user) { %>
                     <li>
                         <a href="/user/<%= user.username %>">
-                            <%= user.imeKlub %> (Username: <%= user.username %>)
+                            <%= user.imeKlub %> (Username: <%= user.username %> rating: <%= user.klubRating %>)
                         </a>
                     </li>
                 <% }); %>
