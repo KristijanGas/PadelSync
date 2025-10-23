@@ -64,13 +64,16 @@ router.get('/:username', requiresAuth(), async (req, res) => {
                                                 }
                                         }
                                         db.close();
+                                        if(profileTypeOfEditedUser === "Club"){
+                                                clubPhotos = clubPhotos.map(p => p.fotoKlubID)
+                                        }
                                          res.render("edituser", {
                                         username: req.oidc.user["https://yourapp.com/username"],
                                         profileType: profileInDB,
                                         profileTypeOfEditedUser: profileTypeOfEditedUser,
                                         usernameOfEditedUser: req.params.username,
                                         userInfo: row,
-                                        clubPhotos : clubPhotos.map(p => p.fotoKlubID)
+                                        clubPhotos : clubPhotos
                                         })
                                 }catch(err){
                                         console.error(err.message);
@@ -254,9 +257,9 @@ router.post('/insertClubInfo', requiresAuth(), upload.array("slike"), async (req
         
         db.close();
         if(req.oidc.user.nickname === req.body.username){
-                res.redirect("/myprofile");
+                res.json({redirectURL: "/myprofile"});
         }else{
-                res.redirect("/");
+                res.json({redirectURL: "/"});
         }
 });
 
@@ -283,11 +286,34 @@ router.get("/photo/:photoId", async(req, res) => {
         if(!photo){
                 return res.status(404).send("Not found");
         }
-        console.log(photo.mimeType);
 
         res.set("Content-Type", photo.mimeType);
         res.send(photo.fotografija);
 
+})
+
+router.get("/erasePhoto/:photoId", async (req, res) => {
+        
+        const SQLQuery = `DELETE FROM foto_klub WHERE fotoKlubId = ?`;
+
+        const db = new sqlite3.Database("database.db");
+
+        const runQuery = (sql, params) => new Promise((resolve, reject) => {
+                db.run(sql, params, function(err) {
+                        if (err) return reject(err);
+                        resolve(this);
+                });
+        });
+        try{
+                await runQuery(SQLQuery, [req.params.photoId]);
+                res.status(200).send("Photo deleted");
+        }catch(err){
+                console.error(err.message);
+                res.status(500).send("Internal Server Error removing profile type");
+                db.close();
+                return;
+        }
+        db.close();
 })
 
 module.exports = router;
