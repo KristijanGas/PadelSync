@@ -10,6 +10,7 @@ router.get('/', (req, res) => {
 });
 
 async function searchTerrains(criteria) {
+    //console.log("Search criteria received:", criteria);
     const db = new sqlite3.Database("database.db");
     let SQLQuery = 'SELECT * FROM TEREN WHERE 1=1';
     //[ NEEDS WORK ]
@@ -19,21 +20,46 @@ async function searchTerrains(criteria) {
     if (criteria.visinaStropa) {
         SQLQuery += ` AND (visinaStrop >= ${criteria.visinaStropa} OR visinaStrop IS NULL)`;
     }
-    SQLQuery += ' AND (1=1';
-    console.log("Criteria tipTeren:", criteria);
-
+    if(criteria.unutarnjiVanjski === undefined || criteria.unutarnjiVanjski.length === 0) {
+        criteria.unutarnjiVanjski = [];
+    }
+    for (let i = 0; i < criteria.unutarnjiVanjski.length; i++) {
+        const element = criteria.unutarnjiVanjski[i];
+        if (i === 0) {
+            SQLQuery += ' AND (';
+        }
+        if( i == criteria.unutarnjiVanjski.length - 1 ){
+            SQLQuery += `(vanjskiUnutarnji = "${element}"))`;
+            break;
+        }
+        //console.log("Criteria unutarnjiVanjski:", criteria);
+        SQLQuery += `(vanjskiUnutarnji = "${element}") OR `;
+    }
+    //console.log("Criteria tipTeren:", criteria);
+    if (criteria.tipTeren === undefined || criteria.tipTeren.length === 0) {
+        criteria.tipTeren = [];
+    }
     for (let i = 0; i < criteria.tipTeren.length; i++) {
         const element = criteria.tipTeren[i];
-        SQLQuery += ` OR (tipPodloge = "${element}")`;
+        if (i === 0) {
+            SQLQuery += ' AND (';
+        }
+        if( i == criteria.tipTeren.length - 1 ){
+            SQLQuery += ` (velicinaTeren = "${element}"))`;
+            break;
+        }
+        SQLQuery += ` (velicinaTeren = "${element}") OR `;
     }
-    SQLQuery += ')';
     if (criteria.cijena) {
         SQLQuery += ` AND cijenaTeren <= ${criteria.cijena}`;
     }
     if (criteria.osvjetljenje) {
         if(criteria.osvjetljenje === 'yes'){
-            SQLQuery += ` AND osvjetljenje = ${criteria.osvjetljenje}`;
+            SQLQuery += ` AND osvjetljenje = 1`;
         }
+    }
+    if (criteria.tipPodloge === undefined || criteria.tipPodloge.length === 0) {
+        criteria.tipPodloge = [];
     }
     for (let i = 0; i < criteria.tipPodloge.length; i++) {
         if (i === 0) {
@@ -46,7 +72,9 @@ async function searchTerrains(criteria) {
             SQLQuery += ')';
         }
     }
-    console.log("Constructed SQL Query:", SQLQuery);
+    SQLQuery += ' ORDER BY cijenaTeren ASC';
+    SQLQuery += ';';
+    // console.log("Constructed SQL Query:", SQLQuery);
     return new Promise((resolve, reject) => {
         db.all(SQLQuery, [], (err, rows) => {
             if (err) {
@@ -54,7 +82,7 @@ async function searchTerrains(criteria) {
                 reject("Internal Server Error");
                 return;
             }
-            console.log("Search results:", rows);
+            //console.log("Search results:", rows);
             resolve(rows);
         });
     });
@@ -69,10 +97,16 @@ router.get('/results', async (req, res) => {
 
     tipTeren = req.query['tipTeren[]'];
     tipPodloge = req.query['tipPodloge[]'];
-    if(typeof tipTeren === 'string'){
+    unutarnjiVanjski = req.query['unutarnjiVanjski[]'];
+
+    // Adjust tipPodloge based on unutarnjiVanjski selection
+    if (typeof unutarnjiVanjski === 'string') {
+        unutarnjiVanjski = [unutarnjiVanjski];
+    }
+    if (typeof tipTeren === 'string') {
         tipTeren = [tipTeren];
     }
-    if(typeof tipPodloge === 'string'){
+    if (typeof tipPodloge === 'string') {
         tipPodloge = [tipPodloge];
     }
 
@@ -110,9 +144,9 @@ router.get('/results', async (req, res) => {
         });
     }
 
-    const results = await searchTerrains({ username, visinaStropa, tipTeren, cijena, osvjetljenje, tipPodloge });
+    const results = await searchTerrains({ username, visinaStropa, tipTeren, cijena, osvjetljenje, tipPodloge, unutarnjiVanjski });
     res.render('terrain_search', {
-        searchResults: results,
+        results: results,
         searchParams: req.query
     });
 });

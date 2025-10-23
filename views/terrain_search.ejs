@@ -9,7 +9,7 @@
         <label for="username">Username:</label>
         <input type="text" id="username" name="username"><br><br>
 
-        <label for="visinaStropa">Visina stropa (≤):</label>
+        <label for="visinaStropa">Visina stropa (>=):</label>
         <input type="number" id="visinaStropa" name="visinaStropa" min="0" step="any"><br><br>
 
         <label>Tip terena:</label>
@@ -17,6 +17,12 @@
         <label for="single">Single</label>
         <input type="checkbox" id="double" name="tipTeren[]" value="double">
         <label for="double">Double</label><br><br>
+
+        <label>Unutarnji/vanjski</label>
+        <input type="checkbox" id="unutarnji" name="unutarnjiVanjski[]" value="unutarnji">
+        <label for="unutarnji">Unutarnji</label>
+        <input type="checkbox" id="vanjski" name="unutarnjiVanjski[]" value="vanjski">
+        <label for="vanjski">Vanjski</label><br><br>
 
         <label for="cijena">Cijena (jeftinije od):</label>
         <input type="number" id="cijena" name="cijena" min="0" step="any"><br><br>
@@ -42,4 +48,22 @@
 
         <button type="submit">Pretraži</button>
     </form>
+
+    <% if (typeof results !== 'undefined' ) {  %>
+        <h2>Search Results:</h2>
+        <% if (results.length > 0) { %>
+            <ul>
+                <% results.forEach(function(terrain) { %>
+                    <li>
+                        <a href="/terrain/<%= terrain.terenID %>">
+                            Terrain ID: <%= terrain.terenID %>, Ime terena: <%= terrain.imeTeren%> Owner: <%= terrain.username %>%>
+                        </a>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p>No terrains found matching the criteria.</p>
+        <% } %>
+    <% } %>
+
 </body>
