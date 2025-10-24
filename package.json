@@ -7,6 +7,7 @@
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
+    "express-oauth2-jwt-bearer": "^1.7.1",
     "express-openid-connect": "^2.19.2",
     "express-session": "^1.18.1",
     "multer": "^2.0.2",
