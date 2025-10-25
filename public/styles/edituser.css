@@ -282,3 +282,67 @@ textarea {
     height: 8vh;
     
 }
+
+.eraseProfileButton {
+
+    background: linear-gradient(135deg, #8b0000, #b30000);
+
+    border: 2px solid #ff4d4d;
+
+    color: #fff;
+
+    font-size: 20px;
+
+    font-weight: 600;
+
+    padding: 12px 28px;
+
+    border-radius: 10px;
+
+    box-shadow: 0 4px 14px rgba(255, 0, 0, 0.3);
+
+    transition: all 0.3s ease, box-shadow 0.4s ease;
+
+    letter-spacing: 0.5px;
+
+}
+
+.eraseProfileButton:hover {
+
+    background: linear-gradient(135deg, #b30000, #ff1a1a);
+
+    border-color: #ff8080;
+
+    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5);
+
+    transform: translateY(-3px);
+
+    cursor: pointer;
+
+}
+
+.eraseProfileButton:active {
+
+    transform: translateY(0);
+
+    background: linear-gradient(135deg, #660000, #b30000);
+
+    box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+
+}
+
+@keyframes pulseWarning {
+
+    0% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); }
+
+    50% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.7); }
+
+    100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); }
+
+}
+
+.eraseProfileButton {
+
+    animation: pulseWarning 2s infinite;
+    
+}

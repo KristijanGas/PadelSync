@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <head>
-    <link rel="stylesheet" type="text/css" href="styles/home.css">
+    <link rel="stylesheet" type="text/css" href="styles/adminlogin.css">
 </head>
 
 <body>
-    <script src="scripts/submitadminlogin.js"></script>
-    <p>Ovdje ide login za admin</p>
-    <form action="JavaScript:submitAdminLoginForm();">
-        <label for="username">Korisničko ime:</label>
-        <input type="text" id="username" name="username" required>
-        <br>
-        <label for="password">Lozinka:</label>
-        <input type="password" id="password" name="password" required>
-        <br>
-        <input type="submit" value="Prijavi se">
-    </form>
-
+    <div class="adminLoginContainer">
+        <script src="scripts/submitadminlogin.js"></script>
+        <p>Ovdje ide login za admin</p>
+        <form action="JavaScript:submitAdminLoginForm();">
+            <label for="username">Korisničko ime:</label>
+            <input type="text" id="username" name="username" required>
+            <br>
+            <label for="password">Lozinka:</label>
+            <input type="password" id="password" name="password" required>
+            <br>
+            <input type="submit" value="Prijavi se">
+        </form>
+    </div>
 </body>
