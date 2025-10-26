@@ -273,7 +273,7 @@ label[for="player"], label[for="club"] {
 
 textarea {
 
-    resize: vertical;
+    resize: none;
 
     min-height: 120px;
 
