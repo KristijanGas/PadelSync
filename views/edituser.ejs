@@ -25,11 +25,6 @@
 
         <% } else { %>
 
-        <form id="eraseType" method="POST" action="/edituser/eraseType">
-                <button type="button" class="eraseProfileButton" onclick="if(confirm('Are you sure you want to erase your profile and choose your type again?')) 
-                { document.getElementById('eraseType').submit(); }">EraseProfile</button>
-        </form>
-
         <!-- actual form for editing info--> 
         <%if(profileTypeOfEditedUser === "Player"){%>
         <form id="playerInfo" method="POST" action="/edituser/insertPlayerInfo">
@@ -50,7 +45,11 @@
             <input type="text" id="imeIgrac" name="imeIgrac" value=<%=userInfo.imeIgrac%>><br><br>
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" value=<%=userInfo.username%> readonly><br><br>
-            <button type="submit">Submit</button>
+            <button type="submit">Spremi postavke</button>
+        </form>
+        <form id="eraseType" method="POST" action="/edituser/eraseType">
+                <button type="button" class="eraseProfileButton" onclick="if(confirm('Are you sure you want to erase your profile and choose your type again?')) 
+                { document.getElementById('eraseType').submit(); }">Izbriši profil</button>
         </form>
         <%}else if(profileTypeOfEditedUser === "Club"){%>
             <form id="clubInfo" method="POST" action="/edituser/insertClubInfo" enctype="multipart/form-data">
@@ -81,8 +80,14 @@
                 <label for="slike">Slike:</label>
                 <input type="file" id="slike" name="slike" multiple accept="image/jbeg"><br><br>
                 <div id="photosContainer" data-club-photos='<%-JSON.stringify(clubPhotos)%>'></div>
-                <button type="submit">Save settings</button>
+                <button type="submit">Spremi postavke</button>
             </form>
+
+        <form id="eraseType" method="POST" action="/edituser/eraseType">
+                <button type="button" class="eraseProfileButton" onclick="if(confirm('Are you sure you want to erase your profile and choose your type again?')) 
+                { document.getElementById('eraseType').submit(); }">Izbriši profil</button>
+        </form>
+
         <%}}%>
         </script>
     </div>

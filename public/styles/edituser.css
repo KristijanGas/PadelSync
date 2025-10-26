@@ -145,11 +145,11 @@ body {
 
 }
 
-.SettingsMenu:hover {
+/* .SettingsMenu:hover {
 
     transform: translateY(-4px);
 
-}
+} */
 
 form {
 
@@ -285,8 +285,6 @@ textarea {
 
 .eraseProfileButton {
 
-    background: linear-gradient(135deg, #8b0000, #b30000);
-
     border: 2px solid #ff4d4d;
 
     color: #fff;
@@ -299,7 +297,7 @@ textarea {
 
     border-radius: 10px;
 
-    box-shadow: 0 4px 14px rgba(255, 0, 0, 0.3);
+    /* box-shadow: 0 4px 14px rgba(255, 0, 0, 0.3); */
 
     transition: all 0.3s ease, box-shadow 0.4s ease;
 
@@ -313,7 +311,7 @@ textarea {
 
     border-color: #ff8080;
 
-    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5);
+    /* box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5); */
 
     transform: translateY(-3px);
 
@@ -327,11 +325,11 @@ textarea {
 
     background: linear-gradient(135deg, #660000, #b30000);
 
-    box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+    /* box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3); */
 
 }
 
-@keyframes pulseWarning {
+/* @keyframes pulseWarning {
 
     0% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); }
 
@@ -339,10 +337,10 @@ textarea {
 
     100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); }
 
-}
+} */
 
-.eraseProfileButton {
+/* .eraseProfileButton {
 
     animation: pulseWarning 2s infinite;
     
-}
+} */
