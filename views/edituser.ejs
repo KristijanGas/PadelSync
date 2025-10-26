@@ -15,11 +15,16 @@
         <% if (profileType === "UserDidntChoose") { %>
         
         <form id="chooseType" method="POST" action="/edituser/chooseType">
-            <input type="radio" id="player" name="userType" value="Player" required>
-            <label for="player">Player</label><br>
-            <input type="radio" id="club" name="userType" value="Club" required>
-            <label for="club">Club</label><br>
-            <button type="submit">Submit</button>
+            <div class="profileTypeOptions">
+                <input type="radio" id="player" name="userType" value="Player" required> 
+                <label for="player">Player</label>
+                <br>
+                <input type="radio" id="club" name="userType" value="Club" required>
+                <label for="club">Club</label>
+            </div>
+            <div class="profileTypeConfirm">
+                <button type="submit">Potvrdi odabir</button>
+            </div>
         </form>
     <!-- Form now uses POST method; JS redirect removed -->
 

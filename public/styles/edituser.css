@@ -69,6 +69,10 @@ body {
 
 }
 
+div.profileTypeOptions, div.profileTypeConfirm {
+    margin: auto;
+}
+
 .BackgroundTop h1 {
 
     font-size: 38px;
@@ -297,8 +301,6 @@ textarea {
 
     border-radius: 10px;
 
-    /* box-shadow: 0 4px 14px rgba(255, 0, 0, 0.3); */
-
     transition: all 0.3s ease, box-shadow 0.4s ease;
 
     letter-spacing: 0.5px;
@@ -311,11 +313,11 @@ textarea {
 
     border-color: #ff8080;
 
-    /* box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5); */
-
     transform: translateY(-3px);
 
     cursor: pointer;
+
+    animation: pulseWarning 2s infinite;
 
 }
 
@@ -325,11 +327,12 @@ textarea {
 
     background: linear-gradient(135deg, #660000, #b30000);
 
-    /* box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3); */
+    animation: pulseWarning 2s infinite;
 
 }
 
-/* @keyframes pulseWarning {
+
+@keyframes pulseWarning {
 
     0% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); }
 
@@ -337,10 +340,4 @@ textarea {
 
     100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); }
 
-} */
-
-/* .eraseProfileButton {
-
-    animation: pulseWarning 2s infinite;
-    
-} */
+}
