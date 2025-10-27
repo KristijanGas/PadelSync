@@ -80,8 +80,6 @@
                 <input type="text" id="username" name="username" value=<%=userInfo.username%> readonly><br><br>
                 <label for="opisKluba">opis Kluba:</label>
                 <input type="textarea" id="opisKluba" name="opisKluba" value=<%=userInfo.opisKluba%>><br><br>
-                <label for="pravilaKlub">Pravila kluba:</label>
-                <input type="textarea" id="pravilaKlub" name="pravilaKlub" rows="10" cols="20" wrap="hard" value=<%=userInfo.najamReketa%>><br><br>
                 <label for="slike">Slike:</label>
                 <input type="file" id="slike" name="slike" multiple accept="image/jbeg"><br><br>
                 <div id="photosContainer" data-club-photos='<%-JSON.stringify(clubPhotos)%>'></div>
