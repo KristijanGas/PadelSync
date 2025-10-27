@@ -12,6 +12,7 @@
                 <pre> <%= JSON.stringify(userInfo, null, 2)%></pre>
         <%}else if(profileType === "Club"){%>
                 <pre> <%= JSON.stringify(userInfo, null, 2)%></pre>
+                <a href="/editterrain/<%=user.nickname%>/newTerrain">Napravi novi teren</a>
         <%}%>
         <pre><%= JSON.stringify(user, null, 2)%></pre>
         <pre><%= JSON.stringify(session, null, 2)%></pre>

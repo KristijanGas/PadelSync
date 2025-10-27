@@ -261,7 +261,7 @@ router.post('/insertClubInfo', requiresAuth(), upload.array("slike"), async (req
                         await runQuery(SQLRemovePhotos, [photo]);
                 }catch(err){
                         console.error(err.message);
-                        res.status(500).send("Internal Server Error removing profile type");
+                        res.status(500).send("Internal Server Error removing club photo");
                         db.close();
                         return;
                 }
@@ -291,7 +291,7 @@ router.get("/photo/:photoId", async(req, res) => {
                 photo = await getRow(SQLQuery, [req.params.photoId]);
         }catch(err){
                 console.error(err.message);
-                if(res) res.status(500).send("Internal Server Error");
+                if(res) res.status(500).send("Internal Server Error fetching photo");
                 db.close();
                 return null;
         }
@@ -304,28 +304,5 @@ router.get("/photo/:photoId", async(req, res) => {
 
 })
 
-router.get("/erasePhoto/:photoId", async (req, res) => {
-        
-        const SQLQuery = `DELETE FROM foto_klub WHERE fotoKlubId = ?`;
-
-        const db = new sqlite3.Database("database.db");
-
-        const runQuery = (sql, params) => new Promise((resolve, reject) => {
-                db.run(sql, params, function(err) {
-                        if (err) return reject(err);
-                        resolve(this);
-                });
-        });
-        try{
-                await runQuery(SQLQuery, [req.params.photoId]);
-                res.status(200).send("Photo deleted");
-        }catch(err){
-                console.error(err.message);
-                res.status(500).send("Internal Server Error removing profile type");
-                db.close();
-                return;
-        }
-        db.close();
-})
 
 module.exports = router;
