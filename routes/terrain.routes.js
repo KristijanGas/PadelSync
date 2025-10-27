@@ -17,10 +17,26 @@ router.get('/:id', async (req, res) => {
     const id = req.params.id;
     let tereni;
     let termini;
+    let razinaPretplate;
 
-    let razinaPretplate = 1;
-    //mrm dodat ovo, kancer
-    let pretplataQuery = 'SELECT * from PRETPLATA NATURAL JOIN TIP_PRETPLATE WHERE TIP_PRETPLATE.username = '
+    let pretplataQuery = 'select * from pretplata join tip_pretplate on pretplata.tipPretpID = tip_pretplate.tipPretpID WHERE TIP_PRETPLATE.username = ? and PRETPLATA.username = ? and PRETPLATA.pretpAktivna = 1';
+
+    let tereniQuery = 'SELECT * FROM teren WHERE terenID = ?';
+    try {
+        tereni = await fetchAll(db, tereniQuery, [id]);
+    } catch (error) {
+        console.log(error);
+    }
+
+    let clubUsername = tereni[0].username;
+    let playerUsername = req.oidc.user.nickname;
+
+    try {
+      let temp = await fetchAll(db, pretplataQuery, [clubUsername, playerUsername]);
+      razinaPretplate = temp[0].levelPretplate;
+    } catch (error) {
+      console.log(error);
+    }
 
     let terminiQuery = 'SELECT * FROM TERMIN_TJEDNI WHERE potrebnaPretplata <= ? AND terenID = ?'
     try {
@@ -28,14 +44,10 @@ router.get('/:id', async (req, res) => {
     } catch (err) {
         console.log(err);
     }
-    let tereniQuery = 'SELECT * FROM teren WHERE terenID = ?';
-    try {
-        tereni = await fetchAll(db, tereniQuery, [id]);
-    } catch (error) {
-        console.log(error);
-    }
+
     res.render('terrain', {
-            teren: tereni[0]
+            teren: tereni[0],
+            termini: termini
         });
     db.close();
 });
