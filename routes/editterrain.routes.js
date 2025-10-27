@@ -40,11 +40,11 @@ router.get('/:clubId/:terrainId', requiresAuth(), async (req, res) => {
                                         })
                                 });
                                 let SQLPhotoQuery = `SELECT fotoTerenID FROM foto_teren WHERE terenID = ?;`;
-                                let SQLQuery = `SELECT * FROM teren WHERE terenID = ?;`;
+                                let SQLQuery = `SELECT * FROM teren WHERE terenID = ? AND username = ?;`;
 
                                 let row;
                                 try{
-                                        row = await getRow(SQLQuery, [req.params.terrainId]);
+                                        row = await getRow(SQLQuery, [req.params.terrainId, req.params.clubId]);
                                 }catch(err){
                                         console.error(err.message);
                                         if(res) res.status(500).send("Internal Server Error");
