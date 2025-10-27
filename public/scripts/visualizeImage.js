@@ -3,6 +3,7 @@ const photosContainer = document.getElementById("photosContainer");
 const form = document.getElementById("clubInfo");
 
 let selectedFiles = [];
+let eraseFiles = [];
 //this will display images as they are being added
 if(addedPhotos){
         addedPhotos.addEventListener("change", (event) => {
@@ -46,22 +47,14 @@ function displayImages(){
 }
 
 async function erasePhoto(photoId, img, eraseButton){
-        try{
-                const res = await fetch(`erasePhoto/${photoId}`);
-
-                if(res.ok){
-                        eraseButton.remove();
-                        img.remove();
-                }
-        }catch(err){
-                console.log("error deleting photo");
-        }
+        eraseButton.remove();
+        img.remove();
+        eraseFiles = eraseFiles.concat(photoId);
 }
 
 function eraseNewPhoto(file, img, button){
         img.remove();
         button.remove();
-        console.log(addedPhotos.value);
         selectedFiles = selectedFiles.filter((f) => f !== file);
 }
 if(form){
@@ -69,8 +62,9 @@ if(form){
         event.preventDefault();
 
         const formData = new FormData(form);
-        console.log(formData);
         selectedFiles.forEach((file) => formData.append("slike", file));
+        formData.append('erasePhotos[]', '');
+        eraseFiles.forEach(photoId => formData.append('erasePhotos[]', photoId));
         let res;
         res = await fetch("insertClubInfo", {
         method: "POST",
@@ -78,12 +72,8 @@ if(form){
         })
         
         if(res.ok){
-                console.log("oke");
-                
                 const data = await res.json();
-                console.log(data);
                 if(data.redirectURL){
-                        console.log("oke");
                         window.location.href = data.redirectURL;
                 }
         }else{

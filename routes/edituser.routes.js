@@ -255,6 +255,18 @@ router.post('/insertClubInfo', requiresAuth(), upload.array("slike"), async (req
                 }
         }
         
+        let SQLRemovePhotos = `DELETE FROM foto_klub WHERE fotoKlubId = ?`;
+        for(const photo of req.body.erasePhotos){
+                try{
+                        await runQuery(SQLRemovePhotos, [photo]);
+                }catch(err){
+                        console.error(err.message);
+                        res.status(500).send("Internal Server Error removing profile type");
+                        db.close();
+                        return;
+                }
+        }
+        
         db.close();
         if(req.oidc.user.nickname === req.body.username){
                 res.json({redirectURL: "/myprofile"});
