@@ -78,6 +78,10 @@ router.get('/:clubId/:terrainId', requiresAuth(), async (req, res) => {
                                         terenID: "newTerrain"
                                         };
                                 }
+
+                                if(!row){
+                                        res.status(500).send("no such terrain exists");
+                                }
                                  res.render("editterrain", {
                                         username: req.oidc.user["https://yourapp.com/username"],
                                         profileType: profileInDB,
