@@ -14,6 +14,7 @@ router.get('/:clubId/:terrainId', requiresAuth(), async (req, res) => {
         try{
                 const isVerified = await verifyProfile(req);
                 let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
+               
 
                 if(!isVerified){
                         /* this view needs to be made */
@@ -39,6 +40,12 @@ router.get('/:clubId/:terrainId', requiresAuth(), async (req, res) => {
                                                 resolve(row);
                                         })
                                 });
+                                const getColumns = (sql, params) => new Promise((resolve, reject) => {
+                                        db.all(sql, params, (err, row) => {
+                                                if(err) return reject(err);
+                                                resolve(row);
+                                        })
+                                })
                                 let SQLPhotoQuery = `SELECT fotoTerenID FROM foto_teren WHERE terenID = ?;`;
                                 let SQLQuery = `SELECT * FROM teren WHERE terenID = ? AND username = ?;`;
 
@@ -47,25 +54,29 @@ router.get('/:clubId/:terrainId', requiresAuth(), async (req, res) => {
                                         row = await getRow(SQLQuery, [req.params.terrainId, req.params.clubId]);
                                 }catch(err){
                                         console.error(err.message);
-                                        if(res) res.status(500).send("Internal Server Error");
+                                        if(res) res.status(500).send("Internal Server Error getting terrain info");
                                         db.close();
                                         return null;
                                 }
+
                                 let terrainPhotos;
                                 try{
                                         terrainPhotos = await getPhotos(SQLPhotoQuery, [req.params.terrainId]);
                                         terrainPhotos = terrainPhotos.map(p => p.fotoTerenID)
                                 }catch(err){
                                         console.error(err.message);
-                                        if(res) res.status(500).send("Internal Server Error");
+                                        if(res) res.status(500).send("Internal Server Error getting terrain images");
                                         db.close();
                                         return null;
                                 }
+                                
                                 db.close();
 
                                 if(req.params.terrainId === "newTerrain") {
-                                    row.username = req.params.clubId;
-                                    row.terenId = "newTerrain";
+                                   row = {
+                                        username: req.params.clubId,
+                                        terenID: "newTerrain"
+                                        };
                                 }
                                  res.render("editterrain", {
                                         username: req.oidc.user["https://yourapp.com/username"],
