@@ -10,10 +10,10 @@
         <input type="text" id="tipPodloge" name="tipPodloge" min="0" value=<%=terrainInfo.tipPodloge%>><br><br>
         <label for="terenId">teren ID:</label>
         <input type="text" id="terenId" name="terenId" readonly value=<%=terrainInfo.terenID%>><br><br>
-        <label for="velicinaTeren">Veičina terena:</label>
-        <input type="number" id="velicinaTeren" name="velicinaTeren" min="0" value=<%=terrainInfo.velicinaTeren%>><br><br>
+        <label for="velicinaTeren">Veličina terena:</label>
+        <input type="text" id="velicinaTeren" name="velicinaTeren" min="0" value=<%=terrainInfo.velicinaTeren%>><br><br>
         <label for="osvjetljenje">Osvjetljenje:</label>
-        <input type="text" id="osvjetljenje" name="osvjetljenje" rows="12" cols="40" value=<%=terrainInfo.osvjetljenje%>></textarea><br><br>
+        <input type="number" id="osvjetljenje" name="osvjetljenje" rows="12" cols="40" value=<%=terrainInfo.osvjetljenje%>></textarea><br><br>
         <label for="vanjskiUnutarnji">Je li ternen vanjski ili unutarnji:</label>
         <input type="radio" id="vanjski" name="vanjskiUnutarnji" value="vanjski" <%= terrainInfo.vanjskiUnutarnji === "vanjski" ? "checked" : "" %>>
         <label for="vanjski">Vanjski</label><br>
