@@ -97,6 +97,9 @@ app.use('/editterrain', editterrainRouter);
 const myprofileRouter = require('./routes/myprofile.routes');
 app.use('/myprofile', myprofileRouter);
 
+const editscheduleRouter = require('./routes/editschedule.routes');
+app.use('/editschedule', editscheduleRouter);
+
 app.use('/signup', (req, res) => {
   if(!req.oidc.isAuthenticated()){
      res.oidc.login({
