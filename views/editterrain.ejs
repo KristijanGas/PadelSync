@@ -1,35 +1,43 @@
 <!DOCTYPE html>
 <head>
-    <link rel="stylesheet" type="text/css" href="styles/home.css">
+    <link rel="stylesheet" type="text/css" href="/styles/editterrain.css">
     <script src="/scripts/handleTerrainImages.js" defer></script>
 </head>
 
 <body>
-    <form id="terrainInfo" method="POST" action="/editterrain/insertTerrainInfo" enctype="multipart/form-data">
-        <label for="tipPodloge">Tip podloge:</label>
-        <input type="text" id="tipPodloge" name="tipPodloge" min="0" value=<%=terrainInfo.tipPodloge%>><br><br>
-        <label for="terenId">teren ID:</label>
-        <input type="text" id="terenId" name="terenId" readonly value=<%=terrainInfo.terenID%>><br><br>
-        <label for="velicinaTeren">Veičina terena:</label>
-        <input type="number" id="velicinaTeren" name="velicinaTeren" min="0" value=<%=terrainInfo.velicinaTeren%>><br><br>
-        <label for="osvjetljenje">Osvjetljenje:</label>
-        <input type="text" id="osvjetljenje" name="osvjetljenje" rows="12" cols="40" value=<%=terrainInfo.osvjetljenje%>></textarea><br><br>
-        <label for="vanjskiUnutarnji">Je li ternen vanjski ili unutarnji:</label>
-        <input type="radio" id="vanjski" name="vanjskiUnutarnji" value="vanjski" <%= terrainInfo.vanjskiUnutarnji === "vanjski" ? "checked" : "" %>>
-        <label for="vanjski">Vanjski</label><br>
-        <input type="radio" id="unutarnji" name="vanjskiUnutarnji" value="unutarnji" <%= terrainInfo.vanjskiUnutarnji === "unutarnji" ? "checked" : "" %>>
-        <label for="unutarnji">Unutarnji</label><br>
-        <label for="visinaStrop">Visina stropa:</label>
-        <input type="number" step="0.01" id="visinaStrop" name="visinaStrop" value=<%=terrainInfo.visinaStrop%>><br><br>
-        <label for="cijenaTeren">Cijena terena:</label>
-        <input type="number" step="0.01" id="cijenaTeren" min = "0" name="cijenaTeren" value=<%=terrainInfo.cijenaTeren%>><br><br>
-        <label for="imeTeren">Ime terena:</label>
-        <input type="text" id="imeTeren" name="imeTeren" value=<%=terrainInfo.imeTeren%>><br><br>
-        <label for="username">Username kluba:</label>
-        <input type="text" id="username" name="username" readonly value=<%=terrainInfo.username%>><br><br>
-        <label for="slike">Slike:</label>
-        <input type="file" id="slike" name="slike" multiple accept="image/jbeg"><br><br>
-        <div id="photosContainer" data-terrain-photos='<%-JSON.stringify(terrainPhotos)%>'></div>
-        <button type="submit">Spremi postavke</button>
-    </form>
+    <div class="BackgroundTop">
+        <h1>Uređivanje informacija o terenu</h1>
+    </div>
+    <div class="SettingsMenu">
+        <form id="terrainInfo" method="POST" action="/editterrain/insertTerrainInfo" enctype="multipart/form-data">
+            <label for="tipPodloge">Tip podloge:</label>
+            <input type="text" id="tipPodloge" name="tipPodloge" min="0" value=<%=terrainInfo.tipPodloge%>><br><br>
+            <label for="terenId">teren ID:</label>
+            <input type="text" id="terenId" name="terenId" readonly value=<%=terrainInfo.terenID%>><br><br>
+            <label for="velicinaTeren">Veličina terena:</label>
+            <input type="text" id="velicinaTeren" name="velicinaTeren" min="0" value=<%=terrainInfo.velicinaTeren%>><br><br>
+            <label for="osvjetljenje">Osvjetljenje:</label>
+            <input type="number" id="osvjetljenje" name="osvjetljenje" rows="12" cols="40" value=<%=terrainInfo.osvjetljenje%>></textarea><br><br>
+            <label for="vanjskiUnutarnji">Je li ternen vanjski ili unutarnji:</label>
+            <div class="radioGroup">
+                <input type="radio" id="vanjski" name="vanjskiUnutarnji" value="vanjski" <%= terrainInfo.vanjskiUnutarnji === "vanjski" ? "checked" : "" %>>
+                <label for="vanjski">Vanjski</label><br>
+                <input type="radio" id="unutarnji" name="vanjskiUnutarnji" value="unutarnji" <%= terrainInfo.vanjskiUnutarnji === "unutarnji" ? "checked" : "" %>>
+                <label for="unutarnji">Unutarnji</label><br>
+            </div>
+            <label for="visinaStrop">Visina stropa:</label>
+            <input type="number" step="0.01" id="visinaStrop" name="visinaStrop" value=<%=terrainInfo.visinaStrop%>><br><br>
+            <label for="cijenaTeren">Cijena terena:</label>
+            <input type="number" step="0.01" id="cijenaTeren" min = "0" name="cijenaTeren" value=<%=terrainInfo.cijenaTeren%>><br><br>
+            <label for="imeTeren">Ime terena:</label>
+            <input type="text" id="imeTeren" name="imeTeren" value=<%=terrainInfo.imeTeren%>><br><br>
+            <label for="username">Username kluba:</label>
+            <input type="text" id="username" name="username" readonly value=<%=terrainInfo.username%>><br><br>
+            <label for="slike">Slike:</label>
+            <input type="file" id="slike" name="slike" multiple accept="image/jbeg"><br><br>
+            <div id="photosContainer" data-terrain-photos='<%-JSON.stringify(terrainPhotos)%>'></div>
+            <button type="submit">Spremi postavke</button>
+        </form>
+    </div>
+    <div class="BottomSpace"></div>
 </body>
