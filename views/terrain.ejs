@@ -8,4 +8,15 @@
     <p>Vlasnik klub terena: <%= teren.username %>, ime terena: <%= teren.imeTeren %></p>
     <p>Tip podloge je <%= teren.tipPodloge %> i teren je <%= teren.vanjskiUnutarnji %></p>
     <p>Cijena terena je <%= teren.cijenaTeren %></p>
+
+    <%if (typeof termini !== 'undefined') {%>
+        <%if (termini.length > 0) {%>
+            <p>Dostupni termini za ovaj tjedan su:</p>
+            <% for(let termin of termini) {%>
+                <p><%= termin.danTjedan %> u <%= termin.vrijemePocetak %> sati. Rezerviraj?</p>
+            <% }%>
+        <%} else {%>
+            <p>Nema dostupnih termina.</p>
+        <%}%>
+    <%}%>
 </body>
