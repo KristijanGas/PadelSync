@@ -81,14 +81,16 @@ router.get('/:clubId/:terrainId', requiresAuth(), async (req, res) => {
 
                                 if(!row){
                                         res.status(500).send("No such terrain exists");
-                                }
-                                 res.render("editterrain", {
+                                }else{
+                                        res.render("editterrain", {
                                         username: req.oidc.user["https://yourapp.com/username"],
                                         profileType: profileInDB,
                                         ownerClub: req.params.clubId,
                                         terrainInfo: row,
                                         terrainPhotos : terrainPhotos
                                         })
+                                }
+                                 
 
                         }else{
                                 res.status(500).send("You're not a club or an admin. You cannot edit any terrains!");
