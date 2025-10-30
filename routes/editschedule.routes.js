@@ -6,7 +6,8 @@ const upload = multer();
 const{ requiresAuth } = require('express-openid-connect')
 
 const { verifyProfile, verifyDBProfile } = require("../backendutils/verifyProfile");
-const { checkAvailability} = require("../backendutils/checkAvailability");
+const { checkBooking} = require("../backendutils/checkAvailability");
+
 const axios = require('axios');
 const { render } = require('../server');
 const sqlite3 = require('sqlite3').verbose();
@@ -75,6 +76,12 @@ router.get('/:clubId/:terrainId', requiresAuth(), async (req, res) => {
     }
 });
 
+async function timeStringToFloat(time) {
+  var hoursMinutes = time.split(/[.:]/);
+  var hours = parseInt(hoursMinutes[0], 10);
+  var minutes = hoursMinutes[1] ? parseInt(hoursMinutes[1], 10) : 0;
+  return hours * 60 + minutes;
+}
 
 router.post('/:clubId/:terrainId/add', requiresAuth(), async (req, res) => {
     try{
@@ -97,6 +104,32 @@ router.post('/:clubId/:terrainId/add', requiresAuth(), async (req, res) => {
         if (!day || !startTime || !endTime) {
             return res.status(400).send("All fields are required.");
         }
+        let startMinute = await timeStringToFloat(startTime);
+        let endMinute = await timeStringToFloat(endTime);
+        if (isNaN(startMinute) || isNaN(endMinute) || startMinute < 0 || endMinute > 1440) {
+            return res.status(400).send("Start time and end time must be valid numbers between 0 and 1440.");
+        }
+        if (startMinute + 30 > endMinute) {
+            return res.status(400).send("Start time must be before end time and booking time should be at least 30 minutes.");
+        }
+        const availability = await checkBooking(row.terenID, dayNum, startTime, endTime);
+        if (!availability) {
+            return res.status(400).send("The specified time conflicts with an existing booking.");
+        }
+        let SQLQuery = `INSERT INTO TERMIN_TJEDNI (terenID, danTjedan, vrijemePocetak, vrijemeKraj, potrebnaPretplata) VALUES (?, ?, ?, ?, ?);`;
+        const db = new sqlite3.Database('database.db', sqlite3.OPEN_READWRITE, (err) => {
+            if (err) {
+                console.error(err.message);
+                return res.status(500).send("Internal Server Error");
+            }
+        });
+        db.run(SQLQuery, [row.terenID, dayNum, startTime, endTime, 0], function(err) {
+            if (err) {
+                console.error(err.message);
+                return res.status(500).send("Internal Server Error inserting schedule");
+            }
+        });
+        db.close();
         res.render("editschedule", {terrain: row, message: "Schedule added successfully!"});
     }
     catch(err){
