@@ -32,7 +32,7 @@
 
         <!-- actual form for editing info--> 
         <%if(profileTypeOfEditedUser === "Player"){%>
-        <form id="playerInfo" method="POST" action="/edituser/insertPlayerInfo">
+        <form id="playerInfo" method="POST" action="<%=usernameOfEditedUser%>/insertPlayerInfo">
             <label for="brojMob">Broj mobitela:</label>
             <input type="text" id="brojMob" min="0" name="brojMob" value=<%=userInfo.brojMob%>><br><br>
             <label for="prefVrijeme">Preferirano vrijeme:</label>
@@ -48,8 +48,6 @@
             <input type="text" id="prezimeIgrac" name="prezimeIgrac" value=<%=userInfo.prezimeIgrac%>><br><br>
             <label for="imeIgrac">Ime:</label>
             <input type="text" id="imeIgrac" name="imeIgrac" value=<%=userInfo.imeIgrac%>><br><br>
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" value=<%=userInfo.username%> readonly><br><br>
             <button type="submit">Spremi postavke</button>
         </form>
         <form id="eraseType" method="POST" action="/edituser/eraseType">
@@ -57,7 +55,7 @@
                 { document.getElementById('eraseType').submit(); }">Izbriši profil</button>
         </form>
         <%}else if(profileTypeOfEditedUser === "Club"){%>
-            <form id="clubInfo" method="POST" action="/edituser/insertClubInfo" enctype="multipart/form-data">
+            <form id="clubInfo" method="POST" enctype="multipart/form-data">
                 <label for="svlacionice">Broj svlacionica:</label>
                 <input type="number" id="svlacionice" name="svlacionice" min="0" value=<%=userInfo.svlacionice%>><br><br>
                 <label for="imeKlub">Ime kluba:</label>
@@ -76,8 +74,6 @@
                 <input type="text" id="adresaKlub" name="adresaKlub" value=<%=userInfo.adresaKlub%>><br><br>
                 <label for="prostorZaOdmor">Prostor za odmor:</label>
                 <input type="number" id="prostorZaOdmor" min="0" name="prostorZaOdmor" value=<%=userInfo.prostorZaOdmor%>><br><br>
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" value=<%=userInfo.username%> readonly><br><br>
                 <label for="opisKluba">opis Kluba:</label>
                 <input type="textarea" id="opisKluba" name="opisKluba" value=<%=userInfo.opisKluba%>><br><br>
                 <label for="slike">Slike:</label>
@@ -92,7 +88,6 @@
         </form>
 
         <%}}%>
-        </script>
     </div>
     <div class="BottomSpace"></div>
 </body>

@@ -1,6 +1,7 @@
 const addedPhotos = document.getElementById("slike");
 const photosContainer = document.getElementById("photosContainer");
 const form = document.getElementById("clubInfo");
+const currentUrl = window.location.href;
 
 let selectedFiles = [];
 let eraseFiles = [];
@@ -34,7 +35,7 @@ function displayImages(){
         const clubPhotos = JSON.parse(photosContainer.dataset.clubPhotos);
         for(const photoId of clubPhotos){
                 const img = document.createElement("img");
-                img.src = `photo/${photoId}`;
+                img.src = `${currentUrl}/photo/${photoId}`;
                 img.style.height = "50px";
                 img.id = photoId;
                 const eraseButton = document.createElement("button");
@@ -66,7 +67,7 @@ if(form){
         formData.append('erasePhotos[]', '');
         eraseFiles.forEach(photoId => formData.append('erasePhotos[]', photoId));
         let res;
-        res = await fetch("insertClubInfo", {
+        res = await fetch(`${currentUrl}/insertClubInfo`, {
         method: "POST",
         body: formData
         })
