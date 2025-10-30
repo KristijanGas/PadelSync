@@ -22,72 +22,72 @@ router.get('/:username', requiresAuth(), async (req, res) => {
                                 //a non-admin user is trying to alter another users info! 
                                 if(req.params.username !== req.oidc.user.nickname && profileInDB !== "Admin"){
                                         res.status(500).send(`You cannot edit this users info. This is not your profile and you are not an admin!`)
-                                }
-                                let clubPhotos = {};
-                                let SQLQuery;
-                                let profileTypeOfEditedUser = await findUserType(req.params.username);
-                                if(profileTypeOfEditedUser === "Player"){
-                                        SQLQuery = `SELECT * FROM igrac WHERE username = ?;`;
-                                }else if(profileTypeOfEditedUser === "Club"){
-                                        SQLQuery = `SELECT * FROM klub WHERE username = ?;`;
                                 }else{
-                                        res.status(500).send("User does not exist or cannot be edited?");
-                                }
-                                
+                                        let clubPhotos = {};
+                                        let SQLQuery;
+                                        let profileTypeOfEditedUser = await findUserType(req.params.username);
+                                        if(profileTypeOfEditedUser === "Player"){
+                                                SQLQuery = `SELECT * FROM igrac WHERE username = ?;`;
+                                        }else if(profileTypeOfEditedUser === "Club"){
+                                                SQLQuery = `SELECT * FROM klub WHERE username = ?;`;
+                                        }else{
+                                                res.status(500).send("User does not exist or cannot be edited?");
+                                        }
+                                        
 
-                                const db = new sqlite3.Database("database.db");
+                                        const db = new sqlite3.Database("database.db");
 
-                                const getRow = (sql, params) => new Promise((resolve, reject) => {
-                                        db.get(sql, params, (err, row) => {
-                                        if (err) return reject(err);
-                                        resolve(row);
-                                        });
-                                });
-                                const getPhotos = (sql, params) => new Promise((resolve, reject) => {
-                                        db.all(sql, params, (err, row) => {
-                                                if(err) return reject(err);
+                                        const getRow = (sql, params) => new Promise((resolve, reject) => {
+                                                db.get(sql, params, (err, row) => {
+                                                if (err) return reject(err);
                                                 resolve(row);
-                                        })
-                                });
-                                let SQLPhotoQuery = `SELECT fotoKlubId FROM foto_klub WHERE username = ?;`;
+                                                });
+                                        });
+                                        const getPhotos = (sql, params) => new Promise((resolve, reject) => {
+                                                db.all(sql, params, (err, row) => {
+                                                        if(err) return reject(err);
+                                                        resolve(row);
+                                                })
+                                        });
+                                        let SQLPhotoQuery = `SELECT fotoKlubId FROM foto_klub WHERE username = ?;`;
 
-                                try{
-                                        const row = await getRow(SQLQuery, [req.params.username]);
-                                        if(profileTypeOfEditedUser === "Club"){
-                                                try{
-                                                        clubPhotos = await getPhotos(SQLPhotoQuery, [req.params.username]);
-                                                }catch(err){
-                                                        console.error(err.message);
-                                                        if(res) res.status(500).send("Internal Server Error");
-                                                        db.close();
-                                                        return null;
+                                        try{
+                                                const row = await getRow(SQLQuery, [req.params.username]);
+                                                if(profileTypeOfEditedUser === "Club"){
+                                                        try{
+                                                                clubPhotos = await getPhotos(SQLPhotoQuery, [req.params.username]);
+                                                        }catch(err){
+                                                                console.error(err.message);
+                                                                if(res) res.status(500).send("Internal Server Error");
+                                                                db.close();
+                                                                return null;
+                                                        }
                                                 }
+                                                db.close();
+                                                if(profileTypeOfEditedUser === "Club"){
+                                                        clubPhotos = clubPhotos.map(p => p.fotoKlubID)
+                                                }
+                                                res.render("edituser", {
+                                                username: req.oidc.user["https://yourapp.com/username"],
+                                                profileType: profileInDB,
+                                                profileTypeOfEditedUser: profileTypeOfEditedUser,
+                                                usernameOfEditedUser: req.params.username,
+                                                userInfo: row,
+                                                clubPhotos : clubPhotos
+                                                })
+                                        }catch(err){
+                                                console.error(err.message);
+                                                if(res) res.status(500).send("Internal Server Error");
+                                                db.close();
+                                                return null;
                                         }
-                                        db.close();
-                                        if(profileTypeOfEditedUser === "Club"){
-                                                clubPhotos = clubPhotos.map(p => p.fotoKlubID)
-                                        }
-                                         res.render("edituser", {
+                                }
+                        }else{
+                              res.render("edituser", {
                                         username: req.oidc.user["https://yourapp.com/username"],
                                         profileType: profileInDB,
-                                        profileTypeOfEditedUser: profileTypeOfEditedUser,
-                                        usernameOfEditedUser: req.params.username,
-                                        userInfo: row,
-                                        clubPhotos : clubPhotos
+                                        usernameOfEditedUser: req.params.username
                                         })
-                                }catch(err){
-                                        console.error(err.message);
-                                        if(res) res.status(500).send("Internal Server Error");
-                                        db.close();
-                                        return null;
-                                }
-
-                        }else{
-                                res.render("edituser", {
-                                username: req.oidc.user["https://yourapp.com/username"],
-                                profileType: profileInDB,
-                                usernameOfEditedUser: req.params.username,
-                                })
                         }
                 }
         }catch(err){
@@ -164,144 +164,206 @@ router.post('/eraseType', requiresAuth(), async (req, res) => {
         res.redirect(`/edituser/${req.oidc.user.nickname}`);
 });
 
-router.post('/insertPlayerInfo', requiresAuth(), async (req, res) => {
-        let SQLQuery = `UPDATE igrac
-                        SET     brojMob = ?,
-                                prefVrijeme = ?,
-                                razZnanjaPadel = ?,
-                                prezimeIgrac = ?,
-                                imeIgrac = ?
-                        WHERE 
-                                username = ?;`;
-        const db = new sqlite3.Database("database.db");
-        const runQuery = (sql, params) => new Promise((resolve, reject) => {
-                db.run(sql, params, function(err) {
-                        if (err) return reject(err);
-                        resolve(this);
-                });
-        });
-         try{
-                await runQuery(SQLQuery, [req.body.brojMob, 
-                                        req.body.prefVrijeme, 
-                                        req.body.razZnanjaPadel, 
-                                        req.body.prezimeIgrac, 
-                                        req.body.imeIgrac, 
-                                        req.body.username]);
-        }catch(err){
-                console.error(err.message);
-                res.status(500).send("Internal Server Error updating player info");
-                db.close();
-                return;
-        }
-        db.close();
-        if(req.oidc.user.nickname === req.body.username){
-                res.redirect("/myprofile");
-        }else{
-                res.redirect("/");
-        }
-        
-});
-
-router.post('/insertClubInfo', requiresAuth(), upload.array("slike"), async (req, res) => {
-        let SQLQuery = `UPDATE klub
-                        SET     svlacionice = ?,
-                                imeKlub = ?,
-                                najamReketa = ?,
-                                pravilaKlub = ?,
-                                klubRadiDo = ?,
-                                klubRadiOd = ?,
-                                tusevi = ?,
-                                adresaKlub = ?,
-                                prostorZaOdmor = ?,
-                                opisKluba = ?
-                        WHERE 
-                                username = ?;`;
-        let SQLPhotoQuery = `INSERT INTO foto_klub (fotoKlubOpis, fotografija, mimeType, username)
-                                VALUES ("", ?, ?, ?);`;
-        const db = new sqlite3.Database("database.db");
-        const runQuery = (sql, params) => new Promise((resolve, reject) => {
-                db.run(sql, params, function(err) {
-                        if (err) return reject(err);
-                        resolve(this);
-                });
-        });
-         try{
-                await runQuery(SQLQuery, [req.body.svlacionice, 
-                                        req.body.imeKlub, 
-                                        req.body.najamReketa,
-                                        req.body.pravilaKlub, 
-                                        req.body.klubRadiDo, 
-                                        req.body.klubRadiOd, 
-                                        req.body.tusevi,
-                                        req.body.adresaKlub,
-                                        req.body.prostorZaOdmor,
-                                        req.body.opisKluba,
-                                        req.body.username]);
-        }catch(err){
-                console.error(err.message);
-                res.status(500).send("Internal Server Error updating club info");
-                db.close();
-                return;
-        }
-
-        for(const photo of req.files){
-                try{
-                await runQuery(SQLPhotoQuery, [photo.buffer, photo.mimetype, req.body.username]);
-                }catch(err){
-                        console.error(err.message);
-                        res.status(500).send("Internal Server Error updating club photo info");
-                        db.close();
-                        return;
-                }
-        }
-        
-        let SQLRemovePhotos = `DELETE FROM foto_klub WHERE fotoKlubId = ?`;
-        for(const photo of req.body.erasePhotos){
-                try{
-                        await runQuery(SQLRemovePhotos, [photo]);
-                }catch(err){
-                        console.error(err.message);
-                        res.status(500).send("Internal Server Error removing club photo");
-                        db.close();
-                        return;
-                }
-        }
-        
-        db.close();
-        if(req.oidc.user.nickname === req.body.username){
-                res.json({redirectURL: "/myprofile"});
-        }else{
-                res.json({redirectURL: "/"});
-        }
-});
-
-router.get("/photo/:photoId", async(req, res) => {
-        let photo;
-        const SQLQuery = `SELECT fotografija, mimeType FROM foto_klub WHERE fotoKlubId = ?`;
-
-        const db = new sqlite3.Database("database.db");
-
-        const getRow = (sql, params) => new Promise((resolve, reject) => {
-                db.get(sql, params, (err, row) => {
-                if (err) return reject(err);
-                resolve(row);
-                });
-        });
+router.post('/:username/insertPlayerInfo', requiresAuth(), async (req, res) => {
         try{
-                photo = await getRow(SQLQuery, [req.params.photoId]);
+                const isVerified = await verifyProfile(req);
+                let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
+
+                if(!isVerified){
+                        /* this view needs to be made */
+                        res.render("verifymail")
+                }else{
+                        if(profileInDB === "Player" || profileInDB === "Admin"){
+                                //a non-admin user is trying to alter another users info! 
+                                if(req.params.username !== req.oidc.user.nickname && profileInDB !== "Admin"){
+                                        res.status(500).send(`You cannot insert this user's info. This is not your profile and you are not an admin!`)
+                                }else{
+                                        let SQLQuery = `UPDATE igrac
+                                                        SET     brojMob = ?,
+                                                                prefVrijeme = ?,
+                                                                razZnanjaPadel = ?,
+                                                                prezimeIgrac = ?,
+                                                                imeIgrac = ?
+                                                        WHERE 
+                                                                username = ?;`;
+                                        const db = new sqlite3.Database("database.db");
+                                        const runQuery = (sql, params) => new Promise((resolve, reject) => {
+                                                db.run(sql, params, function(err) {
+                                                        if (err) return reject(err);
+                                                        resolve(this);
+                                                });
+                                        });
+                                        try{
+                                                await runQuery(SQLQuery, [req.body.brojMob, 
+                                                                        req.body.prefVrijeme, 
+                                                                        req.body.razZnanjaPadel, 
+                                                                        req.body.prezimeIgrac, 
+                                                                        req.body.imeIgrac, 
+                                                                        req.params.username]);
+                                        }catch(err){
+                                                console.error(err.message);
+                                                res.status(500).send("Internal Server Error updating player info");
+                                                db.close();
+                                                return;
+                                        }
+                                        db.close();
+                                        if(req.oidc.user.nickname === req.params.username){
+                                                res.redirect("/myprofile");
+                                        }else{
+                                                res.redirect("/");
+                                        }
+                                }
+                        }else{
+                                res.status(500).send("You're not a player or admin. Why are you inserting player info?");
+                        }
+                }
         }catch(err){
-                console.error(err.message);
-                if(res) res.status(500).send("Internal Server Error fetching photo");
-                db.close();
-                return null;
-        }
-        if(!photo){
-                return res.status(404).send("Not found");
-        }
+                res.status(500).send("internal server error");
+        } 
+});
 
-        res.set("Content-Type", photo.mimeType);
-        res.send(photo.fotografija);
+router.post('/:username/insertClubInfo', requiresAuth(), upload.array("slike"), async (req, res) => {
+        try{
+                const isVerified = await verifyProfile(req);
+                let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
 
+                if(!isVerified){
+                        /* this view needs to be made */
+                        res.render("verifymail")
+                }else{
+                        if(profileInDB === "Club" || profileInDB === "Admin"){
+                                //a non-admin user is trying to alter another users info! 
+                                if(req.params.username !== req.oidc.user.nickname && profileInDB !== "Admin"){
+                                        res.status(500).send(`You cannot insert this user's info. This is not your profile and you are not an admin!`)
+                                }else{
+                                     let SQLQuery = `UPDATE klub
+                                                        SET     svlacionice = ?,
+                                                                imeKlub = ?,
+                                                                najamReketa = ?,
+                                                                pravilaKlub = ?,
+                                                                klubRadiDo = ?,
+                                                                klubRadiOd = ?,
+                                                                tusevi = ?,
+                                                                adresaKlub = ?,
+                                                                prostorZaOdmor = ?,
+                                                                opisKluba = ?
+                                                        WHERE 
+                                                                username = ?;`;
+                                        let SQLPhotoQuery = `INSERT INTO foto_klub (fotoKlubOpis, fotografija, mimeType, username)
+                                                                VALUES ("", ?, ?, ?);`;
+                                        const db = new sqlite3.Database("database.db");
+                                        const runQuery = (sql, params) => new Promise((resolve, reject) => {
+                                                db.run(sql, params, function(err) {
+                                                        if (err) return reject(err);
+                                                        resolve(this);
+                                                });
+                                        });
+                                        try{
+                                                await runQuery(SQLQuery, [req.body.svlacionice, 
+                                                                        req.body.imeKlub, 
+                                                                        req.body.najamReketa,
+                                                                        req.body.pravilaKlub, 
+                                                                        req.body.klubRadiDo, 
+                                                                        req.body.klubRadiOd, 
+                                                                        req.body.tusevi,
+                                                                        req.body.adresaKlub,
+                                                                        req.body.prostorZaOdmor,
+                                                                        req.body.opisKluba,
+                                                                        req.params.username]);
+                                        }catch(err){
+                                                console.error(err.message);
+                                                res.status(500).send("Internal Server Error updating club info");
+                                                db.close();
+                                                return;
+                                        }
+
+                                        for(const photo of req.files){
+                                                try{
+                                                await runQuery(SQLPhotoQuery, [photo.buffer, photo.mimetype, req.params.username]);
+                                                }catch(err){
+                                                        console.error(err.message);
+                                                        res.status(500).send("Internal Server Error updating club photo info");
+                                                        db.close();
+                                                        return;
+                                                }
+                                        }
+                                        
+                                        let SQLRemovePhotos = `DELETE FROM foto_klub WHERE fotoKlubId = ?`;
+                                        for(const photo of req.body.erasePhotos){
+                                                try{
+                                                        await runQuery(SQLRemovePhotos, [photo]);
+                                                }catch(err){
+                                                        console.error(err.message);
+                                                        res.status(500).send("Internal Server Error removing club photo");
+                                                        db.close();
+                                                        return;
+                                                }
+                                        }
+                                        
+                                        db.close();
+                                        if(req.oidc.user.nickname === req.params.username){
+                                                res.json({redirectURL: "/myprofile"});
+                                        }else{
+                                                res.json({redirectURL: "/"});
+                                        }   
+                                }
+                        }else{
+                                res.status(500).send("You're not a club or admin. Why are you inserting club info?");
+                        }
+                }
+        }catch(err){
+                res.status(500).send("internal server error");
+        } 
+        
+});
+
+router.get("/:username/photo/:photoId", async(req, res) => {
+         try{
+                const isVerified = await verifyProfile(req);
+                let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
+
+                if(!isVerified){
+                        /* this view needs to be made */
+                        res.render("verifymail")
+                }else{
+                        if(profileInDB === "Club" || profileInDB === "Admin"){
+                                //a non-admin user is trying to alter another users info! 
+                                if(req.params.username !== req.oidc.user.nickname && profileInDB !== "Admin"){
+                                        res.status(500).send(`You cannot view theese photos. This is not your profile and you are not an admin!`)
+                                }else{
+                                       let photo;
+                                        const SQLQuery = `SELECT fotografija, mimeType FROM foto_klub WHERE fotoKlubId = ?`;
+
+                                        const db = new sqlite3.Database("database.db");
+
+                                        const getRow = (sql, params) => new Promise((resolve, reject) => {
+                                                db.get(sql, params, (err, row) => {
+                                                if (err) return reject(err);
+                                                resolve(row);
+                                                });
+                                        });
+                                        try{
+                                                photo = await getRow(SQLQuery, [req.params.photoId]);
+                                        }catch(err){
+                                                console.error(err.message);
+                                                if(res) res.status(500).send("Internal Server Error fetching photo");
+                                                db.close();
+                                                return null;
+                                        }
+                                        if(!photo){
+                                                return res.status(404).send("Not found");
+                                        }
+
+                                        res.set("Content-Type", photo.mimeType);
+                                        res.send(photo.fotografija);
+                                }
+                        }else{
+                                res.status(500).send("You're not a club or admin. Why are you inserting viewing photos?");
+                        }
+                }
+        }catch(err){
+                res.status(500).send("internal server error");
+        } 
 })
 
 
