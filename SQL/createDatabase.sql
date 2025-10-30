@@ -98,6 +98,8 @@ CREATE TABLE REZERVACIJA
 (
   statusRez VARCHAR NOT NULL,
   rezervacijaID INT NOT NULL,
+  terminID INT NOT NULL,
+  FOREIGN KEY (terminID) REFERENCES TERMIN_TJEDNI(terminID),
   PRIMARY KEY (rezervacijaID)
 );
 
@@ -163,11 +165,12 @@ CREATE TABLE PONAVLJAJUCA_REZ
 CREATE TABLE TERMIN_TJEDNI
 (
   vrijemePocetak DATE NOT NULL,
-  danTjedan VARCHAR NOT NULL,
+  danTjedan INTEGER NOT NULL,
   vrijemeKraj DATE NOT NULL,
   potrebnaPretplata INT NOT NULL,
   terenID INT NOT NULL,
-  PRIMARY KEY (terenID, danTjedan, vrijemePocetak),
+  terminID INT NOT NULL
+  PRIMARY KEY (terminID),
   FOREIGN KEY (terenID) REFERENCES TEREN(terenID) ON DELETE CASCADE
 );
 
