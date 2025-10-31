@@ -35,7 +35,7 @@ router.get('/:username', requiresAuth(), async (req, res) => {
                                         }
                                         
 
-                                        const db = new sqlite3.Database("database.db");
+                                        const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
 
                                         const getRow = (sql, params) => new Promise((resolve, reject) => {
                                                 db.get(sql, params, (err, row) => {
@@ -104,7 +104,7 @@ router.post('/chooseType', requiresAuth(), async (req, res) => {
         if(userType !== "Player" && userType !== "Club"){
                 return res.status(400).send("Invalid user type");
         }
-        const db = new sqlite3.Database("database.db");
+        const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
         let SQLQuery = "";
         if(userType === "Player"){
                 SQLQuery = "INSERT INTO igrac (username) VALUES (?);";
@@ -145,7 +145,7 @@ router.post('/eraseType', requiresAuth(), async (req, res) => {
         }else if(profileInDB === "Club"){
                 SQLQuery = "DELETE FROM klub WHERE username = ?;";
         }
-        const db = new sqlite3.Database("database.db");
+        const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
         const runQuery = (sql, params) => new Promise((resolve, reject) => {
                 db.run(sql, params, function(err) {
                         if (err) return reject(err);
@@ -186,7 +186,7 @@ router.post('/:username/insertPlayerInfo', requiresAuth(), async (req, res) => {
                                                                 imeIgrac = ?
                                                         WHERE 
                                                                 username = ?;`;
-                                        const db = new sqlite3.Database("database.db");
+                                        const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
                                         const runQuery = (sql, params) => new Promise((resolve, reject) => {
                                                 db.run(sql, params, function(err) {
                                                         if (err) return reject(err);
@@ -251,7 +251,7 @@ router.post('/:username/insertClubInfo', requiresAuth(), upload.array("slike"), 
                                                                 username = ?;`;
                                         let SQLPhotoQuery = `INSERT INTO foto_klub (fotoKlubOpis, fotografija, mimeType, username)
                                                                 VALUES ("", ?, ?, ?);`;
-                                        const db = new sqlite3.Database("database.db");
+                                        const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
                                         const runQuery = (sql, params) => new Promise((resolve, reject) => {
                                                 db.run(sql, params, function(err) {
                                                         if (err) return reject(err);
@@ -334,7 +334,7 @@ router.get("/:username/photo/:photoId", async(req, res) => {
                                        let photo;
                                         const SQLQuery = `SELECT fotografija, mimeType FROM foto_klub WHERE fotoKlubId = ?`;
 
-                                        const db = new sqlite3.Database("database.db");
+                                        const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
 
                                         const getRow = (sql, params) => new Promise((resolve, reject) => {
                                                 db.get(sql, params, (err, row) => {

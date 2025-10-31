@@ -25,7 +25,7 @@ router.get('/:clubId/:terrainId', requiresAuth(), async (req, res) => {
                                 if(req.params.clubId !== req.oidc.user.nickname && profileInDB !== "Admin"){
                                         res.status(500).send(`You cannot edit this users info. This is not your profile and you are not an admin!`)
                                 }else{
-                                        const db = new sqlite3.Database("database.db");
+                                        const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
 
                                         const getRow = (sql, params) => new Promise((resolve, reject) => {
                                                 db.get(sql, params, (err, row) => {
@@ -109,7 +109,7 @@ router.post('/:clubId/:terrainId/insertTerrainInfo', requiresAuth(), upload.arra
                                 if(req.params.clubId !== req.oidc.user.nickname && profileInDB !== "Admin"){
                                         res.status(500).send(`You cannot edit this users info. This is not your profile and you are not an admin!`)
                                 }else{
-                                       const db = new sqlite3.Database("database.db");
+                                       const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
 
                                         const getRow = (sql, params) => new Promise((resolve, reject) => {
                                                 db.get(sql, params, (err, row) => {
@@ -262,7 +262,7 @@ router.get("/:clubId/:terrainId/photo/:photoId", async(req, res) => {
                                 if(req.params.clubId !== req.oidc.user.nickname && profileInDB !== "Admin"){
                                         res.status(500).send(`You cannot edit this users info. This is not your profile and you are not an admin!`)
                                 }else{
-                                       const db = new sqlite3.Database("database.db");
+                                       const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
 
                                         const getRow = (sql, params) => new Promise((resolve, reject) => {
                                                 db.get(sql, params, (err, row) => {
@@ -287,7 +287,7 @@ router.get("/:clubId/:terrainId/photo/:photoId", async(req, res) => {
                                                 let photo;
                                                 const SQLQuery = `SELECT fotografija, mimeType FROM foto_teren WHERE fotoTerenId = ?`;
 
-                                                const db = new sqlite3.Database("database.db");
+                                                const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
 
                                                 const getRow = (sql, params) => new Promise((resolve, reject) => {
                                                         db.get(sql, params, (err, row) => {
