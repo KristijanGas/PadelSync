@@ -13,8 +13,8 @@ router.get('/', (req, res) => {
 //search by is player or club by  username
 router.get('/klub/:username', (req, res) => {
     let SQLQuery = 'SELECT * FROM KLUB_RATING'
-    + ' WHERE (lower(klubUsername) LIKE \"%' + req.params.username + '%\")'
-    + ' OR (lower(klub) LIKE \"%' + req.params.username + '%\")';
+    + ' WHERE (lower(usernameKlub) LIKE \"%' + req.params.username + '%\")'
+    + ' OR (lower(imeKlub) LIKE \"%' + req.params.username + '%\")';
     const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
     db.all(SQLQuery, [], (err, rows) => {
         if (err) {
@@ -31,7 +31,7 @@ router.get('/klub/:username', (req, res) => {
             if (rows[i].rating === null) {
                 rows[i].rating = "N/A";
             }
-            klubovi.push({'username':rows[i].klubUsername, 'imeKlub':rows[i].klub, 'klubRating':rows[i].rating});
+            klubovi.push({'username':rows[i].usernameKlub, 'imeKlub':rows[i].klub, 'klubRating':rows[i].rating});
         }
         res.render('user_search', {klubovi: klubovi, session: req.session, isAuthenticated: req.oidc.isAuthenticated()});
     });
