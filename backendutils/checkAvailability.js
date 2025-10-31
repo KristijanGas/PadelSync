@@ -31,11 +31,10 @@ async function checkAvailability(terrainId, date, startTime, endTime) {
     } catch (error) {
         console.log(error);
     }
-
+    db.close();
     if(jednokratniTermini.length > 0 || ponavljajuciTermini.length > 0)
         return false;
     else return true;
-    db.close();
 }
 
 async function checkBooking(terrainId, dayNum, startTime, endTime) {
