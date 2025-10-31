@@ -36,7 +36,7 @@ async function allowEntry(req, res){
         });
     });
 
-    const db = new sqlite3.Database('database.db', sqlite3.OPEN_READONLY, (err) => {
+    const db = new sqlite3.Database(process.env.DB_PATH || 'database.db', sqlite3.OPEN_READONLY, (err) => {
         if (err) {
             console.error(err.message);
             return res.status(500).send("Internal Server Error");
@@ -117,7 +117,7 @@ router.post('/:clubId/:terrainId/add', requiresAuth(), async (req, res) => {
             return res.status(400).send("The specified time conflicts with an existing booking.");
         }
         let SQLQuery = `INSERT INTO TERMIN_TJEDNI (terenID, danTjedan, vrijemePocetak, vrijemeKraj, potrebnaPretplata) VALUES (?, ?, ?, ?, ?);`;
-        const db = new sqlite3.Database('database.db', sqlite3.OPEN_READWRITE, (err) => {
+    const db = new sqlite3.Database(process.env.DB_PATH || 'database.db', sqlite3.OPEN_READWRITE, (err) => {
             if (err) {
                 console.error(err.message);
                 return res.status(500).send("Internal Server Error");

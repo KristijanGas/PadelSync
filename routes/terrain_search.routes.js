@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
 
 async function searchTerrains(criteria) {
     //console.log("Search criteria received:", criteria);
-    const db = new sqlite3.Database("database.db");
+    const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
     let SQLQuery = 'SELECT * FROM TEREN WHERE 1=1';
     //[ NEEDS WORK ]
     if (criteria.username) {

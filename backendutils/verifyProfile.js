@@ -4,31 +4,30 @@ const sqlite3 = require('sqlite3').verbose();
 
 
 async function verifyProfile(req){
-        let data = {}
-        const {token_type, access_token} = req.oidc.accessToken;
+    let data = {}
+    const {token_type, access_token} = req.oidc.accessToken;
 
-        
-        try{
-                const apiResponse = await axios.get('http://localhost:5000/private',
-                        {
-                                headers:{
-                                        authorization: `${token_type} ${access_token}`
-                                }
-                        }
-                )
-                data = apiResponse.data
-        }catch(e){
-                //console.log(e); //ERROR DOES ACTUALLY HAPPEN HERE PLZ FIX
-        }
-        //console.log(data);
-        return data.emailVerified;
+    
+    try{
+        const apiResponse = await axios.get('http://localhost:5000/private',
+            {
+                headers:{
+                    authorization: `${token_type} ${access_token}`
+                }
+            }
+        )
+        data = apiResponse.data
+    }catch(e){
+            //console.log(e); //ERROR DOES ACTUALLY HAPPEN HERE PLZ FIX
+    }
+    //console.log(data);
+    return data.emailVerified;
 }
 
 //checks if profile is verified in our database
 async function verifyDBProfile(username,email,res){
     let SQLQuery = "SELECT count(*) as cnt FROM korisnik WHERE username = ?;";
-
-    const db = new sqlite3.Database("database.db");
+    const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
     let userExists = 1;
 
     const getRow = (sql, params) => new Promise((resolve, reject) => {
@@ -85,7 +84,7 @@ async function verifyDBProfile(username,email,res){
 async function findUserType(username){
     let SQLQuery = "SELECT count(*) as cnt FROM korisnik WHERE username = ?;";
 
-    const db = new sqlite3.Database("database.db");
+    const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
     let userExists = 1;
 
     const getRow = (sql, params) => new Promise((resolve, reject) => {
@@ -139,7 +138,7 @@ async function findUserType(username){
 }
 
 async function addUserToDB(username,email,res){
-    const db = new sqlite3.Database("database.db");
+    const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
     const SQLQuery = 'INSERT INTO korisnik (username,email,passwordHash) VALUES (?,?,?)';
 
     return new Promise((resolve, reject) => {
