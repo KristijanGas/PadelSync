@@ -19,11 +19,7 @@ function createAppWithOidcStub() {
   // Stub OIDC user + token
   app.use((req, res, next) => {
     req.oidc = {
-      accessToken: {
-        token_type: 'Bearer',
-        access_token: 'fake-token',
-        isExpired: () => true
-      },
+      accessToken: { access_token: 'fake-token', token_type: 'Bearer', isExpired: () => false},
       user: {
         nickname: 'gaspar.kristijan',
         email: 'gaspar.kristijan@gmail.com'
@@ -67,3 +63,5 @@ describe('editschedule route', () => {
     expect(res.status).toBe(403);
   });
 });
+
+
