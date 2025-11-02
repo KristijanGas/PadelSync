@@ -38,12 +38,14 @@
             <label for="prefVrijeme">Preferirano vrijeme:</label>
             <input type="date" id="prefVrijeme" name="prefVrijeme" value=<%=userInfo.prefVrijeme%>><br><br>
             <label for="razZnanjaPadel">Razina znanja padela:</label>
-            <select id="razZnanjaPadel" name="razZnanjaPadel">
-                <!-- ovdje moramo odluciti kakve ce to biti razine, ap onda napraviti da pokazuje na prethodno spremljenu -->
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-            </select><br><br>
+            <div class="radioGroup">
+                <input type="radio" id="pro" name="razZnanjaPadel" value="pro" <%= userInfo.razZnanjaPadel === "pro" ? "checked" : "" %>>
+                <label for="pro">Pro</label><br>
+                <input type="radio" id="intermediate" name="razZnanjaPadel" value="intermediate" <%= userInfo.razZnanjaPadel === "intermediate" ? "checked" : "" %>>
+                <label for="intermediate">Intermediate</label><br>
+                <input type="radio" id="beginner" name="razZnanjaPadel" value="beginner" <%= userInfo.razZnanjaPadel === "beginner" ? "checked" : "" %>>
+                <label for="beginner">Beginner</label><br>
+            </div>
             <label for="prezimeIgrac">Prezime:</label>
             <input type="text" id="prezimeIgrac" name="prezimeIgrac" value=<%=userInfo.prezimeIgrac%>><br><br>
             <label for="imeIgrac">Ime:</label>

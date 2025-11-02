@@ -1,6 +1,7 @@
 const addedPhotos = document.getElementById("slike");
 const photosContainer = document.getElementById("photosContainer");
-const form = document.getElementById("clubInfo");
+const clubForm = document.getElementById("clubInfo");
+const playerForm = document.getElementById("playerInfo");
 const currentUrl = window.location.href;
 
 let selectedFiles = [];
@@ -58,11 +59,11 @@ function eraseNewPhoto(file, img, button){
         button.remove();
         selectedFiles = selectedFiles.filter((f) => f !== file);
 }
-if(form){
-        form.addEventListener("submit", async (event) => {
+if(clubForm){
+        clubForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        const formData = new FormData(form);
+        const formData = new FormData(clubForm);
         selectedFiles.forEach((file) => formData.append("slike", file));
         formData.append('erasePhotos[]', '');
         eraseFiles.forEach(photoId => formData.append('erasePhotos[]', photoId));
@@ -71,18 +72,44 @@ if(form){
         method: "POST",
         body: formData
         })
-        
         if(res.ok){
                 const data = await res.json();
                 if(data.redirectURL){
                         window.location.href = data.redirectURL;
                 }
+        }else if(res.status === 400){
+                console.log("here");
+                const data = await res.json();
+                console.log(data);
         }else{
-                console.log("error submitting form");
+                console.log("error submitting clubForm");
         }
         })
 }
 
+if(playerForm){
+        playerForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
+
+                const formData = new FormData(playerForm);
+                res = await fetch(`${currentUrl}/insertPlayerInfo`, {
+                method: "POST",
+                body: formData
+                })
+        
+                if(res.ok){
+                        const data = await res.json();
+                        if(data.redirectURL){
+                                window.location.href = data.redirectURL;
+                        }
+                }else if(res.status === 400){
+                        const data = await res.json();
+                        console.log(data);
+                }else{
+                        console.log("error submitting playerForm");
+                }
+        })
+}
 
 
 
