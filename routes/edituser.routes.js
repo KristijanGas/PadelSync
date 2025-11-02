@@ -21,7 +21,7 @@ router.get('/:username', requiresAuth(), async (req, res) => {
                         if(profileInDB === "Player" || profileInDB === "Club" || profileInDB === "Admin"){
                                 //a non-admin user is trying to alter another users info! 
                                 if(req.params.username !== req.oidc.user.nickname && profileInDB !== "Admin"){
-                                        res.status(500).send(`You cannot edit this users info. This is not your profile and you are not an admin!`)
+                                        res.status(403).send(`You cannot edit this users info. This is not your profile and you are not an admin!`)
                                 }else{
                                         let clubPhotos = {};
                                         let SQLQuery;
@@ -31,7 +31,7 @@ router.get('/:username', requiresAuth(), async (req, res) => {
                                         }else if(profileTypeOfEditedUser === "Club"){
                                                 SQLQuery = `SELECT * FROM klub WHERE username = ?;`;
                                         }else{
-                                                res.status(500).send("User does not exist or cannot be edited?");
+                                                res.status(403).send("User does not exist or cannot be edited?");
                                         }
                                         
 
@@ -164,7 +164,34 @@ router.post('/eraseType', requiresAuth(), async (req, res) => {
         res.redirect(`/edituser/${req.oidc.user.nickname}`);
 });
 
-router.post('/:username/insertPlayerInfo', requiresAuth(), async (req, res) => {
+function checkPlayerInfo(data){
+        const errors = [];
+        if(data.razZnanjaPadel !== "pro" && data.razZnanjaPadel !== "beginner" && data.razZnanjaPadel !== "intermediate"){
+                errors.push("'razZnanjaPadel' must be beginner, intermediate, pro");
+        }
+
+        const ime = (data.imeIgrac || "").trim();
+        const prezime = (data.prezimeIgrac || "").trim();
+
+        const imeRegex = /^[\p{L}]{2,30}$/u;
+        if (!imeRegex.test(ime)) {
+        errors.push("'imeIgrac' must be 2–30 letters, no spaces or special characters.");
+        }
+
+        const prezimeRegex = /^[\p{L}]+(?:[ -][\p{L}]+)*$/u;
+        if (!prezimeRegex.test(prezime) || prezime.length < 2 || prezime.length > 30) {
+        errors.push(
+        "'prezimeIgrac' must be 2–30 chars, letters only, can contain spaces or '-' between names but not at start or end."
+        );
+        }
+        return errors;
+}
+
+router.post('/:username/insertPlayerInfo', requiresAuth(), upload.none(), async (req, res) => {
+        const errors = checkPlayerInfo(req.body);
+        if (errors.length > 0) {
+                return res.status(400).json({ errors });
+        }
         try{
                 const isVerified = await verifyProfile(req);
                 let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
@@ -176,7 +203,7 @@ router.post('/:username/insertPlayerInfo', requiresAuth(), async (req, res) => {
                         if(profileInDB === "Player" || profileInDB === "Admin"){
                                 //a non-admin user is trying to alter another users info! 
                                 if(req.params.username !== req.oidc.user.nickname && profileInDB !== "Admin"){
-                                        res.status(500).send(`You cannot insert this user's info. This is not your profile and you are not an admin!`)
+                                        res.status(403).send(`You cannot insert this user's info. This is not your profile and you are not an admin!`)
                                 }else{
                                         let SQLQuery = `UPDATE igrac
                                                         SET     brojMob = ?,
@@ -208,13 +235,13 @@ router.post('/:username/insertPlayerInfo', requiresAuth(), async (req, res) => {
                                         }
                                         db.close();
                                         if(req.oidc.user.nickname === req.params.username){
-                                                res.redirect("/myprofile");
+                                                res.json({redirectURL: "/myprofile"});
                                         }else{
-                                                res.redirect("/");
-                                        }
+                                                res.json({redirectURL: "/"});
+                                        }   
                                 }
                         }else{
-                                res.status(500).send("You're not a player or admin. Why are you inserting player info?");
+                                res.status(403).send("You're not a player or admin. Why are you inserting player info?");
                         }
                 }
         }catch(err){
@@ -222,7 +249,39 @@ router.post('/:username/insertPlayerInfo', requiresAuth(), async (req, res) => {
         } 
 });
 
+function checkClubInfo(data) {
+  const errors = [];
+
+  if (data.svlacionice < 0)
+    errors.push("'svlacionice' is negative");
+
+  if (data.najamReketa < 0)
+    errors.push("'najamReketa' is negative");
+
+  if (data.tusevi < 0)
+    errors.push("'tusevi' is negative");
+
+  if (data.prostorZaOdmor < 0)
+    errors.push("'prostorZaOdmor' is negative");
+
+  const nameRegex = /^[\p{L}\p{N} ]{3,30}$/u;
+  const ime = (data.imeKlub || "").trim().replace(/\s+/g, " ");
+  if (!nameRegex.test(ime))
+    errors.push("'imeKlub' must be 3–30 chars and contain only letters, numbers and spaces.");
+
+  const adressRegex = /^[\p{L}\p{N} ]{3,70}$/u;
+  const adresa = (data.adresaKlub || "").trim().replace(/\s+/g, " ");
+  if (!adressRegex.test(adresa))
+    errors.push("'adresaKlub' must be 3–70 chars and contain only letters, numbers and spaces.");
+
+  return errors;
+}
+
 router.post('/:username/insertClubInfo', requiresAuth(), upload.array("slike"), async (req, res) => {
+        const errors = checkClubInfo(req.body);
+        if (errors.length > 0) {
+                return res.status(400).json({ errors });
+        }
         try{
                 const isVerified = await verifyProfile(req);
                 let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
@@ -234,7 +293,7 @@ router.post('/:username/insertClubInfo', requiresAuth(), upload.array("slike"), 
                         if(profileInDB === "Club" || profileInDB === "Admin"){
                                 //a non-admin user is trying to alter another users info! 
                                 if(req.params.username !== req.oidc.user.nickname && profileInDB !== "Admin"){
-                                        res.status(500).send(`You cannot insert this user's info. This is not your profile and you are not an admin!`)
+                                        res.status(403).send(`You cannot insert this user's info. This is not your profile and you are not an admin!`)
                                 }else{
                                      let SQLQuery = `UPDATE klub
                                                         SET     svlacionice = ?,
@@ -308,7 +367,7 @@ router.post('/:username/insertClubInfo', requiresAuth(), upload.array("slike"), 
                                         }   
                                 }
                         }else{
-                                res.status(500).send("You're not a club or admin. Why are you inserting club info?");
+                                res.status(403).send("You're not a club or admin. Why are you inserting club info?");
                         }
                 }
         }catch(err){
@@ -329,7 +388,7 @@ router.get("/:username/photo/:photoId", async(req, res) => {
                         if(profileInDB === "Club" || profileInDB === "Admin"){
                                 //a non-admin user is trying to alter another users info! 
                                 if(req.params.username !== req.oidc.user.nickname && profileInDB !== "Admin"){
-                                        res.status(500).send(`You cannot view theese photos. This is not your profile and you are not an admin!`)
+                                        res.status(403).send(`You cannot view theese photos. This is not your profile and you are not an admin!`)
                                 }else{
                                        let photo;
                                         const SQLQuery = `SELECT fotografija, mimeType FROM foto_klub WHERE fotoKlubId = ?`;
@@ -358,7 +417,7 @@ router.get("/:username/photo/:photoId", async(req, res) => {
                                         res.send(photo.fotografija);
                                 }
                         }else{
-                                res.status(500).send("You're not a club or admin. Why are you inserting viewing photos?");
+                                res.status(403).send("You're not a club or admin. Why are you inserting viewing photos?");
                         }
                 }
         }catch(err){

@@ -93,8 +93,59 @@ router.get('/:clubId/:terrainId', requiresAuth(), async (req, res) => {
         }
 });
 
+function checkTerrainInfo(data){
+        const errors = [];
+
+        const tipPodloge = (data.tipPodloge || "").trim();
+        const tipPodlogeRegex = /^[\p{L}]+$/u;
+        if (!tipPodlogeRegex.test(tipPodloge)) {
+                errors.push("'tipPodloge' must contain only letters, no spaces or special characters.");
+        }
+
+        if (data.velicinaTeren !== "single" && data.velicinaTeren !== "double") {
+                errors.push("'velicinaTeren' must be 'single' or 'double'.");
+        }
+
+        if (data.osvjetljenje !== "0" && data.osvjetljenje !== "1") {
+                errors.push("'osvjetljenje' must be 0 or 1.");
+        }
+
+        if (data.vanjskiUnutarnji !== "vanjski" && data.vanjskiUnutarnji !== "unutarnji") {
+                errors.push("'vanjskiUnutarnji' must be 'vanjski' or 'unutarnji'.");
+        }
+
+        if (data.vanjskiUnutarnji === "unutarnji") {
+                if (data.visinaStrop <= 0 && data.visinaStrop) {
+                errors.push("'visinaStrop' must be a positive number for 'unutarnji' terrains.");
+                }
+        }
+
+        if(data.vanjskiUnutarnji === "vanjski"){
+                if(data.visinaStrop){
+                        error.push("You cannot set 'visinaStrop' if 'vanjskiUnutarnji' is 'vanjski'");
+                }
+        }
+
+        if (data.cijenaTeren < 0) {
+                errors.push("'cijenaTeren' must be a non-negative number.");
+        }
+
+        const imeTeren = (data.imeTeren || "").trim();
+        const imeTerenRegex = /^[\p{L}0-9]+(?:[ -][\p{L}0-9]+)*$/u;
+        if (!imeTerenRegex.test(imeTeren) || imeTeren.length < 2 || imeTeren.length > 50) {
+                errors.push(
+                "'imeTeren' must be 2–50 characters: letters, numbers, spaces or '-' (no leading/trailing spaces or hyphens)."
+                );
+        }
+
+        return errors;
+}
 
 router.post('/:clubId/:terrainId/insertTerrainInfo', requiresAuth(), upload.array("slike"), async (req, res) => {
+        const errors = checkTerrainInfo(req.body);
+        if (errors.length > 0) {
+                return res.status(400).json({ errors });
+        }
         try{
                 const isVerified = await verifyProfile(req);
                 let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
