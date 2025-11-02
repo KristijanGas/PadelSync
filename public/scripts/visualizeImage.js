@@ -78,7 +78,6 @@ if(clubForm){
                         window.location.href = data.redirectURL;
                 }
         }else if(res.status === 400){
-                console.log("here");
                 const data = await res.json();
                 console.log(data);
         }else{

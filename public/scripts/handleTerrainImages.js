@@ -75,8 +75,11 @@ form.addEventListener("submit", async (event) => {
                 if(data.redirectURL){
                         window.location.href = data.redirectURL;
                 }
+        }else if(res.status === 400){
+                const data = await res.json();
+                console.log(data);
         }else{
-                console.log("error submitting form");
+        console.log("error submitting form");
         }
 })
 

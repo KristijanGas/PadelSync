@@ -170,20 +170,15 @@ function checkPlayerInfo(data){
                 errors.push("'razZnanjaPadel' must be beginner, intermediate, pro");
         }
 
-        // Trim values first
         const ime = (data.imeIgrac || "").trim();
         const prezime = (data.prezimeIgrac || "").trim();
 
-        // Regex: ime = only letters, 2–30 chars
         const imeRegex = /^[\p{L}]{2,30}$/u;
         if (!imeRegex.test(ime)) {
         errors.push("'imeIgrac' must be 2–30 letters, no spaces or special characters.");
         }
 
-        // Regex: prezime = letters, spaces, hyphens, no leading/trailing spaces or hyphens
-        // Min 2, max 30 characters
         const prezimeRegex = /^[\p{L}]+(?:[ -][\p{L}]+)*$/u;
-
         if (!prezimeRegex.test(prezime) || prezime.length < 2 || prezime.length > 30) {
         errors.push(
         "'prezimeIgrac' must be 2–30 chars, letters only, can contain spaces or '-' between names but not at start or end."
