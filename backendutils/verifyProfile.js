@@ -7,12 +7,12 @@ async function requireFreshAccessToken(req){
         const token = req.oidc.accessToken;
 
         if (token?.isExpired()) {
-        console.log("Access token expired, refreshing...");
+        //console.log("Access token expired, refreshing...");
         const refreshed = await token.refresh();
 
-        console.log("Got new access token, valid for:", refreshed.expires_in);
+        //console.log("Got new access token, valid for:", refreshed.expires_in);
         }else{
-            console.log("Token already valid, expires in:", req.oidc.accessToken.expires_in);
+            //console.log("Token already valid, expires in:", req.oidc.accessToken.expires_in);
         }
     } catch (err) {
         console.error("Failed to refresh access token:", err);

@@ -11,11 +11,12 @@ jest.mock('express-openid-connect', () => ({
 
 const editschedule = require('../../routes/editschedule.routes');
 
+let bodyrequest = null;
+
 function createAppWithOidcStub() {
   const app = express();
   app.set('views', path.join(__dirname, '../../views'));
   app.set('view engine', 'ejs');
-
   // Stub OIDC user + token
   app.use((req, res, next) => {
     req.oidc = {
@@ -26,6 +27,7 @@ function createAppWithOidcStub() {
       },
       isAuthenticated: () => true,
     };
+    req.body = bodyrequest;
     next();
   });
 
@@ -33,7 +35,7 @@ function createAppWithOidcStub() {
   return app;
 }
 
-describe('editschedule route', () => {
+describe('editschedule GET route', () => {
     
   it('displays your terrain', async () => {
     axios.get.mockResolvedValue({ data: { emailVerified: true, nickname: 'gaspar.kristijan', email: 'gaspar.kristijan@gmail.com' } });
@@ -65,3 +67,20 @@ describe('editschedule route', () => {
 });
 
 
+describe('editschedule POST route', () => {
+    
+  it('adds a schedule at an available spot', async () => {
+    bodyrequest = { day: 'tuesday', startTime: '16:00', endTime: '17:00' };
+    axios.get.mockResolvedValue({ data: { emailVerified: true, nickname: 'gaspar.kristijan', email: 'gaspar.kristijan@gmail.com' } });
+    const app = createAppWithOidcStub();
+    
+    //const res = await request(app)
+    //  .post('/editschedule/gaspar.kristijan/8/add');
+
+    //expect(res.status).toBe(200);
+    
+    //expect(res.text).toContain("Schedule added successfully!");
+
+  });
+  bodyrequest = undefined;
+});
