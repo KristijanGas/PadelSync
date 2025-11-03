@@ -3,20 +3,75 @@
 <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
+        <link rel="stylesheet"  href="/styles/myprofile.css">
+        <title>Moj profil</title>
 </head>
 <body>
-        <a href="/edituser/<%=user.nickname%>"><button>Edit profile</button></a>
 
-        <%if(profileType === "Player"){%>
-                <pre> <%= JSON.stringify(userInfo, null, 2)%></pre>
-        <%}else if(profileType === "Club"){%>
-                <pre> <%= JSON.stringify(userInfo, null, 2)%></pre>
-                <a href="/editterrain/<%=user.nickname%>/newTerrain">Napravi novi teren</a>
-        <%}%>
-        <pre><%= JSON.stringify(user, null, 2)%></pre>
-        <pre><%= JSON.stringify(session, null, 2)%></pre>
-        <pre><%= JSON.stringify(oidcWhole, null, 2)%></pre>
-        <pre><%= JSON.stringify(tokenInfo, null, 2)%></pre>
+        <div class="BackgroundTop">
+                <h1>Hello, <%=user.nickname%></h1>
+        </div>
+
+        <div class="Content">
+
+                <a href="/edituser/<%=user.nickname%>"><button>Edit profile</button></a>
+
+                <%if(profileType === "Player"){%>
+                        <div class="userInfo">
+
+                                <div class="userInfoItemName">Korisničko ime</div>
+                                <div class="userInfoItem"><%= userInfo["username"] %></div>
+                                <br>
+
+                                <div class="userInfoItemName">Ime</div>
+                                <div class="userInfoItem"><%= userInfo["imeIgrac"] %></div>
+                                <br>
+
+                                <div class="userInfoItemName">Prezime</div>
+                                <div class="userInfoItem"><%= userInfo["prezimeIgrac"] %></div>
+                                <br>
+
+                                <div class="userInfoItemName">Broj mobitela</div>
+                                <div class="userInfoItem"><%= userInfo["brojMob"] %></div>
+                                <br>
+
+                                <div class="userInfoItemName">Razina znanja</div>
+                                <div class="userInfoItem"><%= userInfo["razZnanjaPadel"] %></div>
+                                <br>
+
+                                <div class="userInfoItemName">Preferirano vrijeme treniranja</div>
+                                <div class="userInfoItem"><%= userInfo["prefVrijeme"] %></div>
+                                <br>
+
+                        </div>
+
+                        <div class="userInfoItemName">Interne informacije</div>
+                        <div class="userInfoItem">
+                        <pre> <%= JSON.stringify(userInfo, null, 2)%></pre>
+                        
+
+
+                <%}else if(profileType === "Club"){%>
+                        <pre> <%= JSON.stringify(userInfo, null, 2)%></pre>
+                        <a href="/editterrain/<%=user.nickname%>/newTerrain">Napravi novi teren</a>
+
+
+                <%}%>
+
+                <p>user:</p>
+                <pre><%= JSON.stringify(user, null, 2)%></pre>
+
+                <p>session:</p>
+                <pre><%= JSON.stringify(session, null, 2)%></pre>
+
+                <p>oidcWhole:</p>
+                <pre><%= JSON.stringify(oidcWhole, null, 2)%></pre>
+
+                <p>tokenInfo:</p>
+                <pre><%= JSON.stringify(tokenInfo, null, 2)%></pre>
+
+                </div>
+
+        </div>
 </body>
 </html>
