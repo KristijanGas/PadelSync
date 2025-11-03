@@ -50,6 +50,55 @@
 
 
                 <%}else if(profileType === "Club"){%>
+
+                        <div class="userInfo">
+
+                                <div class="userInfoItemName">Korisničko ime</div>
+                                <div class="userInfoItem"><%= userInfo["username"] %></div>
+                                <br>
+
+                                <div class="userInfoItemName">Ime kluba</div>
+                                <div class="userInfoItem"><%= userInfo["imeKlub"] %></div>
+                                <br>
+
+                                <div class="userInfoItemName">Adresa kluba</div>
+                                <div class="userInfoItem"><%= userInfo["adresaKlub"] %></div>
+                                <br>
+
+                                <div class="userInfoItemName">Početak radnog vremena</div>
+                                <div class="userInfoItem"><%= userInfo["klubRadiOd"] %></div>
+                                <br>
+
+                                <div class="userInfoItemName">Kraj radnog vremena</div>
+                                <div class="userInfoItem"><%= userInfo["klubRadiDo"] %></div>
+                                <br>
+
+                                <div class="userInfoItemName">Opis kluba</div>
+                                <div class="userInfoItem"><%= userInfo["opisKluba"] %></div>
+                                <br>
+
+                                <div class="userInfoItemName">Pravila kluba</div>
+                                <div class="userInfoItem"><%= userInfo["pravilaKlub"] %></div>
+                                <br>
+
+                                <div class="userInfoItemName">Najam reketa</div>
+                                <div class="userInfoItem"><%= userInfo["najamReketa"] %></div>
+                                <br>
+
+                                <div class="userInfoItemName">Broj svlačionica</div>
+                                <div class="userInfoItem"><%= userInfo["svlacionice"] %></div>
+                                <br>
+
+                                <div class="userInfoItemName">Broj tuševa</div>
+                                <div class="userInfoItem"><%= userInfo["tusevi"] %></div>
+                                <br>
+
+                                <div class="userInfoItemName">Broj prostora za odmor</div>
+                                <div class="userInfoItem"><%= userInfo["prostorZaOdmor"] %></div>
+                                <br>
+
+                        </div>
+
                         <pre> <%= JSON.stringify(userInfo, null, 2)%></pre>
                         <a href="/editterrain/<%=user.nickname%>/newTerrain">Napravi novi teren</a>
 
