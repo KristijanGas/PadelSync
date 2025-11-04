@@ -4,7 +4,7 @@ const router = express.Router()
 
 
 router.get('/', (req, res) => {
-    res.render('calendar');
+    res.redirect('http://localhost:8080');
 });
 
 

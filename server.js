@@ -1,5 +1,6 @@
 
 const express = require('express');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 const port = 3000;
 app.use(express.static("public"));
@@ -73,6 +74,10 @@ app.use('/user_search', user_searchRouter);
 app.use('/user', userRouter);
 app.use('/terrain_search', terrain_searchRouter);
 app.use('/terrain', terrainRouter);
+
+app.get('/react', (req, res) => {
+  res.redirect('http://localhost:8080');
+});
 
 /* const registrationRouter = require('./routes/registration.routes');
 const loginRouter = require('./routes/login.routes');
