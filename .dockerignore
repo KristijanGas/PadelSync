@@ -1,0 +1,24 @@
+# sadržaj .gitignore datoteke iz korijenskog direktorija
+node_modules/
+package-lock.json
+
+
+# sadržaj .gitignore datoteke iz frontend/ direktorija
+# s tim da je ispred svega dodano "frontend/"
+frontend/node_modules
+frontend/.pnp
+frontend/.pnp.js
+
+frontend/coverage
+
+frontend/build
+
+frontent/.DS_Store
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
