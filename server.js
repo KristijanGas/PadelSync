@@ -1,6 +1,5 @@
 
 const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 const port = 3000;
 app.use(express.static("public"));
@@ -86,9 +85,6 @@ app.use('/registration', registrationRouter); */
 
 const calendarRouter = require('./routes/calendar.routes');
 app.use('/calendar', calendarRouter);
-
-const adminloginRouter = require('./routes/adminlogin.routes');
-app.use('/adminlogin', adminloginRouter);
 
 const adminRouter = require('./routes/adminlogin.routes');
 app.use('/admin', adminRouter);
