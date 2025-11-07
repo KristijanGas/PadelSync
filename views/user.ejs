@@ -9,7 +9,9 @@
     <p>Email: <%= user.email %></p>
 
     <% for(let teren of tereni) {%>
-        <p>Teren ime: <%= teren.imeTeren%></p>
-        <p>Tip podloge: <%= teren.tipPodloge%></p>
+        <div>
+            <p>Teren ime: <%= teren.imeTeren%></p>
+            <button onclick="location.href='/terrain/<%= teren.terenID %>'">Go to terrain page</button>
+        </div>
     <% }%>
 </body>

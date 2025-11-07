@@ -86,9 +86,6 @@ app.use('/registration', registrationRouter); */
 const calendarRouter = require('./routes/calendar.routes');
 app.use('/calendar', calendarRouter);
 
-const adminRouter = require('./routes/adminlogin.routes');
-app.use('/admin', adminRouter);
-
 const edituserRouter = require('./routes/edituser.routes');
 app.use('/edituser', edituserRouter);
 
