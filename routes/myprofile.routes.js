@@ -45,6 +45,16 @@ router.get('/', requiresAuth(), async (req, res) => {
 
                                 try{
                                         const row = await getRow(SQLQuery, [req.oidc.user.nickname]);
+                                        if(profileInDB === "Club"){
+                                                let SQLTerrainQuery = `SELECT * FROM teren WHERE username = ?;`;
+                                                const terrains = await new Promise((resolve, reject) => {
+                                                        db.all(SQLTerrainQuery, [req.oidc.user.nickname], (err, rows) => {
+                                                        if (err) return reject(err);
+                                                        resolve(rows);
+                                                        });
+                                                });
+                                                row.terrains = terrains;
+                                        }
                                         db.close();
                                         res.render("myprofile", {
                                         username: req.oidc.user["https://yourapp.com/username"],
