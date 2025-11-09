@@ -1,14 +1,11 @@
 const express = require('express');
-const multer = require('multer');
 const router = express.Router();
-const upload = multer();
 
 const{ requiresAuth } = require('express-openid-connect')
 
 const { verifyProfile, verifyDBProfile } = require("../backendutils/verifyProfile");
 const { checkBooking} = require("../backendutils/checkAvailability");
 
-const axios = require('axios');
 const sqlite3 = require('sqlite3').verbose();
 
 async function allowEntry(req, res){
@@ -65,8 +62,8 @@ router.get('/:clubId/:terrainId', requiresAuth(), async (req, res) => {
     try{
         const row = await allowEntry(req, res);
         if(!row) return;
-        res.render("editschedule", {terrain: row});
-        
+        res.render("editschedule", {terrain: row, message: null});
+
     }
     catch(err){
         console.log(err);
@@ -115,18 +112,19 @@ router.post('/:clubId/:terrainId/add', requiresAuth(), async (req, res) => {
             return res.status(400).send("The specified time conflicts with an existing booking.");
         }
         let SQLQuery = `INSERT INTO TERMIN_TJEDNI (terenID, danTjedan, vrijemePocetak, vrijemeKraj, potrebnaPretplata) VALUES (?, ?, ?, ?, ?);`;
-        const db = new sqlite3.Database(process.env.DB_PATH || 'database.db', sqlite3.OPEN_READWRITE, (err) => {
-            if (err) {
-                console.error(err.message);
-                return res.status(500).send("Internal Server Error");
-            }
-        });
+
+        const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+
         console.log("Inserting schedule:", row.terenID, dayNum, startTime, endTime, 0);
-        db.run(SQLQuery, [row.terenID, dayNum, startTime, endTime, 0], function(err) {
-            if (err) {
-                console.error(err.message);
-                return res.status(500).send("Internal Server Error inserting schedule");
-            }
+
+        await new Promise((resolve, reject) => {
+            db.run(SQLQuery, [row.terenID, dayNum, startTime, endTime, 0], function(err) {
+                if (err) {
+                    console.error(err.message);
+                    return reject(err);
+                }
+                resolve();
+            });
         });
         db.close();
         res.render("editschedule", {terrain: row, message: "Schedule added successfully!"});
