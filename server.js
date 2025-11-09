@@ -7,6 +7,7 @@ require("dotenv").config();
 
 const session = require('express-session')
 const { auth } = require('express-openid-connect');
+const path = require("path");
 
 const config = {
   authRequired: false,
@@ -77,14 +78,18 @@ app.use('/terrain', terrainRouter);
 app.get('/react', (req, res) => {
   res.redirect('http://localhost:8080');
 });
-
+app.use("/calendar", express.static(path.join(__dirname, "../progi_g12_4/frontend/build")));
+app.get("/react-calendar", (req, res) =>{
+  res.render("calendar");
+});
 /* const registrationRouter = require('./routes/registration.routes');
 const loginRouter = require('./routes/login.routes');
 app.use('/login', loginRouter);
 app.use('/registration', registrationRouter); */
-
+/*
 const calendarRouter = require('./routes/calendar.routes');
 app.use('/calendar', calendarRouter);
+*/
 
 const edituserRouter = require('./routes/edituser.routes');
 app.use('/edituser', edituserRouter);
