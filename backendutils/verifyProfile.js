@@ -9,7 +9,7 @@ async function requireFreshAccessToken(req){
         if (token?.isExpired()) {
         //console.log("Access token expired, refreshing...");
         const refreshed = await token.refresh();
-
+        req.oidc.accessToken = refreshed;
         //console.log("Got new access token, valid for:", refreshed.expires_in);
         }else{
             //console.log("Token already valid, expires in:", req.oidc.accessToken.expires_in);
@@ -20,11 +20,9 @@ async function requireFreshAccessToken(req){
 }
 
 async function verifyProfile(req){
-    requireFreshAccessToken(req);
+    await requireFreshAccessToken(req);
     let data = {};
     const {token_type, access_token} = req.oidc.accessToken;
-    //console.log(req.oidc);
-    
     try{
         const apiResponse = await axios.get('http://localhost:5000/private',
             {
