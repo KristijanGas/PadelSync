@@ -19,11 +19,15 @@ describe('verifyProfile', () => {
     expect(result).toBeUndefined();
   });
 
-  it('calls refresh when access token is expired', async () => {
-  // Mock axios if needed (inside verifyProfile)
+ it('calls refresh when access token is expired', async () => {
   axios.get.mockResolvedValue({ data: { emailVerified: true, username: 'alice' } });
 
-  // Fake request with expired token
+  const refreshMock = jest.fn().mockResolvedValue({
+    access_token: 'new-token',
+    token_type: 'Bearer',
+    expires_in: 3600
+  });
+
   const fakeReq = {
     oidc: {
       accessToken: {
@@ -31,19 +35,15 @@ describe('verifyProfile', () => {
         token_type: 'Bearer',
         expires_in: 0,
         isExpired: () => true, // expired token
-        refresh: jest.fn().mockResolvedValue({
-          access_token: 'new-token',
-          token_type: 'Bearer',
-          expires_in: 3600
-        })
+        refresh: refreshMock
       }
     }
   };
 
-  // Call the function
   await verifyProfile(fakeReq);
 
-  // Assert that refresh was called
-  expect(fakeReq.oidc.accessToken.refresh).toHaveBeenCalled();
+  
+  expect(refreshMock).toHaveBeenCalled();
+  expect(fakeReq.oidc.accessToken.access_token).toBe('new-token');
 });
 });
