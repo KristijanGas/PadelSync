@@ -1,17 +1,32 @@
 <!DOCTYPE html>
+<html>
 <head>
-    <link rel="stylesheet" type="text/css" href="styles/home.css">
+    <link rel="stylesheet" type="text/css" href="/styles/user.css">
+    <title>User Info</title>
 </head>
 
 <body>
-    <p>This page will show info for a SPECIFIC CLUB OR PLAYER from the database</p>
-    <p>Username: <%= user.username %></p>
-    <p>Email: <%= user.email %></p>
 
-    <% for(let teren of tereni) {%>
-        <div>
-            <p>Teren ime: <%= teren.imeTeren%></p>
-            <button onclick="location.href='/terrain/<%= teren.terenID %>'">Go to terrain page</button>
-        </div>
-    <% }%>
+    <div class="UserInfoContainer">
+        <p>This page will show info for a SPECIFIC CLUB OR PLAYER from the database</p>
+        <p>Username: <%= user.username %></p>
+        <p>Email: <%= user.email %></p>
+    </div>
+
+    <div class="TerrainsContainer">
+        <% for(let teren of tereni) { %>
+            <div class="TerenCard">
+                <p>Teren ime: <%= teren.imeTeren %></p>
+                <button class="terrainButton" onclick="location.href='/terrain/<%= teren.terenID %>'">
+                    Go to terrain page
+                </button>
+            </div>
+        <% } %>
+    </div>
+
+    <div class="BackProfileContainer">
+        <button class="backButton" onclick="location.href='/myprofile'">← Back to MyProfile</button>
+    </div>
+
 </body>
+</html>

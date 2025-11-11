@@ -1,0 +1,127 @@
+body {
+
+    margin: 0;
+
+    padding: 0;
+
+    background-color: #0b0b0b;
+
+    color: rgba(240, 231, 231, 0.9);
+
+    font-family: 'Segoe UI', sans-serif;
+
+    min-height: 100vh;
+
+}
+
+.UserInfoContainer {
+
+    padding: 60px 40px 20px 40px;
+
+    text-align: center;
+
+}
+
+.UserInfoContainer p {
+
+    font-size: 18px;
+
+    margin: 8px 0;
+
+}
+
+.TerrainsContainer {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+
+    gap: 20px;
+
+    padding: 20px;
+
+}
+
+.TerenCard {
+
+    background-color: rgba(16,16,16,0.95);
+
+    border-radius: 10px;
+
+    padding: 20px;
+
+    width: 250px;
+
+    text-align: center;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+
+    transition: all 0.3s ease;
+
+}
+
+.TerenCard:hover {
+
+    transform: translateY(-3px);
+
+    background-color: rgba(30,30,30,0.95);
+
+    box-shadow: 0 6px 14px rgba(0,0,0,0.7);
+
+}
+
+.terrainButton, .backButton {
+
+    margin-top: 10px;
+
+    padding: 10px 20px;
+
+    border-radius: 8px;
+
+    border: 2px solid #555;
+
+    background-color: #222;
+
+    color: #f1f1f1;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+
+}
+
+.terrainButton:hover, .backButton:hover {
+
+    background-color: #333;
+
+    border-color: #777;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 6px 14px rgba(0,0,0,0.6);
+
+}
+
+.terrainButton:active, .backButton:active {
+
+    transform: translateY(0);
+
+    background-color: #444;
+
+}
+
+.BackProfileContainer {
+
+    display: flex;
+
+    justify-content: center;
+
+    padding: 30px 0;
+    
+}

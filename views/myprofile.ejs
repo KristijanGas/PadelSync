@@ -14,8 +14,12 @@
 
         <div class="Content">
 
-                <a href="/edituser/<%=user.nickname%>"><button>Edit profile</button></a>
-                <button onclick="location.href='/user/<%=user.nickname%>'">Go to your public profile</button>
+                <div class="buttonContainer">
+                        <a href="/edituser/<%=user.nickname%>"><button>Edit profile</button></a>
+                        <button onclick="location.href='/user/<%=user.nickname%>'">Go to your public profile</button>
+                        <button onclick="location.href='/home'">← Back Home</button>
+                </div>
+
                 <h2>Your profile information:</h2>
                 <%if(profileType === "Player"){%>
                         <div class="userInfo">
@@ -120,7 +124,9 @@
                         </div>
 
                         <pre> <%= JSON.stringify(userInfo, null, 2)%></pre>
-                        <a href="/editterrain/<%=user.nickname%>/newTerrain">Napravi novi teren</a>
+                        <a href="/editterrain/<%=user.nickname%>/newTerrain">
+                                <button>Napravi novi teren</button>
+                        </a>
 
 
                 <%}%>

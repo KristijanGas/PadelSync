@@ -269,3 +269,65 @@ body {
 
 }
 
+.HomePageButtons {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 30px;
+
+    margin-top: 40px;
+
+    animation: fadeInUp 1s ease-out forwards;
+
+}
+
+.navButton {
+
+    width: 220px;
+
+    height: 55px;
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+    border-radius: 10px;
+
+    border: 2px solid #222;
+
+    background-color: #0e0e0e;
+
+    color: #f2f2f2;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7),
+                0 4px 10px rgba(255, 255, 255, 0.05);
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+
+}
+
+.navButton:hover {
+
+    background-color: #1a1a1a;
+
+    border-color: #333;
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.8),
+                0 6px 14px rgba(255, 255, 255, 0.08);
+                
+}
+
+
+pre {
+
+    display: none;
+
+}
