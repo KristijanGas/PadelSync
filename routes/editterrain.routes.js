@@ -98,19 +98,19 @@ function checkTerrainInfo(data){
 
         const tipPodloge = (data.tipPodloge || "").trim();
         const tipPodlogeRegex = /^[\p{L}]+$/u;
-        if (!tipPodlogeRegex.test(tipPodloge)) {
+        if (!tipPodlogeRegex.test(tipPodloge) && tipPodloge) {
                 errors.push("'tipPodloge' must contain only letters, no spaces or special characters.");
         }
 
-        if (data.velicinaTeren !== "single" && data.velicinaTeren !== "double") {
+        if (data.velicinaTeren !== "single" && data.velicinaTeren !== "double" && data.velicinaTeren) {
                 errors.push("'velicinaTeren' must be 'single' or 'double'.");
         }
 
-        if (data.osvjetljenje !== "0" && data.osvjetljenje !== "1") {
+        if (data.osvjetljenje !== "0" && data.osvjetljenje !== "1" && data.osvjetljenje) {
                 errors.push("'osvjetljenje' must be 0 or 1.");
         }
 
-        if (data.vanjskiUnutarnji !== "vanjski" && data.vanjskiUnutarnji !== "unutarnji") {
+        if (data.vanjskiUnutarnji !== "vanjski" && data.vanjskiUnutarnji !== "unutarnji" && data.vanjskiUnutarnji) {
                 errors.push("'vanjskiUnutarnji' must be 'vanjski' or 'unutarnji'.");
         }
 
@@ -126,13 +126,13 @@ function checkTerrainInfo(data){
                 }
         }
 
-        if (data.cijenaTeren < 0) {
+        if (data.cijenaTeren < 0 && data.cijenaTeren) {
                 errors.push("'cijenaTeren' must be a non-negative number.");
         }
 
         const imeTeren = (data.imeTeren || "").trim();
         const imeTerenRegex = /^[\p{L}0-9]+(?:[ -][\p{L}0-9]+)*$/u;
-        if (!imeTerenRegex.test(imeTeren) || imeTeren.length < 2 || imeTeren.length > 50) {
+        if (!imeTerenRegex.test(imeTeren) || imeTeren.length < 2 || imeTeren.length > 50 && imeTeren) {
                 errors.push(
                 "'imeTeren' must be 2–50 characters: letters, numbers, spaces or '-' (no leading/trailing spaces or hyphens)."
                 );

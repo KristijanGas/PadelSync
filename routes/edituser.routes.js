@@ -166,20 +166,20 @@ router.post('/eraseType', requiresAuth(), async (req, res) => {
 
 function checkPlayerInfo(data){
         const errors = [];
-        if(data.razZnanjaPadel !== "pro" && data.razZnanjaPadel !== "beginner" && data.razZnanjaPadel !== "intermediate"){
+        if(data.razZnanjaPadel !== "pro" && data.razZnanjaPadel !== "beginner" && data.razZnanjaPadel !== "intermediate" && data.razZnanjaPadel){
                 errors.push("'razZnanjaPadel' must be beginner, intermediate, pro");
         }
 
         const ime = (data.imeIgrac || "").trim();
         const prezime = (data.prezimeIgrac || "").trim();
 
-        const imeRegex = /^[\p{L}]{2,30}$/u;
-        if (!imeRegex.test(ime)) {
+        const imeRegex = /^[\p{L}\s\-]{2,30}$/u;
+        if (!imeRegex.test(ime) && ime) {
         errors.push("'imeIgrac' must be 2–30 letters, no spaces or special characters.");
         }
 
         const prezimeRegex = /^[\p{L}]+(?:[ -][\p{L}]+)*$/u;
-        if (!prezimeRegex.test(prezime) || prezime.length < 2 || prezime.length > 30) {
+        if (!prezimeRegex.test(prezime) || prezime.length < 2 || prezime.length > 30 && prezime) {
         errors.push(
         "'prezimeIgrac' must be 2–30 chars, letters only, can contain spaces or '-' between names but not at start or end."
         );
@@ -252,26 +252,26 @@ router.post('/:username/insertPlayerInfo', requiresAuth(), upload.none(), async 
 function checkClubInfo(data) {
   const errors = [];
 
-  if (data.svlacionice < 0)
+  if (data.svlacionice < 0 && data.svlacionice)
     errors.push("'svlacionice' is negative");
 
-  if (data.najamReketa < 0)
+  if (data.najamReketa < 0 && data.najamReketa)
     errors.push("'najamReketa' is negative");
 
-  if (data.tusevi < 0)
+  if (data.tusevi < 0 && data.tusevi)
     errors.push("'tusevi' is negative");
 
-  if (data.prostorZaOdmor < 0)
+  if (data.prostorZaOdmor < 0 && data.prostorZaOdmor)
     errors.push("'prostorZaOdmor' is negative");
 
-  const nameRegex = /^[\p{L}\p{N} ]{3,30}$/u;
+  const nameRegex = /^[\p{L}\p{N} .,_()\-\s]{3,30}$/u;
   const ime = (data.imeKlub || "").trim().replace(/\s+/g, " ");
-  if (!nameRegex.test(ime))
+  if (!nameRegex.test(ime) && ime)
     errors.push("'imeKlub' must be 3–30 chars and contain only letters, numbers and spaces.");
 
   const adressRegex = /^[\p{L}\p{N} ]{3,70}$/u;
   const adresa = (data.adresaKlub || "").trim().replace(/\s+/g, " ");
-  if (!adressRegex.test(adresa))
+  if (!adressRegex.test(adresa) && adresa)
     errors.push("'adresaKlub' must be 3–70 chars and contain only letters, numbers and spaces.");
 
   return errors;

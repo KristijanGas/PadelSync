@@ -48,7 +48,6 @@ router.get('/:id', requiresAuth(), async (req, res) => {
     } else {
       razinaPretplate = 0;
     }
-    console.log(razinaPretplate);
     let terminiQuery = 'SELECT * FROM TERMIN_TJEDNI WHERE potrebnaPretplata <= ? AND terenID = ?'
     try {
         termini = await fetchAll(db, terminiQuery, [razinaPretplate, id]);
