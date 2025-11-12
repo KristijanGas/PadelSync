@@ -6,6 +6,7 @@ const upload = multer();
 const{ requiresAuth } = require('express-openid-connect')
 
 const { verifyProfile, verifyDBProfile, findUserType } = require("../backendutils/verifyProfile");
+const { verifyInputText } = require("../backendutils/verifyInputText");
 const axios = require('axios')
 const sqlite3 = require('sqlite3').verbose();
 
@@ -249,7 +250,7 @@ router.post('/:username/insertPlayerInfo', requiresAuth(), upload.none(), async 
         } 
 });
 
-function checkClubInfo(data) {
+async function checkClubInfo(data) {
   const errors = [];
 
   if (data.svlacionice < 0 && data.svlacionice)
@@ -274,11 +275,17 @@ function checkClubInfo(data) {
   if (!adressRegex.test(adresa) && adresa)
     errors.push("'adresaKlub' must be 3–70 chars and contain only letters, numbers and spaces.");
 
+  if (!(await verifyInputText(data.pravilaKlub)) && data.pravilaKlub) 
+    errors.push("'pravilaKlub' cannot contain special char");
+
+  if(!(await verifyInputText(data.opisKluba)) && data.opisKluba)
+        errors.push("'opisKluba' cannot contain special chars");
+
   return errors;
 }
 
 router.post('/:username/insertClubInfo', requiresAuth(), upload.array("slike"), async (req, res) => {
-        const errors = checkClubInfo(req.body);
+        const errors = await checkClubInfo(req.body);
         if (errors.length > 0) {
                 return res.status(400).json({ errors });
         }

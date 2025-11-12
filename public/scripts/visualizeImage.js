@@ -80,6 +80,7 @@ if(clubForm){
         }else if(res.status === 400){
                 const data = await res.json();
                 console.log(data);
+                alert(data.errors);
         }else{
                 console.log("error submitting clubForm");
         }
@@ -104,6 +105,7 @@ if(playerForm){
                 }else if(res.status === 400){
                         const data = await res.json();
                         console.log(data);
+                        alert(data.errors);
                 }else{
                         console.log("error submitting playerForm");
                 }

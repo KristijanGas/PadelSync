@@ -6,6 +6,7 @@ const upload = multer();
 const{ requiresAuth } = require('express-openid-connect')
 
 const { verifyProfile, verifyDBProfile, findUserType } = require("../backendutils/verifyProfile");
+const { verifyInputText } = require("../backendutils/verifyInputText");
 const axios = require('axios')
 const sqlite3 = require('sqlite3').verbose();
 
@@ -93,13 +94,11 @@ router.get('/:clubId/:terrainId', requiresAuth(), async (req, res) => {
         }
 });
 
-function checkTerrainInfo(data){
+async function checkTerrainInfo(data){
         const errors = [];
 
-        const tipPodloge = (data.tipPodloge || "").trim();
-        const tipPodlogeRegex = /^[\p{L}]+$/u;
-        if (!tipPodlogeRegex.test(tipPodloge) && tipPodloge) {
-                errors.push("'tipPodloge' must contain only letters, no spaces or special characters.");
+        if (data.tipPodloge && !(await verifyInputText(data.tipPodloge))) {
+                errors.push("'tipPodloge' cannot contain special char.");
         }
 
         if (data.velicinaTeren !== "single" && data.velicinaTeren !== "double" && data.velicinaTeren) {
@@ -130,11 +129,9 @@ function checkTerrainInfo(data){
                 errors.push("'cijenaTeren' must be a non-negative number.");
         }
 
-        const imeTeren = (data.imeTeren || "").trim();
-        const imeTerenRegex = /^[\p{L}0-9]+(?:[ -][\p{L}0-9]+)*$/u;
-        if (!imeTerenRegex.test(imeTeren) || imeTeren.length < 2 || imeTeren.length > 50 && imeTeren) {
+        if (!(await verifyInputText(data.imeTeren)) && data.imeTeren) {
                 errors.push(
-                "'imeTeren' must be 2–50 characters: letters, numbers, spaces or '-' (no leading/trailing spaces or hyphens)."
+                "'imeTeren' cannot contain special chars"
                 );
         }
 
@@ -142,7 +139,7 @@ function checkTerrainInfo(data){
 }
 
 router.post('/:clubId/:terrainId/insertTerrainInfo', requiresAuth(), upload.array("slike"), async (req, res) => {
-        const errors = checkTerrainInfo(req.body);
+        const errors = await checkTerrainInfo(req.body);
         if (errors.length > 0) {
                 return res.status(400).json({ errors });
         }

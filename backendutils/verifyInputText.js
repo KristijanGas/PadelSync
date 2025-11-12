@@ -1,11 +1,7 @@
-async function verifyInputText(str) {
-    // Allow any unicode letter, any digit, and dots. Reject special characters.
-    // ^[\p{L}\p{N}.]+$ means: start to end, any letter, number, or dot, one or more times
-    if (!/^[\p{L}\p{N}.]+$/u.test(str)) {
-        return false;
-    }
-    return true;
+function verifyInputText(str) {
+  // Allow letters, digits, spaces, and safe punctuation
+  // Reject anything that could break SQL/HTML or JSON
+  return /^[\p{L}\p{N}\s.,!?()_\-:]+$/u.test(str);
 }
 
-
-module.exports = verifyInputText;
+module.exports = { verifyInputText };
