@@ -30,13 +30,13 @@ describe('GET /terrain_search', () => {
         const res = await request(app).get('/terrain_search/results')
             .query({
                 username: 'andj',
-                cijena: '100',
+                cijena: '13',
                 osvjetljenje: 'yes',
                 'tipPodloge[]': 'drvo',
                 'tipTeren[]': ['double', 'single']
             });
         expect(res.status).toBe(200);
-        expect(res.text).toContain('Terrain ID: 6, Ime terena: teren Owner: andjela.replit');
+        expect(res.text).toContain('Terrain ID: 12, Ime terena: terenkoo Owner: andjela.replit');
         expect(res.text).toContain('<!DOCTYPE html>'); // basic check: HTML returned
         const res2 = await request(app).get('/terrain_search/results')
             .query({

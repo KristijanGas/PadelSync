@@ -1,6 +1,6 @@
 const express = require('express');
 var sqlite3 = require('sqlite3').verbose();
-const verifyInputText = require('../backendutils/verifyInputText');
+const {verifyInputText} = require('../backendutils/verifyInputText');
 const router = express.Router();
 // podstranica za pretraživanje klubova, igrača
 
