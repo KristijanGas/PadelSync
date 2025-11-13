@@ -3,7 +3,8 @@ const multer = require('multer');
 const router = express.Router();
 const upload = multer();
 
-const{ requiresAuth } = require('express-openid-connect')
+const{ requiresAuth } = require('express-openid-connect');
+const processImages = require('../middlewares/imageprocessor');
 
 const { verifyProfile, verifyDBProfile, findUserType } = require("../backendutils/verifyProfile");
 const { verifyInputText } = require("../backendutils/verifyInputText");
@@ -284,7 +285,7 @@ async function checkClubInfo(data) {
   return errors;
 }
 
-router.post('/:username/insertClubInfo', requiresAuth(), upload.array("slike"), async (req, res) => {
+router.post('/:username/insertClubInfo', requiresAuth(), upload.array("slike"), processImages, async (req, res) => {
         const errors = await checkClubInfo(req.body);
         if (errors.length > 0) {
                 return res.status(400).json({ errors });
@@ -343,7 +344,7 @@ router.post('/:username/insertClubInfo', requiresAuth(), upload.array("slike"), 
                                                 return;
                                         }
 
-                                        for(const photo of req.files){
+                                        for(const photo of req.processedFiles){
                                                 try{
                                                 await runQuery(SQLPhotoQuery, [photo.buffer, photo.mimetype, req.params.username]);
                                                 }catch(err){

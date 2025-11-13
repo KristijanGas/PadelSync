@@ -3,7 +3,8 @@ const multer = require('multer');
 const router = express.Router();
 const upload = multer();
 
-const{ requiresAuth } = require('express-openid-connect')
+const{ requiresAuth } = require('express-openid-connect');
+const processImages = require('../middlewares/imageprocessor');
 
 const { verifyProfile, verifyDBProfile, findUserType } = require("../backendutils/verifyProfile");
 const { verifyInputText } = require("../backendutils/verifyInputText");
@@ -138,7 +139,7 @@ async function checkTerrainInfo(data){
         return errors;
 }
 
-router.post('/:clubId/:terrainId/insertTerrainInfo', requiresAuth(), upload.array("slike"), async (req, res) => {
+router.post('/:clubId/:terrainId/insertTerrainInfo', requiresAuth(), upload.array("slike"), processImages, async (req, res) => {
         const errors = await checkTerrainInfo(req.body);
         if (errors.length > 0) {
                 return res.status(400).json({ errors });
