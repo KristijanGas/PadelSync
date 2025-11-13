@@ -110,7 +110,7 @@ async function checkTerrainInfo(data){
                 errors.push("'osvjetljenje' must be 0 or 1.");
         }
 
-        if (data.vanjskiUnutarnji !== "vanjski" && data.vanjskiUnutarnji !== "unutarnji" && data.vanjskiUnutarnji) {
+        if (data.vanjskiUnutarnji !== "vanjski" && data.vanjskiUnutarnji !== "unutarnji") {
                 errors.push("'vanjskiUnutarnji' must be 'vanjski' or 'unutarnji'.");
         }
 
