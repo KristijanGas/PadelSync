@@ -254,9 +254,10 @@ router.post('/:clubId/:terrainId/insertTerrainInfo', requiresAuth(), upload.arra
                                                 
                                                 let SQLPhotoQuery = `INSERT INTO foto_teren (fotoTerenOpis, fotografija, mimeType, terenId)
                                                                         VALUES ("", ?, ?, ?);`;
-                                                for(const photo of req.files){
+                                                if(req.processedFiles){
+                                                        for(const photo of req.files){
                                                         try{
-                                                        await runQuery(SQLPhotoQuery, [photo.buffer, photo.mimetype, terenId]);
+                                                                await runQuery(SQLPhotoQuery, [photo.buffer, photo.mimetype, terenId]);
                                                         }catch(err){
                                                                 console.error(err.message);
                                                                 res.status(500).send("Internal Server Error updating terrain photo info");
@@ -264,6 +265,8 @@ router.post('/:clubId/:terrainId/insertTerrainInfo', requiresAuth(), upload.arra
                                                                 return;
                                                         }
                                                 }
+                                                }
+                                                
                                                 
                                                 let SQLRemovePhotos = `DELETE FROM foto_teren WHERE fotoTerenId = ?`;
                                                 for(const photo of req.body.erasePhotos){

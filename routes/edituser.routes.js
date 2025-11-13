@@ -343,15 +343,16 @@ router.post('/:username/insertClubInfo', requiresAuth(), upload.array("slike"), 
                                                 db.close();
                                                 return;
                                         }
-
-                                        for(const photo of req.processedFiles){
-                                                try{
-                                                await runQuery(SQLPhotoQuery, [photo.buffer, photo.mimetype, req.params.username]);
-                                                }catch(err){
-                                                        console.error(err.message);
-                                                        res.status(500).send("Internal Server Error updating club photo info");
-                                                        db.close();
-                                                        return;
+                                        if(req.processedFiles){
+                                                for(const photo of req.processedFiles){
+                                                        try{
+                                                        await runQuery(SQLPhotoQuery, [photo.buffer, photo.mimetype, req.params.username]);
+                                                        }catch(err){
+                                                                console.error(err.message);
+                                                                res.status(500).send("Internal Server Error updating club photo info");
+                                                                db.close();
+                                                                return;
+                                                        }
                                                 }
                                         }
                                         
