@@ -122,7 +122,7 @@ async function checkTerrainInfo(data){
 
         if(data.vanjskiUnutarnji === "vanjski"){
                 if(data.visinaStrop){
-                        error.push("You cannot set 'visinaStrop' if 'vanjskiUnutarnji' is 'vanjski'");
+                        errors.push("You cannot set 'visinaStrop' if 'vanjskiUnutarnji' is 'vanjski'");
                 }
         }
 
