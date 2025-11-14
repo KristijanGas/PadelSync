@@ -34,8 +34,11 @@ Aplikacija se sastoji od puno različitih funkcijskih zahtjeva od kojih najveći
 Koriste se različite tehnologije ovisno o namjeni:
 
 Frontend: Koristi se React zbog responzivnosti i mogućnosti jednostavnog korištenja na mobilnim uređajima.
+
 Backend: Za backend se koristi Node.js zbog svoje brzine i upoznatosti tima s okruženjem
+
 Deployment: Aplikacija je postavljena na DigitalOcean-ovu serveru
+
 Autentikacija: Za autentikaciju se koristi protokol OAuth2.0 
 
 # 📝 Licenca
