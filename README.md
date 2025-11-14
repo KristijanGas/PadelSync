@@ -1,5 +1,3 @@
-App still in development
-
 # Link deploya
 link: https://padelsync.online
 
