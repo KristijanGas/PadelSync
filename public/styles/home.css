@@ -1,3 +1,8 @@
+* {
+    font-size: 20px;
+    text-align: center;
+}
+
 body {
 
     margin: 0;
@@ -9,7 +14,6 @@ body {
     color: rgba(240, 231, 231, 0.902);
 
     overflow-x: hidden;
-
 
 }
 
@@ -54,7 +58,7 @@ body {
 
    gap: 32px;
 
-   font-size: 17px;
+   font-size: 1rem;
 
 }
 
@@ -98,7 +102,7 @@ body {
 
 .HomePageInformation > h1 {
 
-    font-size: 60px;
+    font-size: 4rem;
 
 }
 
@@ -257,8 +261,6 @@ body {
 
 .HomePageClubCard span {
 
-    text-align: center;
-
     padding: 10px 0;
 
     color: rgba(240, 231, 231, 0.902);
@@ -272,6 +274,10 @@ body {
 .HomePageButtons {
 
     display: flex;
+
+    flex-direction: row;
+
+    /* flex-direction: column; */
 
     justify-content: center;
 
@@ -330,4 +336,37 @@ pre {
 
     display: none;
 
+}
+
+@media screen and (max-width: 768px) {
+
+    .header {
+        flex-direction: column;
+        height: 160px;
+    }
+
+    .HomePageInformation > h1 {
+        font-size: 3rem;
+    }
+
+    .HomePageInformation > span {
+        font-size: 2rem;
+    }
+
+    .HomePageButtons {
+        flex-direction: column;
+    }
+
+    .navButton {
+        width: 90vw;
+        height: 85px;
+    }
+
+    .HomePageClubs {
+        flex-direction: column;
+    }
+
+    .HomePageClubCard {
+        width: 95vw;
+    }
 }
