@@ -1,31 +1,34 @@
 <!DOCTYPE html>
-<head>
-    <link rel="stylesheet" type="text/css" href="styles/home.css">
-</head>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="styles/home.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
 
-<body>
-    <p><%= message %></p>
-    <p>edita se <%= terrain.imeTeren %></p>
-    <p>username: <%= terrain.username %></p>
-        <p>terenID: <%= terrain.terenID %></p>
-    <form id ="addScheduleForm" method="POST" action="/editschedule/<%= terrain.username %>/<%= terrain.terenID %>/add">
-        <label for="day">Day:</label>
-        <select id="day" name="day">
-            <option value="monday">Monday</option>
-            <option value="tuesday">Tuesday</option>
-            <option value="wednesday">Wednesday</option>
-            <option value="thursday">Thursday</option>
-            <option value="friday">Friday</option>
-            <option value="saturday">Saturday</option>
-            <option value="sunday">Sunday</option>
-        </select><br><br>
+    <body>
+        <p><%= message %></p>
+        <p>edita se <%= terrain.imeTeren %></p>
+        <p>username: <%= terrain.username %></p>
+            <p>terenID: <%= terrain.terenID %></p>
+        <form id ="addScheduleForm" method="POST" action="/editschedule/<%= terrain.username %>/<%= terrain.terenID %>/add">
+            <label for="day">Day:</label>
+            <select id="day" name="day">
+                <option value="monday">Monday</option>
+                <option value="tuesday">Tuesday</option>
+                <option value="wednesday">Wednesday</option>
+                <option value="thursday">Thursday</option>
+                <option value="friday">Friday</option>
+                <option value="saturday">Saturday</option>
+                <option value="sunday">Sunday</option>
+            </select><br><br>
 
-        <label for="startTime">Start Time:</label>
-        <input type="time" id="startTime" name="startTime"><br><br>
+            <label for="startTime">Start Time:</label>
+            <input type="time" id="startTime" name="startTime"><br><br>
 
-        <label for="endTime">End Time:</label>
-        <input type="time" id="endTime" name="endTime"><br><br>
+            <label for="endTime">End Time:</label>
+            <input type="time" id="endTime" name="endTime"><br><br>
 
-        <button type="submit">Dodaj termin</button>
-    </form>
-</body>
+            <button type="submit">Dodaj termin</button>
+        </form>
+    </body>
+</html>

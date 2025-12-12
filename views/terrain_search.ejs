@@ -1,80 +1,88 @@
 <!DOCTYPE html>
-<head>
-    <link rel="stylesheet" type="text/css" href="styles/terrain_search.css">
-</head>
+<html>
+    <head>
+        <% if (show_search_results === true) { %>
+            <link rel="stylesheet" type="text/css" href="../styles/terrain_search.css">
+        <% } %>
+        <% if (show_search_results === false) { %>
+            <link rel="stylesheet" type="text/css" href="styles/terrain_search.css">
+        <% } %>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
 
-<body>
+    <body>
 
-    <div class="BackgroundTop">
-        <h1>This page will support searching through TERRAINS</h1>
-    </div>
-
-    <div class="SearchContainer">
-        <form id="terrainSearchForm" method="GET" action="/terrain_search/results">
-            <label>Username:
-                <input type="text" id="username" name="username">
-            </label><br><br>
-
-            <label>Visina stropa (>=):
-                <input type="number" id="visinaStropa" name="visinaStropa" min="0" step="any">
-            </label><br><br>
-
-            <label>Tip terena:</label>
-            <div class="InputGroup">
-                <label><input type="checkbox" id="single" name="tipTeren[]" value="single"> Single</label>
-                <label><input type="checkbox" id="double" name="tipTeren[]" value="double"> Double</label>
-            </div><br>
-
-            <label>Unutarnji/vanjski:</label>
-            <div class="InputGroup">
-                <label><input type="checkbox" id="unutarnji" name="unutarnjiVanjski[]" value="unutarnji"> Unutarnji</label>
-                <label><input type="checkbox" id="vanjski" name="unutarnjiVanjski[]" value="vanjski"> Vanjski</label>
-            </div><br>
-
-            <label>Cijena (jeftinije od):
-                <input type="number" id="cijena" name="cijena" min="0" step="any">
-            </label><br><br>
-
-            <label>Osvjetljenje:</label>
-            <div class="InputGroup">
-                <label><input type="radio" id="osvjetljenjeYes" name="osvjetljenje" value="yes"> Da</label>
-                <label><input type="radio" id="osvjetljenjeNo" name="osvjetljenje" value="no"> Ne</label>
-            </div><br>
-
-            <label>Tip podloge (dozvoljeno):</label>
-            <div class="InputGroup">
-                <label><input type="checkbox" id="beton" name="tipPodloge[]" value="beton"> Beton</label>
-                <label><input type="checkbox" id="trava" name="tipPodloge[]" value="trava"> Trava</label>
-                <label><input type="checkbox" id="tepih" name="tipPodloge[]" value="tepih"> Tepih</label>
-                <label><input type="checkbox" id="akrilik" name="tipPodloge[]" value="akrilik"> Akrilik</label>
-                <label><input type="checkbox" id="drvo" name="tipPodloge[]" value="drvo"> Drvo</label>
-            </div><br>
-
-            <div class="FormButtons">
-                <button type="submit" class="searchButton">Pretraži</button>
-                <button type="button" class="backButton" onclick="location.href='/home'">← Back to Home</button>
-            </div>
-            
-        </form>
-    </div>
-
-    <% if (typeof results !== 'undefined' ) {  %>
-        <div class="ResultsSection">
-            <h2>Search Results:</h2>
-            <% if (results.length > 0) { %>
-                <ul>
-                    <% results.forEach(function(terrain) { %>
-                        <li>
-                            <a href="/terrain/<%= terrain.terenID %>">
-                                Terrain ID: <%= terrain.terenID %>, Ime terena: <%= terrain.imeTeren%> Owner: <%= terrain.username %>
-                            </a>
-                        </li>
-                    <% }); %>
-                </ul>
-            <% } else { %>
-                <p>No terrains found matching the criteria.</p>
-            <% } %>
+        <div class="BackgroundTop">
+            <h1>This page will support searching through TERRAINS</h1>
         </div>
-    <% } %>
 
-</body>
+        <div class="SearchContainer">
+            <form id="terrainSearchForm" method="GET" action="/terrain_search/results">
+                <label>Username:
+                    <input type="text" id="username" name="username">
+                </label><br><br>
+
+                <label>Visina stropa (>=):
+                    <input type="number" id="visinaStropa" name="visinaStropa" min="0" step="any">
+                </label><br><br>
+
+                <label>Tip terena:</label>
+                <div class="InputGroup">
+                    <label><input type="checkbox" id="single" name="tipTeren[]" value="single"> Single</label>
+                    <label><input type="checkbox" id="double" name="tipTeren[]" value="double"> Double</label>
+                </div><br>
+
+                <label>Unutarnji/vanjski:</label>
+                <div class="InputGroup">
+                    <label><input type="checkbox" id="unutarnji" name="unutarnjiVanjski[]" value="unutarnji"> Unutarnji</label>
+                    <label><input type="checkbox" id="vanjski" name="unutarnjiVanjski[]" value="vanjski"> Vanjski</label>
+                </div><br>
+
+                <label>Cijena (jeftinije od):
+                    <input type="number" id="cijena" name="cijena" min="0" step="any">
+                </label><br><br>
+
+                <label>Osvjetljenje:</label>
+                <div class="InputGroup">
+                    <label><input type="radio" id="osvjetljenjeYes" name="osvjetljenje" value="yes"> Da</label>
+                    <label><input type="radio" id="osvjetljenjeNo" name="osvjetljenje" value="no"> Ne</label>
+                </div><br>
+
+                <label>Tip podloge (dozvoljeno):</label>
+                <div class="InputGroup">
+                    <label><input type="checkbox" id="beton" name="tipPodloge[]" value="beton"> Beton</label>
+                    <label><input type="checkbox" id="trava" name="tipPodloge[]" value="trava"> Trava</label>
+                    <label><input type="checkbox" id="tepih" name="tipPodloge[]" value="tepih"> Tepih</label>
+                    <label><input type="checkbox" id="akrilik" name="tipPodloge[]" value="akrilik"> Akrilik</label>
+                    <label><input type="checkbox" id="drvo" name="tipPodloge[]" value="drvo"> Drvo</label>
+                </div><br>
+
+                <div class="FormButtons">
+                    <button type="submit" class="searchButton">Pretraži</button>
+                    <button type="button" class="backButton" onclick="location.href='/home'">← Back to Home</button>
+                </div>
+                
+            </form>
+        </div>
+
+        <% if (typeof results !== 'undefined' ) {  %>
+            <div class="ResultsSection">
+                <h2>Search Results:</h2>
+                <% if (results.length > 0) { %>
+                    <ul>
+                        <% results.forEach(function(terrain) { %>
+                            <li>
+                                <a href="/terrain/<%= terrain.terenID %>">
+                                    Terrain ID: <%= terrain.terenID %>, Ime terena: <%= terrain.imeTeren%> Owner: <%= terrain.username %>
+                                </a>
+                            </li>
+                        <% }); %>
+                    </ul>
+                <% } else { %>
+                    <p>No terrains found matching the criteria.</p>
+                <% } %>
+            </div>
+        <% } %>
+
+    </body>
+</html>

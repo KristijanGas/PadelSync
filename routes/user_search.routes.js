@@ -6,7 +6,8 @@ const router = express.Router()
 
 router.get('/', (req, res) => {
     res.render('user_search', { 
-        isAuthenticated: req.oidc.isAuthenticated()
+        isAuthenticated: req.oidc.isAuthenticated(),
+        show_search_results: false
     });
 });
 
@@ -33,7 +34,7 @@ router.get('/klub/:username', (req, res) => {
             }
             klubovi.push({'username':rows[i].usernameKlub, 'imeKlub':rows[i].klub, 'klubRating':rows[i].rating});
         }
-        res.render('user_search', {klubovi: klubovi, session: req.session, isAuthenticated: req.oidc.isAuthenticated()});
+        res.render('user_search', {klubovi: klubovi, session: req.session, isAuthenticated: req.oidc.isAuthenticated(), show_search_results: true});
     });
     db.close();
     
@@ -59,7 +60,7 @@ router.get('/igrac/:username', (req, res) => {
         for(let i=0; i<rows.length; i++){
             igraci.push({'username':rows[i].username, 'imeIgrac':rows[i].imeIgrac, 'prezimeIgrac':rows[i].prezimeIgrac});
         }
-        res.render('user_search', {igraci: igraci, session: req.session, isAuthenticated: req.oidc.isAuthenticated()});
+        res.render('user_search', {igraci: igraci, session: req.session, isAuthenticated: req.oidc.isAuthenticated(), show_search_results: true});
     });
     db.close();
     

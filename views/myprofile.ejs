@@ -1,137 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet"  href="/styles/myprofile.css">
-        <title>Moj profil</title>
-</head>
-<body>
+        <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet"  href="/styles/myprofile.css">
+                <title>Moj profil</title>
+        </head>
+        <body>
 
-        <div class="BackgroundTop">
-                <h1>Hello, <%=user.nickname%></h1>
-        </div>
-
-        <div class="Content">
-
-                <div class="buttonContainer">
-                        <a href="/edituser/<%=user.nickname%>"><button>Edit profile</button></a>
-                        <button onclick="location.href='/user/<%=user.nickname%>'">Go to your public profile</button>
-                        <button onclick="location.href='/home'">← Back Home</button>
+                <div class="BackgroundTop">
+                        <h1>Hello, <%=user.nickname%></h1>
                 </div>
 
-                <h2>Your profile information:</h2>
-                <%if(profileType === "Player"){%>
-                        <div class="userInfo">
+                <div class="Content">
 
-                                <div class="userInfoItemName">Korisničko ime</div>
-                                <div class="userInfoItem"><%= userInfo["username"] %></div>
-                                <br>
-
-                                <div class="userInfoItemName">Ime</div>
-                                <div class="userInfoItem"><%= userInfo["imeIgrac"] %></div>
-                                <br>
-
-                                <div class="userInfoItemName">Prezime</div>
-                                <div class="userInfoItem"><%= userInfo["prezimeIgrac"] %></div>
-                                <br>
-
-                                <div class="userInfoItemName">Broj mobitela</div>
-                                <div class="userInfoItem"><%= userInfo["brojMob"] %></div>
-                                <br>
-
-                                <div class="userInfoItemName">Razina znanja</div>
-                                <div class="userInfoItem"><%= userInfo["razZnanjaPadel"] %></div>
-                                <br>
-
-                                <div class="userInfoItemName">Preferirano vrijeme treniranja</div>
-                                <div class="userInfoItem"><%= userInfo["prefVrijeme"] %></div>
-                                <br>
-
+                        <div class="buttonContainer">
+                                <a href="/edituser/<%=user.nickname%>"><button>Edit profile</button></a>
+                                <button onclick="location.href='/user/<%=user.nickname%>'">Go to your public profile</button>
+                                <button onclick="location.href='/home'">← Back Home</button>
                         </div>
 
-                        <pre> <%= JSON.stringify(userInfo, null, 2)%></pre>
-                        
+                        <h2>Your profile information:</h2>
+                        <%if(profileType === "Player"){%>
+                                <div class="userInfo">
+
+                                        <div class="userInfoItemName">Korisničko ime</div>
+                                        <div class="userInfoItem"><%= userInfo["username"] %></div>
+                                        <br>
+
+                                        <div class="userInfoItemName">Ime</div>
+                                        <div class="userInfoItem"><%= userInfo["imeIgrac"] %></div>
+                                        <br>
+
+                                        <div class="userInfoItemName">Prezime</div>
+                                        <div class="userInfoItem"><%= userInfo["prezimeIgrac"] %></div>
+                                        <br>
+
+                                        <div class="userInfoItemName">Broj mobitela</div>
+                                        <div class="userInfoItem"><%= userInfo["brojMob"] %></div>
+                                        <br>
+
+                                        <div class="userInfoItemName">Razina znanja</div>
+                                        <div class="userInfoItem"><%= userInfo["razZnanjaPadel"] %></div>
+                                        <br>
+
+                                        <div class="userInfoItemName">Preferirano vrijeme treniranja</div>
+                                        <div class="userInfoItem"><%= userInfo["prefVrijeme"] %></div>
+                                        <br>
+
+                                </div>
+
+                                <pre> <%= JSON.stringify(userInfo, null, 2)%></pre>
+                                
 
 
-                <%}else if(profileType === "Club"){%>
-                        <div>
-                        <h2>Your terrains:</h2>
-                        <% if( userInfo.terrains && userInfo.terrains.length > 0 ) { %>
-                                <ul>
-                                <% userInfo.terrains.forEach(function(teren) { %>
-                                        <li>
-                                                <span><%= teren.imeTeren %></span>
-                                                <p>ID: <%= teren.terenID %></p>
-                                                <button onclick="location.href='/terrain/<%= teren.terenID %>'">Go to terrain page</button>
-                                                <button onclick="location.href='/editterrain/<%=user.nickname%>/<%= teren.terenID %>'">Edit terrain</button>
-                                                <button onclick="location.href='/editschedule/<%=user.nickname%>/<%= teren.terenID %>'">Edit schedule</button>
-                                                <button onclick="location.href='/editterrain/<%=user.nickname%>/<%= teren.terenID %>/delete'">Delete terrain</button>
-                                        </li>
-                                <% }); %>
-                                </ul>
-                        <% } else { %>
-                                <p>You have no terrains added yet.</p>
-                        <% } %>
-                        <button onclick="location.href='/editterrain/<%=user.nickname%>/newTerrain'">Add New Terrain</button>
-                        </div>
-                        <div class="userInfo">
+                        <%}else if(profileType === "Club"){%>
+                                <div>
+                                <h2>Your terrains:</h2>
+                                <% if( userInfo.terrains && userInfo.terrains.length > 0 ) { %>
+                                        <ul>
+                                        <% userInfo.terrains.forEach(function(teren) { %>
+                                                <li>
+                                                        <span><%= teren.imeTeren %></span>
+                                                        <p>ID: <%= teren.terenID %></p>
+                                                        <button onclick="location.href='/terrain/<%= teren.terenID %>'">Go to terrain page</button>
+                                                        <button onclick="location.href='/editterrain/<%=user.nickname%>/<%= teren.terenID %>'">Edit terrain</button>
+                                                        <button onclick="location.href='/editschedule/<%=user.nickname%>/<%= teren.terenID %>'">Edit schedule</button>
+                                                        <button onclick="location.href='/editterrain/<%=user.nickname%>/<%= teren.terenID %>/delete'">Delete terrain</button>
+                                                </li>
+                                        <% }); %>
+                                        </ul>
+                                <% } else { %>
+                                        <p>You have no terrains added yet.</p>
+                                <% } %>
+                                <button onclick="location.href='/editterrain/<%=user.nickname%>/newTerrain'">Add New Terrain</button>
+                                </div>
+                                <div class="userInfo">
 
-                                <div class="userInfoItemName">Korisničko ime</div>
-                                <div class="userInfoItem"><%= userInfo["username"] %></div>
-                                <br>
+                                        <div class="userInfoItemName">Korisničko ime</div>
+                                        <div class="userInfoItem"><%= userInfo["username"] %></div>
+                                        <br>
 
-                                <div class="userInfoItemName">Ime kluba</div>
-                                <div class="userInfoItem"><%= userInfo["imeKlub"] %></div>
-                                <br>
+                                        <div class="userInfoItemName">Ime kluba</div>
+                                        <div class="userInfoItem"><%= userInfo["imeKlub"] %></div>
+                                        <br>
 
-                                <div class="userInfoItemName">Adresa kluba</div>
-                                <div class="userInfoItem"><%= userInfo["adresaKlub"] %></div>
-                                <br>
+                                        <div class="userInfoItemName">Adresa kluba</div>
+                                        <div class="userInfoItem"><%= userInfo["adresaKlub"] %></div>
+                                        <br>
 
-                                <div class="userInfoItemName">Početak radnog vremena</div>
-                                <div class="userInfoItem"><%= userInfo["klubRadiOd"] %></div>
-                                <br>
+                                        <div class="userInfoItemName">Početak radnog vremena</div>
+                                        <div class="userInfoItem"><%= userInfo["klubRadiOd"] %></div>
+                                        <br>
 
-                                <div class="userInfoItemName">Kraj radnog vremena</div>
-                                <div class="userInfoItem"><%= userInfo["klubRadiDo"] %></div>
-                                <br>
+                                        <div class="userInfoItemName">Kraj radnog vremena</div>
+                                        <div class="userInfoItem"><%= userInfo["klubRadiDo"] %></div>
+                                        <br>
 
-                                <div class="userInfoItemName">Opis kluba</div>
-                                <div class="userInfoItem"><%= userInfo["opisKluba"] %></div>
-                                <br>
+                                        <div class="userInfoItemName">Opis kluba</div>
+                                        <div class="userInfoItem"><%= userInfo["opisKluba"] %></div>
+                                        <br>
 
-                                <div class="userInfoItemName">Pravila kluba</div>
-                                <div class="userInfoItem"><%= userInfo["pravilaKlub"] %></div>
-                                <br>
+                                        <div class="userInfoItemName">Pravila kluba</div>
+                                        <div class="userInfoItem"><%= userInfo["pravilaKlub"] %></div>
+                                        <br>
 
-                                <div class="userInfoItemName">Najam reketa</div>
-                                <div class="userInfoItem"><%= userInfo["najamReketa"] %></div>
-                                <br>
+                                        <div class="userInfoItemName">Najam reketa</div>
+                                        <div class="userInfoItem"><%= userInfo["najamReketa"] %></div>
+                                        <br>
 
-                                <div class="userInfoItemName">Broj svlačionica</div>
-                                <div class="userInfoItem"><%= userInfo["svlacionice"] %></div>
-                                <br>
+                                        <div class="userInfoItemName">Broj svlačionica</div>
+                                        <div class="userInfoItem"><%= userInfo["svlacionice"] %></div>
+                                        <br>
 
-                                <div class="userInfoItemName">Broj tuševa</div>
-                                <div class="userInfoItem"><%= userInfo["tusevi"] %></div>
-                                <br>
+                                        <div class="userInfoItemName">Broj tuševa</div>
+                                        <div class="userInfoItem"><%= userInfo["tusevi"] %></div>
+                                        <br>
 
-                                <div class="userInfoItemName">Broj prostora za odmor</div>
-                                <div class="userInfoItem"><%= userInfo["prostorZaOdmor"] %></div>
-                                <br>
+                                        <div class="userInfoItemName">Broj prostora za odmor</div>
+                                        <div class="userInfoItem"><%= userInfo["prostorZaOdmor"] %></div>
+                                        <br>
 
-                        </div>
+                                </div>
 
-                        <pre> <%= JSON.stringify(userInfo, null, 2)%></pre>
-                        <a href="/editterrain/<%=user.nickname%>/newTerrain">
-                                <button>Napravi novi teren</button>
-                        </a>
-
-
-                <%}%>
+                                <pre> <%= JSON.stringify(userInfo, null, 2)%></pre>
+                                <a href="/editterrain/<%=user.nickname%>/newTerrain">
+                                        <button>Napravi novi teren</button>
+                                </a>
 
 
-        </div>
-</body>
+                        <%}%>
+
+
+                </div>
+        </body>
 </html>

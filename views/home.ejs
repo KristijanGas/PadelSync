@@ -1,73 +1,76 @@
 <!DOCTYPE html>
-<head>
-    <link rel="stylesheet" type="text/css" href="styles/home.css">
-</head>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="styles/home.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
 
-<body>
+    <body>
 
-    <div class="header">
+        <div class="header">
 
-        <div class="HomePageTitle">PadelSync</div>
+            <div class="HomePageTitle">PadelSync</div>
 
-       <%- include("./partials/header") %>
+        <%- include("./partials/header") %>
 
-    </div>
-    <div class="HomePageButtons">
-        <button class="navButton" onclick="location.href='/terrain_search'">Go to Terrain Search</button>
-        <button class="navButton" onclick="location.href='/user_search'">Go to User Search</button>
-    </div>
-    <div>
+        </div>
+        <div class="HomePageButtons">
+            <button class="navButton" onclick="location.href='/terrain_search'">Go to Terrain Search</button>
+            <button class="navButton" onclick="location.href='/user_search'">Go to User Search</button>
+        </div>
+        <div>
 
-        <div class="HomePageInformation">
+            <div class="HomePageInformation">
 
-            <h1>Welcome to PadelSync</h1>
+                <h1>Welcome to PadelSync</h1>
 
-            <span>Explore everything about padel and what it has to offer</span>
+                <span>Explore everything about padel and what it has to offer</span>
+
+            </div>
+
+            <div class="HomePageClubs">
+
+                <div class="HomePageClubCard">
+
+                    <img src="/images/padel1.avif" alt="Image 1" class="homeImage">
+
+                    <span>Zagreb Padel Arena</span>
+
+                </div>
+
+                <div class="HomePageClubCard">
+
+                    <img src="/images/padel2.jpg" alt="Image 2" class="homeImage">
+
+                    <span>Padel Klub Medvednica</span>
+
+                </div>
+
+                <div class="HomePageClubCard">
+
+                    <img src="/images/padel3.avif" alt="Image 3" class="homeImage">
+
+                    <span>Zagreb Smash Padel</span>
+
+                </div>
+
+                <div class="HomePageClubCard">
+
+                    <img src="/images/padel4.avif" alt="Image 4" class="homeImage">
+
+                    <span>Padel Klub Maksimir</span>
+
+                </div>
+
+
+            </div>
+
+            <pre><%= JSON.stringify(user, null, 2)%></pre>
+            <pre><%= JSON.stringify(session, null, 2)%></pre>
+            <pre><%= JSON.stringify(oidcWhole, null, 2)%></pre>
 
         </div>
 
-        <div class="HomePageClubs">
-
-            <div class="HomePageClubCard">
-
-                <img src="/images/padel1.avif" alt="Image 1" class="homeImage">
-
-                <span>Zagreb Padel Arena</span>
-
-            </div>
-
-            <div class="HomePageClubCard">
-
-                <img src="/images/padel2.jpg" alt="Image 2" class="homeImage">
-
-                <span>Padel Klub Medvednica</span>
-
-            </div>
-
-            <div class="HomePageClubCard">
-
-                <img src="/images/padel3.avif" alt="Image 3" class="homeImage">
-
-                <span>Zagreb Smash Padel</span>
-
-            </div>
-
-            <div class="HomePageClubCard">
-
-                <img src="/images/padel4.avif" alt="Image 4" class="homeImage">
-
-                <span>Padel Klub Maksimir</span>
-
-            </div>
-
-
-        </div>
-
-        <pre><%= JSON.stringify(user, null, 2)%></pre>
-        <pre><%= JSON.stringify(session, null, 2)%></pre>
-        <pre><%= JSON.stringify(oidcWhole, null, 2)%></pre>
-
-    </div>
-
-    
-</body>
+        
+    </body>
+</html>

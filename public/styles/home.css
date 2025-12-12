@@ -108,7 +108,7 @@ body {
 
 .HomePageInformation > span {
 
-    font-size: 17px;
+    font-size: 2rem;
 
     color: rgba(202, 201, 201, 0.779);
 
@@ -346,11 +346,11 @@ pre {
     }
 
     .HomePageInformation > h1 {
-        font-size: 3rem;
+        font-size: 2rem;
     }
 
     .HomePageInformation > span {
-        font-size: 2rem;
+        font-size: 1rem;
     }
 
     .HomePageButtons {

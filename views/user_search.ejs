@@ -1,79 +1,87 @@
 <!DOCTYPE html>
-<head>
-    <link rel="stylesheet" type="text/css" href="styles/user_search.css">
-</head>
-
-<body>
-    <%- include("./partials/header") %>
-    <div class="Content">
-        <h2>Search for a player</h2>
-        <form id="searchFormPly">
-            <input type="text" id="usernameInputPly" name="username" placeholder="Enter username, first or last name" required>
-            <button type="submit" class="searchButton">Search</button>
-        </form>
-        <script>
-            document.getElementById('searchFormPly').addEventListener('submit', function(e) {
-                e.preventDefault();
-                var username = document.getElementById('usernameInputPly').value;
-                if(username) {
-                    window.location.href = '/user_search/igrac/' + encodeURIComponent(username);
-                }
-            });
-        </script>
-        <hr>
-
-        <h2>Search for a club</h2>
-        <form id="searchFormClub">
-            <input type="text" id="usernameInputClub" name="username" placeholder="Enter club name" required>
-            <button type="submit" class="searchButton">Search</button>
-        </form>
-        <script>
-            document.getElementById('searchFormClub').addEventListener('submit', function(e) {
-                e.preventDefault();
-                var username = document.getElementById('usernameInputClub').value;
-                if(username) {
-                    window.location.href = '/user_search/klub/' + encodeURIComponent(username);
-                }
-            });
-        </script>
-        <hr>
-
-        <% if (typeof igraci !== 'undefined' ) {  %>
-            <% if (igraci.length > 0) { %>
-                <ul>
-                    <% igraci.forEach(function(user) { %>
-                        <li>
-                            <a href="/user/<%= user.username %>">
-                                <%= user.imeIgrac %> <%= user.prezimeIgrac %> (Username: <%= user.username %>)
-                            </a>
-                        </li>
-                    <% }); %>
-                </ul>
-            <% } else { %>
-                <p>No players found.</p>
-            <% } %>
+<html>
+    <head>
+        <% if (show_search_results === true) { %>
+            <link rel="stylesheet" type="text/css" href="../../styles/user_search.css">
         <% } %>
-
-        <% if (typeof klubovi !== 'undefined' ) {  %>
-            <% if (klubovi.length > 0) { %>
-                <ul>
-                    <% klubovi.forEach(function(user) { %>
-                        <li>
-                            <a href="/user/<%= user.username %>">
-                                <%= user.imeKlub %> (Username: <%= user.username %> rating: <%= user.klubRating %>)
-                            </a>
-                        </li>
-                    <% }); %>
-                </ul>
-            <% } else { %>
-                <p>No clubs found.</p>
-            <% } %>
+        <% if (show_search_results === false) { %>
+            <link rel="stylesheet" type="text/css" href="styles/user_search.css">
         <% } %>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
 
-        <div class="BackHomeContainer">
-            <button type="button" class="backButton" onclick="location.href='/home'">← Back Home</button>
+    <body>
+        <%- include("./partials/header") %>
+        <div class="Content">
+            <h2>Search for a player</h2>
+            <form id="searchFormPly">
+                <input type="text" id="usernameInputPly" name="username" placeholder="Enter username, first or last name" required>
+                <button type="submit" class="searchButton">Search</button>
+            </form>
+            <script>
+                document.getElementById('searchFormPly').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    var username = document.getElementById('usernameInputPly').value;
+                    if(username) {
+                        window.location.href = '/user_search/igrac/' + encodeURIComponent(username);
+                    }
+                });
+            </script>
+            <hr>
+
+            <h2>Search for a club</h2>
+            <form id="searchFormClub">
+                <input type="text" id="usernameInputClub" name="username" placeholder="Enter club name" required>
+                <button type="submit" class="searchButton">Search</button>
+            </form>
+            <script>
+                document.getElementById('searchFormClub').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    var username = document.getElementById('usernameInputClub').value;
+                    if(username) {
+                        window.location.href = '/user_search/klub/' + encodeURIComponent(username);
+                    }
+                });
+            </script>
+            <hr>
+
+            <% if (typeof igraci !== 'undefined' ) {  %>
+                <% if (igraci.length > 0) { %>
+                    <ul>
+                        <% igraci.forEach(function(user) { %>
+                            <li>
+                                <a href="/user/<%= user.username %>">
+                                    <%= user.imeIgrac %> <%= user.prezimeIgrac %> (Username: <%= user.username %>)
+                                </a>
+                            </li>
+                        <% }); %>
+                    </ul>
+                <% } else { %>
+                    <p>No players found.</p>
+                <% } %>
+            <% } %>
+
+            <% if (typeof klubovi !== 'undefined' ) {  %>
+                <% if (klubovi.length > 0) { %>
+                    <ul>
+                        <% klubovi.forEach(function(user) { %>
+                            <li>
+                                <a href="/user/<%= user.username %>">
+                                    <%= user.imeKlub %> (Username: <%= user.username %> rating: <%= user.klubRating %>)
+                                </a>
+                            </li>
+                        <% }); %>
+                    </ul>
+                <% } else { %>
+                    <p>No clubs found.</p>
+                <% } %>
+            <% } %>
+
+            <div class="BackHomeContainer">
+                <button type="button" class="backButton" onclick="location.href='/home'">← Back Home</button>
+            </div>
+
         </div>
 
-    </div>
-
-</body>
+    </body>
+</html>

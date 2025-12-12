@@ -1,22 +1,25 @@
 <!DOCTYPE html>
-<head>
-    <link rel="stylesheet" type="text/css" href="styles/home.css">
-</head>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="styles/home.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
 
-<body>
-    <p>This page will show info for a SPECIFIC terrain from the database</p>
-    <p>Vlasnik klub terena: <%= teren.username %>, ime terena: <%= teren.imeTeren %></p>
-    <p>Tip podloge je <%= teren.tipPodloge %> i teren je <%= teren.vanjskiUnutarnji %></p>
-    <p>Cijena terena je <%= teren.cijenaTeren %></p>
+    <body>
+        <p>This page will show info for a SPECIFIC terrain from the database</p>
+        <p>Vlasnik klub terena: <%= teren.username %>, ime terena: <%= teren.imeTeren %></p>
+        <p>Tip podloge je <%= teren.tipPodloge %> i teren je <%= teren.vanjskiUnutarnji %></p>
+        <p>Cijena terena je <%= teren.cijenaTeren %></p>
 
-    <%if (typeof termini !== 'undefined') {%>
-        <%if (termini.length > 0) {%>
-            <p>Dostupni termini za ovaj tjedan su:</p>
-            <% for(let termin of termini) {%>
-                <p><%= termin.danTjedan %> u <%= termin.vrijemePocetak %> sati. Rezerviraj?</p>
-            <% }%>
-        <%} else {%>
-            <p>Nema dostupnih termina.</p>
+        <%if (typeof termini !== 'undefined') {%>
+            <%if (termini.length > 0) {%>
+                <p>Dostupni termini za ovaj tjedan su:</p>
+                <% for(let termin of termini) {%>
+                    <p><%= termin.danTjedan %> u <%= termin.vrijemePocetak %> sati. Rezerviraj?</p>
+                <% }%>
+            <%} else {%>
+                <p>Nema dostupnih termina.</p>
+            <%}%>
         <%}%>
-    <%}%>
-</body>
+    </body>
+</html>

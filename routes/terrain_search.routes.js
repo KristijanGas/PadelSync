@@ -6,7 +6,9 @@ const router = express.Router();
 
 
 router.get('/', (req, res) => {
-    res.render('terrain_search');
+    res.render('terrain_search', {
+        show_search_results: false
+    });
 });
 
 async function searchTerrains(criteria) {
@@ -146,6 +148,7 @@ router.get('/results', async (req, res) => {
 
     const results = await searchTerrains({ username, visinaStropa, tipTeren, cijena, osvjetljenje, tipPodloge, unutarnjiVanjski });
     res.render('terrain_search', {
+        show_search_results: true,
         results: results,
         searchParams: req.query
     });
