@@ -86,13 +86,13 @@ router.post('/:clubId/:terrainId/add', requiresAuth(), async (req, res) => {
         const startTime = req.body.startTime;
         const endTime = req.body.endTime;
         let dayNum;
-        if(day  == "monday") {dayNum = 0;}
-        else if(day  == "tuesday") {dayNum = 1;}
-        else if(day  == "wednesday") {dayNum = 2;}
-        else if(day  == "thursday") {dayNum = 3;}
-        else if(day  == "friday") {dayNum = 4;}
-        else if(day  == "saturday") {dayNum = 5;}
-        else if(day  == "sunday") {dayNum = 6;}
+        if(day  == "monday") {dayNum = 1;}
+        else if(day  == "tuesday") {dayNum = 2;}
+        else if(day  == "wednesday") {dayNum = 3;}
+        else if(day  == "thursday") {dayNum = 4;}
+        else if(day  == "friday") {dayNum = 5;}
+        else if(day  == "saturday") {dayNum = 6;}
+        else if(day  == "sunday") {dayNum = 0;}
         else {
             return res.status(400).send("Invalid day provided.");
         }
