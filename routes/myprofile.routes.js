@@ -8,7 +8,7 @@ const sqlite3 = require('sqlite3').verbose();
 
 router.get('/', requiresAuth(), async (req, res) => {
         try {
-                const isVerified = await verifyProfile(req);
+                const isVerified = await verifyProfile(req, res);
                 //console.log(isVerified);
 
                 if (isVerified === undefined || !isVerified) {

@@ -50,7 +50,7 @@ router.get('/:id', requiresAuth(), async (req, res) => {
     } catch (error) {
         console.log(error);
     }
-    const isVerified = await verifyProfile(req);
+    const isVerified = await verifyProfile(req, res);
     if (isVerified) {
       let clubUsername = tereni[0].username;
       let playerUsername = req.oidc.user.nickname;

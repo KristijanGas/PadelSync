@@ -14,7 +14,7 @@ const sqlite3 = require('sqlite3').verbose();
 
 router.get('/:clubId/:terrainId', requiresAuth(), async (req, res) => {
         try{
-                const isVerified = await verifyProfile(req);
+                const isVerified = await verifyProfile(req, res);
                 let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
                
 
@@ -145,7 +145,7 @@ router.post('/:clubId/:terrainId/insertTerrainInfo', requiresAuth(), upload.arra
                 return res.status(400).json({ errors });
         }
         try{
-                const isVerified = await verifyProfile(req);
+                const isVerified = await verifyProfile(req, res);
                 let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
                
 
@@ -301,7 +301,7 @@ router.post('/:clubId/:terrainId/insertTerrainInfo', requiresAuth(), upload.arra
 
 router.get("/:clubId/:terrainId/photo/:photoId", async(req, res) => {
          try{
-                const isVerified = await verifyProfile(req);
+                const isVerified = await verifyProfile(req, res);
                 let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
                
 

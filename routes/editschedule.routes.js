@@ -9,7 +9,7 @@ const { checkBooking} = require("../backendutils/checkAvailability");
 const sqlite3 = require('sqlite3').verbose();
 
 async function allowEntry(req, res){
-    const isVerified = await verifyProfile(req);
+    const isVerified = await verifyProfile(req, res);
     const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
 
     if(!isVerified){

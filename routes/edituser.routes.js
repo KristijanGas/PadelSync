@@ -13,7 +13,7 @@ const sqlite3 = require('sqlite3').verbose();
 
 router.get('/:username', requiresAuth(), async (req, res) => {
         try{
-                const isVerified = await verifyProfile(req);
+                const isVerified = await verifyProfile(req, res);
                 let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
 
                 if(!isVerified){
@@ -195,7 +195,7 @@ router.post('/:username/insertPlayerInfo', requiresAuth(), upload.none(), async 
                 return res.status(400).json({ errors });
         }
         try{
-                const isVerified = await verifyProfile(req);
+                const isVerified = await verifyProfile(req, res);
                 let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
 
                 if(!isVerified){
@@ -291,7 +291,7 @@ router.post('/:username/insertClubInfo', requiresAuth(), upload.array("slike"), 
                 return res.status(400).json({ errors });
         }
         try{
-                const isVerified = await verifyProfile(req);
+                const isVerified = await verifyProfile(req, res);
                 let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
 
                 if(!isVerified){
@@ -387,7 +387,7 @@ router.post('/:username/insertClubInfo', requiresAuth(), upload.array("slike"), 
 
 router.get("/:username/photo/:photoId", async(req, res) => {
          try{
-                const isVerified = await verifyProfile(req);
+                const isVerified = await verifyProfile(req, res);
                 let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
 
                 if(!isVerified){

@@ -2,7 +2,7 @@ const{ requiresAuth } = require('express-openid-connect')
 const axios = require('axios')
 const sqlite3 = require('sqlite3').verbose();
 
-async function requireFreshAccessToken(req){
+async function requireFreshAccessToken(req, res){
     try {
         const token = req.oidc.accessToken;
 
@@ -14,13 +14,16 @@ async function requireFreshAccessToken(req){
         }else{
             //console.log("Token already valid, expires in:", req.oidc.accessToken.expires_in);
         }
+        return true;
     } catch (err) {
-        console.error("Failed to refresh access token:", err);
+        res.redirect("/login");
+        return false;
     }
 }
 
-async function verifyProfile(req){
-    await requireFreshAccessToken(req);
+async function verifyProfile(req, res){
+    const ok = await requireFreshAccessToken(req, res);
+    if(!ok) return;
     let data = {};
     const {token_type, access_token} = req.oidc.accessToken;
     try{
