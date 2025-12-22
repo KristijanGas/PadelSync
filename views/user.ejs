@@ -25,9 +25,19 @@
             <% } %>
         </div>
 
-        <div class="BackProfileContainer">
+        <div class="ReviewsContainer">
+            <% for(let recenzija of recenzije) { %>
+                <div class="Recenzija">
+                    <pre><%= JSON.stringify(recenzija, null, 2) %></pre>
+                </div>
+            <% } %>
+        </div>
+        <%if(showBackToMyProfile){%>
+            <div class="BackProfileContainer">
             <button class="backButton" onclick="location.href='/myprofile'">← Back to MyProfile</button>
         </div>
+        <%}%>
+        
 
     </body>
 </html>

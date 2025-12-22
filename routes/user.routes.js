@@ -2,47 +2,73 @@ const express = require('express');
 var sqlite3 = require('sqlite3').verbose();
 
 const router = express.Router()
+const dbAll = (db, sql, params = []) => {
+    return new Promise((resolve, reject) => {
+        db.all(sql, params, (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows);
+        });
+    });
+};
+
+const dbGet = (db, sql, params = []) => {
+    return new Promise((resolve, reject) => {
+        db.get(sql, params, (err, row) => {
+            if (err) reject(err);
+            else resolve(row);
+        });
+    });
+};
+
 
 // podstranica za pretraživanje klubova, igrača
-
-
 router.get('/:username', async (req, res) => {
     const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
-    let tereni;
     const username = req.params.username;
-    let tereniQuery = 'SELECT * FROM teren WHERE username = ?';
-    db.all(tereniQuery, [username], (err, rows) => {
-        if (err) {
-            console.error(err.message);
-            res.status(500).send("Internal Server Error");
-            return;
-        }
-        if (!rows) {
-            res.status(404).send("Field Not Found");
-            return;
-        }
-        tereni = rows;
-    });
-    let SQLQuery = 'SELECT * FROM korisnik WHERE username = ?';
-    db.get(SQLQuery, [username], (err, row) => {
-        if (err) {
-            console.error(err.message);
-            res.status(500).send("Internal Server Error");
-            return;
-        }
-        if (!row) {
+
+    try {
+        const tereni = await dbAll(
+            db,
+            'SELECT * FROM teren WHERE username = ?',
+            [username]
+        );
+
+        const recenzije = await dbAll(
+            db,
+            `SELECT r.komentar, r.ocjena, r.datumRecenzija, r.username, r.terenID
+             FROM RECENZIJA r
+             JOIN TEREN t ON t.terenID = r.terenID
+             WHERE t.username = ?`,
+            [username]
+        );
+
+        const user = await dbGet(
+            db,
+            'SELECT * FROM korisnik WHERE username = ?',
+            [username]
+        );
+
+        if (!user) {
             res.status(404).send("User Not Found");
             return;
         }
-        const user = {
-            username: row.username,
-            first_name: row.first_name,
-            email: row.email,
-        };
-        res.render('user', { user: user, session: req.session, tereni: tereni });
-    });
-    db.close();
+
+        res.render('user', {
+            user,
+            session: req.session,
+            tereni,
+            recenzije,
+            showBackToMyProfile: username === req.oidc.user.nickname
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+    } finally {
+        db.close();
+    }
 });
+
 
 
 module.exports = router;
