@@ -15,7 +15,18 @@
             <%if (termini.length > 0) {%>
                 <p>Dostupni termini za ovaj tjedan su:</p>
                 <% for(let termin of termini) {%>
-                    <p><%= termin.danTjedan %> u <%= termin.vrijemePocetak %> sati. Rezerviraj?</p>
+                    <form class="formaRezervacije" action="/terrain/<%= termin.terenID %>" method="POST">
+                        <p><%= termin.datum %> u <%= termin.vrijemePocetak %> do <%= termin.vrijemeKraj %> sati.</p>
+                        <p>Koji tip termina zelite rezervirati?</p>
+                        <input type="radio" id="jdn" name="tipTermina" value="jednokratni" required>
+                        <label for="jdn">Jednokrantni termin</label>
+                        <input type="radio" id="pon" name="tipTermina" value="ponavljajuci">
+                        <label for="pon">Ponavljajuci termin</label>
+                        <input type="hidden" name="terminID" value=<%= termin.terminID %>>
+                        <input type="hidden" name="datum" value=<%= termin.datum %>><br>
+                        <input type="hidden" name="klub" value=<%= termin.klub %>>
+                        <input type="submit" value="Rerezviraj?">
+                    </form>
                 <% }%>
             <%} else {%>
                 <p>Nema dostupnih termina.</p>

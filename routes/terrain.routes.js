@@ -23,9 +23,11 @@ const fetchAll = async (db, sql, params) => {
 //za obicnu currentDate
 function currentDateOff(offset) {
   var date = new Date(Date.now());
-  const year = date.getFullYear();
-  const month = date.getMonth()+1;
-  const day = date.getDate()-date.getDay()+offset;
+  var newDate = new Date(date);
+  newDate.setDate(newDate.getDate()-date.getDay()+offset);
+  const year = newDate.getFullYear();
+  const month = newDate.getMonth()+1;
+  const day = newDate.getDate();
   return year + '-' + month + '-' + day;
 }
 function currentDate() {
@@ -43,7 +45,7 @@ router.get('/:id', requiresAuth(), async (req, res) => {
     let termini2;
     let razinaPretplate;
     let pretplataQuery = 'select * from pretplata join tip_pretplate on pretplata.tipPretpID = tip_pretplate.tipPretpID WHERE TIP_PRETPLATE.username = ? and PRETPLATA.username = ? and PRETPLATA.pretpAktivna = 1';
-
+    let clubUsername;
     let tereniQuery = 'SELECT * FROM teren WHERE terenID = ?';
     try {
         tereni = await fetchAll(db, tereniQuery, [id]);
@@ -52,7 +54,7 @@ router.get('/:id', requiresAuth(), async (req, res) => {
     }
     const isVerified = await verifyProfile(req, res);
     if (isVerified) {
-      let clubUsername = tereni[0].username;
+      clubUsername = tereni[0].username;
       let playerUsername = req.oidc.user.nickname;
 
       try {
@@ -83,23 +85,108 @@ router.get('/:id', requiresAuth(), async (req, res) => {
     let dostupniTermini = [];
     for (let termin of termini) {
       let dejtOwO = currentDateOff(termin.danTjedan);
-      if(checkAvailability(termin.terenID, dejtOwO, termin.vrijemePocetak, termin.vrijemeKraj))
-        dostupniTermini.push(termin);
+      if(checkAvailability(termin.terenID, dejtOwO, termin.vrijemePocetak, termin.vrijemeKraj)) {
+        const kopija = structuredClone(termin);
+        kopija.datum = dejtOwO;
+        kopija.klub = clubUsername;
+        dostupniTermini.push(kopija);
+      }
     }
     for(let i = 1; i < 4; i++) {
       for(let termin of termini2) {
         let dejtOwO = currentDateOff(termin.danTjedan+i*7);
-        if(checkAvailability(termin.terenID, dejtOwO, termin.vrijemePocetak, termin.vrijemeKraj))
-          dostupniTermini.push(termin);
+        if(checkAvailability(termin.terenID, dejtOwO, termin.vrijemePocetak, termin.vrijemeKraj)) {
+          const kopija = structuredClone(termin);
+          kopija.datum = dejtOwO;
+          kopija.klub = clubUsername;
+          dostupniTermini.push(kopija);
+        } else {
+          console.log("ne prolazi ovaj termin")
+          console.log(termin);
+        }
       }
     }
-    //NEMAM POJMA JEL RADI
     res.render('terrain', {
             teren: tereni[0],
             termini: dostupniTermini
         });
     db.close();
 });
+router.post('/:id', requiresAuth(), async (req, res) => {
+  const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+  console.log(req.body);
+  const tipTermina = req.body.tipTermina;
+  const terminID = req.body.terminID;
+  const datum = req.body.datum;
+  const terenID = req.params.id;
+  const username = req.oidc.user.nickname;
+  let tipPretpID;
+  let transakcijaID = 1; //OVAJ CITAV DIO TREBA DOVRSIT
+  console.log(username);
+  
+  let rows;
+  let ID;
+  let idQuery = `select max(rezervacijaID) as max from rezervacija`;
+  try {
+    rows = await fetchAll(db, idQuery, [8]);
+  } catch (error) {
+    console.log(error);
+  }
 
+  if (rows != undefined) {
+    ID = rows[0].max + 1;
+  } else ID = 1;
+  
+  const SQLQuery1 = `INSERT INTO REZERVACIJA (statusRez, rezervacijaID, terminID) VALUES (?, ?, ?)`
+  await new Promise((resolve, reject) => {
+    db.run(SQLQuery1, ['aktivna', ID, terminID], function(err) {
+      if (err) {
+        console.error(err.message);
+        return reject(err);
+      }
+      resolve();
+    });
+  });
+
+  if(tipTermina == 'jednokratni') {
+    const SQLQuery2 = `INSERT INTO JEDNOKRATNA_REZERVACIJA (datumRez, rezervacijaID, username, transakcijaID) VALUES (?, ?, ?, ?)`;
+    await new Promise((resolve, reject) => {
+    db.run(SQLQuery2, [datum, ID, username, transakcijaID], function(err) {
+      if (err) {
+        console.error(err.message);
+        return reject(err);
+      }
+      resolve();
+    });
+  });
+  }else if(tipTermina == 'ponavljajuci') {
+    let pretplataQry = `select TIP_PRETPLATE.tipPretpID from pretplata join tip_pretplate on pretplata.tipPretpID = tip_pretplate.tipPretpID
+    WHERE TIP_PRETPLATE.username = ? and PRETPLATA.username = ? and PRETPLATA.pretpAktivna = 1`;
+    const clubUsername = req.body.klub;
+    let rows;
+    try {
+      rows = await fetchAll(db, pretplataQry, [clubUsername, username]);
+    } catch (error) {
+      console.log(error);
+    }
+    if(rows != undefined) {
+      tipPretpID = rows[0].tipPretpID;
+    } else {
+      res.status(404).send("Ne postoji covjek s tom pretplatom LoL");
+    }
+    const SQLQuery3 = `INSERT INTO PONAVLJAJUCA_REZ (rezervacijaID, tipPretpID) VALUES (?, ?)`
+    db.run(SQLQuery3, [ID, tipPretpID], function(err) {
+      if (err) {
+        console.error(err.message);
+        return reject(err);
+      }
+      resolve();
+    });
+  } else {
+    res.status(500).send("Zasto saljes post zahtjev s nevaljajucim parametrom?")
+  }
+  
+  res.redirect('/terrain/' + req.params.id);
+});
 
 module.exports = router;
