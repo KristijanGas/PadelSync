@@ -16,25 +16,24 @@ async function checkAvailability(terrainId, date, startTime, endTime) {
                     where JEDNOKRATNA_REZ.datumRez = ? and termin_tjedni.terenID = ?
                     and NOT(TERMIN_TJEDNI.vrijemeKraj <= ? or TERMIN_TJEDNI.vrijemePocetak >= ?)`;
     try {
-        jednokratniTermini = fetchAll(db, query1, [date, terrainId, startTime, endTime]);
+        jednokratniTermini = await fetchAll(db, query1, [date, terrainId, startTime, endTime]);
     } catch (error) {
         console.log(error);
     }
-
     let ponavljajuciTermini;
     const query2 = `select * from REZERVACIJA join PONAVLJAJUCA_REZ on REZERVACIJA.rezervacijaID = PONAVLJAJUCA_REZ.rezervacijaID
                     join TERMIN_TJEDNI on REZERVACIJA.terminID = TERMIN_TJEDNI.terminID
                     where strftime('%w', ?) = TERMIN_TJEDNI.danTjedan and TERMIN_TJEDNI.terenID = ?
                     and NOT(TERMIN_TJEDNI.vrijemeKraj <= ? or TERMIN_TJEDNI.vrijemePocetak >= ?)`;
     try {
-        ponavljajuciTermini = fetchAll(db, query2,[date, terrainId, startTime, endTime]);
+        ponavljajuciTermini = await fetchAll(db, query2,[date, terrainId, startTime, endTime]);
     } catch (error) {
         console.log(error);
     }
     db.close();
-    if(jednokratniTermini.length > 0 || ponavljajuciTermini.length > 0)
+    if(jednokratniTermini.length > 0 || ponavljajuciTermini.length > 0) {
         return false;
-    else return true;
+    } else return true;
 }
 
 async function checkBooking(terrainId, dayNum, startTime, endTime) {
