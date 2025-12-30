@@ -17,6 +17,7 @@
     "npm": "^11.7.0",
     "sharp": "^0.34.5",
     "sqlite3": "^5.1.7",
+    "stripe": "^20.1.0",
     "urlencode": "^2.0.0"
   },
   "description": "Aplikacija za rezerviranje termina za sport padel.",

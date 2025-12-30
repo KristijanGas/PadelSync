@@ -13,7 +13,7 @@ const config = {
   authRequired: false,
   auth0Logout: true,
   secret: process.env.SECRET,
-  baseURL: process.env.BASEURL,
+  baseURL: process.env.BASEURL || "https://maryanna-nonrealizable-ambroise.ngrok-free.dev",
   clientID: process.env.CLIENTID,
   issuerBaseURL: process.env.ISSUER,
   clientSecret: process.env.CLIENTSECRET,
@@ -35,7 +35,11 @@ app.use(session({
     secret: 'verysecretyesyes', // used to sign the session ID cookie
     resave: false, // do not save the session if it's not modified
     // do not save new sessions that have not been modified
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+        secure: true, 
+        sameSite: 'lax'    
+    }
 }));
 
 // Middleware to log session data
@@ -69,11 +73,13 @@ const userRouter = require('./routes/user.routes');
 const user_searchRouter = require('./routes/user_search.routes');
 const terrainRouter = require('./routes/terrain.routes');
 const terrain_searchRouter = require('./routes/terrain_search.routes');
+const stripeRouter = require('./routes/stripe.routes')
 app.use('/home', homeRouter);
 app.use('/user_search', user_searchRouter);
 app.use('/user', userRouter);
 app.use('/terrain_search', terrain_searchRouter);
 app.use('/terrain', terrainRouter);
+app.use('/stripe', stripeRouter)
 
 app.get('/react', (req, res) => {
   res.redirect('http://localhost:8080');
