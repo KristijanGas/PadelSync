@@ -13,7 +13,7 @@ const config = {
   authRequired: false,
   auth0Logout: true,
   secret: process.env.SECRET,
-  baseURL: process.env.BASEURL || "https://maryanna-nonrealizable-ambroise.ngrok-free.dev",
+  baseURL: /* process.env.BASEURL ||  */"https://maryanna-nonrealizable-ambroise.ngrok-free.dev",
   clientID: process.env.CLIENTID,
   issuerBaseURL: process.env.ISSUER,
   clientSecret: process.env.CLIENTSECRET,
@@ -21,9 +21,16 @@ const config = {
     response_type: 'code',
     audience: 'https://www.padelsync-api.com',
     scope: 'openid profile email username offline_access'
-  }
+  },
+  session: {
+      cookie: {
+        secure: true, // REQUIRED for ngrok
+        sameSite: 'None'
+      }
+    }
 };
 
+app.set('trust proxy', 1);
 app.set('views','./views');
 app.set('view engine', 'ejs');
 app.engine('html', require('ejs').renderFile);
@@ -36,10 +43,6 @@ app.use(session({
     resave: false, // do not save the session if it's not modified
     // do not save new sessions that have not been modified
     saveUninitialized: false,
-    cookie: {
-        secure: true, 
-        sameSite: 'lax'    
-    }
 }));
 
 // Middleware to log session data
