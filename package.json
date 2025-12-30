@@ -2,6 +2,7 @@
   "name": "padelsync",
   "version": "1.0.0",
   "dependencies": {
+    "@stripe/stripe-js": "^8.6.0",
     "axios": "^1.12.2",
     "corepack": "^0.32.0",
     "dotenv": "^17.2.3",

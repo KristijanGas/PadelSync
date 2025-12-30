@@ -76,13 +76,15 @@ const userRouter = require('./routes/user.routes');
 const user_searchRouter = require('./routes/user_search.routes');
 const terrainRouter = require('./routes/terrain.routes');
 const terrain_searchRouter = require('./routes/terrain_search.routes');
-const stripeRouter = require('./routes/stripe.routes')
+const stripeClubRouter = require('./routes/stripeClub.routes')
+const stripePayment = require('./routes/stripePayment.routes')
 app.use('/home', homeRouter);
 app.use('/user_search', user_searchRouter);
 app.use('/user', userRouter);
 app.use('/terrain_search', terrain_searchRouter);
 app.use('/terrain', terrainRouter);
-app.use('/stripe', stripeRouter)
+app.use('/stripeClub', stripeClubRouter)
+app.use('/create-payment-intent', stripePayment)
 
 app.get('/react', (req, res) => {
   res.redirect('http://localhost:8080');
@@ -124,6 +126,9 @@ app.use('/signup', (req, res) => {
   }
 })
 
+app.get("/pay", (req, res) => {
+  res.render("testPayment")
+})
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
