@@ -33,9 +33,13 @@ function currentDateOff(offset) {
   var date = new Date(Date.now());
   var newDate = new Date(date);
   newDate.setDate(newDate.getDate()-date.getDay()+offset);
-  const year = newDate.getFullYear();
-  const month = newDate.getMonth()+1;
-  const day = newDate.getDate();
+  let year = newDate.getFullYear().toString();
+  let month = (newDate.getMonth()+1).toString();
+  if(month.length == 1)
+    month = "0" + month;
+  let day = newDate.getDate().toString();
+  if(day.length == 1)
+    day = "0" + day;
   return year + '-' + month + '-' + day;
 }
 function currentDate() {
