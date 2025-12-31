@@ -1,5 +1,8 @@
 const express = require('express');
+const { requiresAuth } = require('express-openid-connect');
 var sqlite3 = require('sqlite3').verbose();
+const { verifyProfile, verifyDBProfile, findUserType } = require("../backendutils/verifyProfile");
+const { verifyInputText } = require("../backendutils/verifyInputText");
 
 const router = express.Router()
 const dbAll = (db, sql, params = []) => {
