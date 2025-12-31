@@ -99,6 +99,11 @@ router.get('/:username', requiresAuth(), async (req, res) => {
 
 router.post('/chooseType', requiresAuth(), async (req, res) => {
         const { userType } = req.body;
+        const isVerified = await verifyProfile(req, res);
+        if(!isVerified){
+                res.render("verifymail")
+                return;
+        }
         let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
         if(profileInDB !== "UserDidntChoose"){
                 return res.status(400).send("User type already chosen");
@@ -134,6 +139,11 @@ router.post('/chooseType', requiresAuth(), async (req, res) => {
 });
 
 router.post('/eraseType', requiresAuth(), async (req, res) => {
+        const isVerified = await verifyProfile(req, res);
+        if(!isVerified){
+                res.render("verifymail")
+                return;
+        }
         let profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
         if(profileInDB === "Admin"){
                 return res.status(400).send("You can't erase your profile type because you are an admin.");

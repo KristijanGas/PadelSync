@@ -7,6 +7,14 @@ const { requiresAuth } = require('express-openid-connect')
 const axios = require('axios');
 const { checkAvailability } = require('../backendutils/checkAvailability');
 
+const dbGet = (db, sql, params = []) => {
+    return new Promise((resolve, reject) => {
+        db.get(sql, params, (err, row) => {
+            if (err) reject(err);
+            else resolve(row);
+        });
+    });
+};
 
 // podstranica za pretraživanje klubova, igrača
 const fetchAll = async (db, sql, params) => {
@@ -108,12 +116,40 @@ router.get('/:id', requiresAuth(), async (req, res) => {
       }
     }
   }
+
+  let addComment = false;
+  if(req.oidc){
+      const userType = await findUserType(req.oidc.user.nickname);
+      if(userType == "Player"){
+          const SQLCommentQuerry = `SELECT EXISTS (
+              SELECT 1
+              FROM JEDNOKRATNA_REZ jr
+              JOIN REZERVACIJA r ON r.rezervacijaID = jr.rezervacijaID
+              JOIN TERMIN_TJEDNI tt ON tt.terminID = r.terminID
+              WHERE jr.username = ?
+              AND tt.terenId = ?
+              AND r.statusRez = 'aktivna'
+              AND jr.datumRez < DATE('now', '+10 days')
+                
+          ) AS hadRez ;`
+          const hadPrevRez = await dbGet(
+              db,
+              SQLCommentQuerry,
+              [req.oidc.user.nickname, id]
+          );
+          if(hadPrevRez.hadRez)
+              addComment = true;
+      }
+  }
+
   res.render('terrain', {
           teren: tereni[0],
-          termini: dostupniTermini
+          termini: dostupniTermini,
+          addComment: addComment
       });
   db.close();
 });
+
 router.post('/:id', requiresAuth(), async (req, res) => {
   const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
   console.log(req.body);
@@ -178,5 +214,32 @@ router.post('/:id', requiresAuth(), async (req, res) => {
   
   res.redirect('/terrain/' + req.params.id);
 });
+
+router.post("/:terenID/addComment", requiresAuth(), async (req, res) => {
+  const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+  const runQuery = (sql, params) => new Promise((resolve, reject) => {
+                db.run(sql, params, function(err) {
+                        if (err) return reject(err);
+                        resolve(this);
+                });
+        });
+  SQLQuery = `INSERT INTO recenzija(komentar, ocjena, datumRecenzija, username, terenID)
+              VALUES (?, ?, ?, ?, ?)`
+  try{
+    //treba rijesiti datum i provjera tipova!
+          await runQuery(SQLQuery, [req.body.komentar,
+                                    req.body.ocjena,
+                                    "11-11-2001",
+                                    req.oidc.user.nickname,
+                                    req.params.terenID]);
+  }catch(err){
+          console.error(err.message);
+          res.status(500).send("Internal Server Error adding comment");
+          db.close();
+          return;
+  }
+  db.close(),
+    res.redirect(`/terrain/${req.params.terenID}`)
+})
 
 module.exports = router;
