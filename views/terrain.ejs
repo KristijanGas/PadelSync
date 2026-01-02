@@ -47,5 +47,15 @@
                 <p>Nema dostupnih termina.</p>
             <%}%>
         <%}%>
+
+        <%if(addComment){%>
+            <form action="/terrain/<%= teren.terenID %>/addComment" method="POST">
+                <label for="komentar">Dodajte svoj komentar:</label>
+                <textarea id="komentar" name="komentar" rows="12" cols="40" placeholder="Napišite komentar"></textarea><br><br>
+                <label for="ocjena">Ocjena</label>
+                <input type="number" name="ocjena" id="ocjena"><br><br>
+                <button type="submit">Objavi komentar</button>
+            </form>
+        <%}%>
     </body>
 </html>

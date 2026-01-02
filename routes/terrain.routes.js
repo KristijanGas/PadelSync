@@ -6,6 +6,7 @@ const { verifyProfile, verifyDBProfile, findUserType } = require("../backendutil
 const { requiresAuth } = require('express-openid-connect')
 const axios = require('axios');
 const { checkAvailability } = require('../backendutils/checkAvailability');
+
 const StatusRezervacije = require('../constants/statusRez');
 const StatusPlacanja = require('../constants/statusPlacanja');
 
@@ -31,9 +32,13 @@ function currentDateOff(offset) {
   var date = new Date(Date.now());
   var newDate = new Date(date);
   newDate.setDate(newDate.getDate()-date.getDay()+offset);
-  const year = newDate.getFullYear();
-  const month = newDate.getMonth()+1;
-  const day = newDate.getDate();
+  let year = newDate.getFullYear().toString();
+  let month = (newDate.getMonth()+1).toString();
+  if(month.length == 1)
+    month = "0" + month;
+  let day = newDate.getDate().toString();
+  if(day.length == 1)
+    day = "0" + day;
   return year + '-' + month + '-' + day;
 }
 function currentDate() {
@@ -122,17 +127,41 @@ router.get('/:id', requiresAuth(), async (req, res) => {
     cardAllowed = false;
   }else{
     cardAllowed = true;
+  let addComment = false;
+  if(req.oidc){
+      const userType = await findUserType(req.oidc.user.nickname);
+      if(userType == "Player"){
+          const SQLCommentQuerry = `SELECT EXISTS (
+              SELECT 1
+              FROM JEDNOKRATNA_REZ jr
+              JOIN REZERVACIJA r ON r.rezervacijaID = jr.rezervacijaID
+              JOIN TERMIN_TJEDNI tt ON tt.terminID = r.terminID
+              WHERE jr.username = ?
+              AND tt.terenId = ?
+              AND r.statusRez = 'aktivna'
+              AND jr.datumRez < DATE('now', '+10 days')
+                
+          ) AS hadRez ;`
+          const hadPrevRez = await dbGet(
+              db,
+              SQLCommentQuerry,
+              [req.oidc.user.nickname, id]
+          );
+          if(hadPrevRez.hadRez)
+              addComment = true;
+      }
   }
 
   res.render('terrain', {
           teren: tereni[0],
           termini: dostupniTermini,
-          cardAllowed
+          cardAllowed,
+          addComment: addComment
+
       });
   db.close();
+    }
 });
-
-
 
 router.post('/:id', requiresAuth(), async (req, res) => {
   const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
@@ -233,5 +262,31 @@ router.post('/:id', requiresAuth(), async (req, res) => {
 });
 
 
+router.post("/:terenID/addComment", requiresAuth(), async (req, res) => {
+  const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+  const runQuery = (sql, params) => new Promise((resolve, reject) => {
+                db.run(sql, params, function(err) {
+                        if (err) return reject(err);
+                        resolve(this);
+                });
+        });
+  SQLQuery = `INSERT INTO recenzija(komentar, ocjena, datumRecenzija, username, terenID)
+              VALUES (?, ?, ?, ?, ?)`
+  try{
+    //treba rijesiti datum i provjera tipova!
+          await runQuery(SQLQuery, [req.body.komentar,
+                                    req.body.ocjena,
+                                    "11-11-2001",
+                                    req.oidc.user.nickname,
+                                    req.params.terenID]);
+  }catch(err){
+          console.error(err.message);
+          res.status(500).send("Internal Server Error adding comment");
+          db.close();
+          return;
+  }
+  db.close(),
+    res.redirect(`/terrain/${req.params.terenID}`)
+})
 
 module.exports = router;
