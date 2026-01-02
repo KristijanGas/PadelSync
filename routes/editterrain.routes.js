@@ -130,7 +130,8 @@ async function checkTerrainInfo(data){
                 errors.push("'cijenaTeren' must be a non-negative number.");
         }
 
-        if (!(await verifyInputText(data.imeTeren)) && data.imeTeren) {
+        const rez = await verifyInputText(data.imeTeren)
+        if (!rez && data.imeTeren) {
                 errors.push(
                 "'imeTeren' cannot contain special chars"
                 );

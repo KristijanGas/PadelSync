@@ -36,7 +36,7 @@
             <%if(profileTypeOfEditedUser === "Player"){%>
             <form id="playerInfo" method="POST" action="<%=usernameOfEditedUser%>/insertPlayerInfo">
                 <label for="brojMob">Broj mobitela:</label>
-                <input type="text" id="brojMob" min="0" name="brojMob" value=<%=userInfo.brojMob%>><br><br>
+                <input type="text" id="brojMob" min="0" name="brojMob" value="<%=userInfo.brojMob%>"><br><br>
                 <label for="prefVrijeme">Preferirano vrijeme:</label>
                 <input type="date" id="prefVrijeme" name="prefVrijeme" value=<%=userInfo.prefVrijeme%>><br><br>
                 <label for="razZnanjaPadel">Razina znanja padela:</label>
@@ -49,9 +49,9 @@
                     <label for="beginner">Beginner</label><br>
                 </div>
                 <label for="prezimeIgrac">Prezime:</label>
-                <input type="text" id="prezimeIgrac" name="prezimeIgrac" value=<%=userInfo.prezimeIgrac%>><br><br>
+                <input type="text" id="prezimeIgrac" name="prezimeIgrac" value="<%=userInfo.prezimeIgrac%>"><br><br>
                 <label for="imeIgrac">Ime:</label>
-                <input type="text" id="imeIgrac" name="imeIgrac" value=<%=userInfo.imeIgrac%>><br><br>
+                <input type="text" id="imeIgrac" name="imeIgrac" value="<%=userInfo.imeIgrac%>"><br><br>
                 <button type="submit">Spremi postavke</button>
             </form>
             <form id="eraseType" method="POST" action="/edituser/eraseType">
@@ -63,7 +63,7 @@
                     <label for="svlacionice">Broj svlacionica:</label>
                     <input type="number" id="svlacionice" name="svlacionice" min="0" value=<%=userInfo.svlacionice%>><br><br>
                     <label for="imeKlub">Ime kluba:</label>
-                    <input type="text" id="imeKlub" name="imeKlub" value=<%=userInfo.imeKlub%>><br><br>
+                    <input type="text" id="imeKlub" name="imeKlub" value="<%=userInfo.imeKlub%>"><br><br>
                     <label for="najamReketa">Najam reketa:</label>
                     <input type="number" id="najamReketa" name="najamReketa" min="0" value=<%=userInfo.najamReketa%>><br><br>
                     <label for="pravilaKlub">Pravila kluba:</label>
@@ -75,7 +75,7 @@
                     <label for="tusevi">Koliko tuševa imate:</label>
                     <input type="number" id="tusevi" min = "0" name="tusevi" value=<%=userInfo.tusevi%>><br><br>
                     <label for="adresaKlub">Adresa kluba:</label>
-                    <input type="text" id="adresaKlub" name="adresaKlub" value=<%=userInfo.adresaKlub%>><br><br>
+                    <input type="text" id="adresaKlub" name="adresaKlub" value="<%=userInfo.adresaKlub%>"><br><br>
                     <label for="prostorZaOdmor">Prostor za odmor:</label>
                     <input type="number" id="prostorZaOdmor" min="0" name="prostorZaOdmor" value=<%=userInfo.prostorZaOdmor%>><br><br>
                     <label for="opisKluba">opis Kluba:</label>

@@ -64,6 +64,7 @@ if(clubForm){
         event.preventDefault();
 
         const formData = new FormData(clubForm);
+        console.log(formData)
         selectedFiles.forEach((file) => formData.append("slike", file));
         formData.append('erasePhotos[]', '');
         eraseFiles.forEach(photoId => formData.append('erasePhotos[]', photoId));

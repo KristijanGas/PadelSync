@@ -13,9 +13,9 @@
         <div class="SettingsMenu">
             <form id="terrainInfo" method="POST" enctype="multipart/form-data">
                 <label for="tipPodloge">Tip podloge:</label>
-                <input type="text" id="tipPodloge" name="tipPodloge" min="0" value=<%=terrainInfo.tipPodloge%>><br><br>
+                <input type="text" id="tipPodloge" name="tipPodloge" min="0" value="<%=terrainInfo.tipPodloge%>"><br><br>
                 <label for="velicinaTeren">Veličina terena:</label>
-                <input type="text" id="velicinaTeren" name="velicinaTeren" min="0" value=<%=terrainInfo.velicinaTeren%>><br><br>
+                <input type="text" id="velicinaTeren" name="velicinaTeren" min="0" value="<%=terrainInfo.velicinaTeren%>"><br><br>
                 <label for="osvjetljenje">Osvjetljenje:</label>
                 <input type="number" id="osvjetljenje" name="osvjetljenje" rows="12" cols="40" value=<%=terrainInfo.osvjetljenje%>></textarea><br><br>
                 <label for="vanjskiUnutarnji">Je li ternen vanjski ili unutarnji:</label>
@@ -30,7 +30,7 @@
                 <label for="cijenaTeren">Cijena terena:</label>
                 <input type="number" step="0.01" id="cijenaTeren" min = "0" name="cijenaTeren" value=<%=terrainInfo.cijenaTeren%>><br><br>
                 <label for="imeTeren">Ime terena:</label>
-                <input type="text" id="imeTeren" name="imeTeren" value=<%=terrainInfo.imeTeren%>><br><br>
+                <input type="text" id="imeTeren" name="imeTeren" value="<%=terrainInfo.imeTeren%>"><br><br>
                 <label for="slike">Slike:</label>
                 <input type="file" id="slike" name="slike" multiple accept="image/jbeg"><br><br>
                 <div id="photosContainer" data-terrain-photos='<%-JSON.stringify(terrainPhotos)%>'></div>

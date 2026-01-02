@@ -69,6 +69,7 @@ router.get('/:username', requiresAuth(), async (req, res) => {
                                                 if(profileTypeOfEditedUser === "Club"){
                                                         clubPhotos = clubPhotos.map(p => p.fotoKlubID)
                                                 }
+
                                                 res.render("edituser", {
                                                 username: req.oidc.user["https://yourapp.com/username"],
                                                 profileType: profileInDB,
@@ -176,6 +177,7 @@ router.post('/eraseType', requiresAuth(), async (req, res) => {
         res.redirect(`/edituser/${req.oidc.user.nickname}`);
 });
 
+
 function checkPlayerInfo(data){
         const errors = [];
         if(data.razZnanjaPadel !== "pro" && data.razZnanjaPadel !== "beginner" && data.razZnanjaPadel !== "intermediate" && data.razZnanjaPadel){
@@ -186,12 +188,12 @@ function checkPlayerInfo(data){
         const prezime = (data.prezimeIgrac || "").trim();
 
         const imeRegex = /^[\p{L}\s\-]{2,30}$/u;
-        if (!imeRegex.test(ime) && ime) {
+        if (!imeRegex.test(ime) && data.imeIgrac) {
         errors.push("'imeIgrac' must be 2–30 letters, no spaces or special characters.");
         }
 
         const prezimeRegex = /^[\p{L}]+(?:[ -][\p{L}]+)*$/u;
-        if (!prezimeRegex.test(prezime) || prezime.length < 2 || prezime.length > 30 && prezime) {
+        if (data.prezimeIgrac && !prezimeRegex.test(prezime)) {
         errors.push(
         "'prezimeIgrac' must be 2–30 chars, letters only, can contain spaces or '-' between names but not at start or end."
         );
@@ -278,12 +280,12 @@ async function checkClubInfo(data) {
 
   const nameRegex = /^[\p{L}\p{N} .,_()\-\s]{3,30}$/u;
   const ime = (data.imeKlub || "").trim().replace(/\s+/g, " ");
-  if (!nameRegex.test(ime) && ime)
+  if (!nameRegex.test(ime) && data.imeKlub)
     errors.push("'imeKlub' must be 3–30 chars and contain only letters, numbers and spaces.");
 
   const adressRegex = /^[\p{L}\p{N} ]{3,70}$/u;
   const adresa = (data.adresaKlub || "").trim().replace(/\s+/g, " ");
-  if (!adressRegex.test(adresa) && adresa)
+  if (!adressRegex.test(adresa) && data.adresaKlub)
     errors.push("'adresaKlub' must be 3–70 chars and contain only letters, numbers and spaces.");
 
   if (!(await verifyInputText(data.pravilaKlub)) && data.pravilaKlub) 
