@@ -6,6 +6,7 @@ const { verifyProfile, verifyDBProfile, findUserType } = require("../backendutil
 const { requiresAuth } = require('express-openid-connect')
 const axios = require('axios');
 const { checkAvailability } = require('../backendutils/checkAvailability');
+const { verifyInputText } = require("../backendutils/verifyInputText");
 
 const StatusRezervacije = require('../constants/statusRez');
 const StatusPlacanja = require('../constants/statusPlacanja');
@@ -48,6 +49,7 @@ function currentDate() {
   const day = date.getDate();
   return year + '-' + month + '-' + day;
 }
+
 router.get('/:id', requiresAuth(), async (req, res) => {
   const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
   const id = req.params.id;
@@ -127,31 +129,47 @@ router.get('/:id', requiresAuth(), async (req, res) => {
     cardAllowed = false;
   }else{
     cardAllowed = true;
+  }
   let addComment = false;
   if(req.oidc){
       const userType = await findUserType(req.oidc.user.nickname);
       if(userType == "Player"){
+
+        
           const SQLCommentQuerry = `SELECT EXISTS (
-              SELECT 1
+              SELECT jr.datumRez
               FROM JEDNOKRATNA_REZ jr
               JOIN REZERVACIJA r ON r.rezervacijaID = jr.rezervacijaID
               JOIN TERMIN_TJEDNI tt ON tt.terminID = r.terminID
               WHERE jr.username = ?
               AND tt.terenId = ?
-              AND r.statusRez = 'aktivna'
-              AND jr.datumRez < DATE('now', '+10 days')
+              AND r.statusRez = ?
+              AND jr.datumRez < DATE('now')
                 
           ) AS hadRez ;`
           const hadPrevRez = await dbGet(
               db,
               SQLCommentQuerry,
-              [req.oidc.user.nickname, id]
+              [req.oidc.user.nickname, id, StatusRezervacije.AKTIVNA],
           );
           if(hadPrevRez.hadRez)
               addComment = true;
+
+          const SQLCommentQuerry1 = `SELECT EXISTS(SELECT 1 FROM
+                                    recenzija r
+                                    WHERE username = ?
+                                    AND terenID = ?) AS hadComment`
+        const hadPrevComment = await dbGet(
+            db,
+            SQLCommentQuerry1,
+            [req.oidc.user.nickname, id]
+        )
+        if(hadPrevComment.hadComment){
+          addComment = false;
+        }
       }
   }
-
+  db.close();
   res.render('terrain', {
           teren: tereni[0],
           termini: dostupniTermini,
@@ -159,15 +177,14 @@ router.get('/:id', requiresAuth(), async (req, res) => {
           addComment: addComment
 
       });
-  db.close();
-    }
+  
+    
 });
 
 router.post('/:id', requiresAuth(), async (req, res) => {
   const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
   const { tipTermina, tipPlacanja, termin, teren} = req.body;
   const terminID = req.params.id;
-  console.log(terminID)
   const datum = termin.datum;
   const username = req.oidc.user.nickname;
   let statusPlac;
@@ -261,7 +278,6 @@ router.post('/:id', requiresAuth(), async (req, res) => {
   }
 });
 
-
 router.post("/:terenID/addComment", requiresAuth(), async (req, res) => {
   const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
   const runQuery = (sql, params) => new Promise((resolve, reject) => {
@@ -270,23 +286,37 @@ router.post("/:terenID/addComment", requiresAuth(), async (req, res) => {
                         resolve(this);
                 });
         });
+  const ocjena = Number(req.body.ocjena)
+  
+  const errors = [];
+  if(!ocjena || ocjena < 1 || ocjena > 5){
+    errors.push("Ocjena mora biti cijeli broj između 1 i 5")
+  }
+
+  if(!req.body.komentar || !verifyInputText(req.body.komentar)){
+    errors.push("Komentar ne smije biti prazan i ne smije sadržavati specijalne znakove")
+  }
+
+  if(errors.length > 0){
+    return res.status(400).json({ errors })
+  }
   SQLQuery = `INSERT INTO recenzija(komentar, ocjena, datumRecenzija, username, terenID)
               VALUES (?, ?, ?, ?, ?)`
+  const currentDateUTC = new Date().toISOString().split('T')[0];
   try{
     //treba rijesiti datum i provjera tipova!
           await runQuery(SQLQuery, [req.body.komentar,
                                     req.body.ocjena,
-                                    "11-11-2001",
+                                    currentDateUTC,
                                     req.oidc.user.nickname,
                                     req.params.terenID]);
   }catch(err){
           console.error(err.message);
-          res.status(500).send("Internal Server Error adding comment");
           db.close();
-          return;
+          return res.status(500).send("Internal Server Error adding comment");
   }
-  db.close(),
-    res.redirect(`/terrain/${req.params.terenID}`)
+  db.close();
+  res.status(200).json({redirect : `/terrain/${req.params.terenID}`})
 })
 
 module.exports = router;

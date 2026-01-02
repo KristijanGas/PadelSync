@@ -3,6 +3,7 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="/scripts/reservations.js" defer></script>
+        <script src="/scripts/commentHandler.js" defer></script>
     </head>
 
     <body>
@@ -49,11 +50,11 @@
         <%}%>
 
         <%if(addComment){%>
-            <form action="/terrain/<%= teren.terenID %>/addComment" method="POST">
+            <form class="commentForm" action="/terrain/<%= teren.terenID %>/addComment" method="POST">
                 <label for="komentar">Dodajte svoj komentar:</label>
-                <textarea id="komentar" name="komentar" rows="12" cols="40" placeholder="Napišite komentar"></textarea><br><br>
+                <textarea id="komentar" name="komentar" rows="12" cols="40" placeholder="Napišite komentar" required></textarea><br><br>
                 <label for="ocjena">Ocjena</label>
-                <input type="number" name="ocjena" id="ocjena"><br><br>
+                <input type="number" name="ocjena" id="ocjena" required><br><br>
                 <button type="submit">Objavi komentar</button>
             </form>
         <%}%>
