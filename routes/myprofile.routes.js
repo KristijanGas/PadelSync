@@ -54,6 +54,63 @@ router.get('/', requiresAuth(), async (req, res) => {
                                                         });
                                                 });
                                                 row.terrains = terrains;
+                                        }else{
+                                                let SQLOldRes = `SELECT jr.datumRez, 
+                                                        jr.rezervacijaID, 
+                                                        jr.transakcijaID, 
+                                                        r.statusRez,
+                                                        tt.terminID,
+                                                        t.terenId,
+                                                        tt.vrijemePocetak,
+                                                        tt.vrijemeKraj,
+                                                        t.imeTeren,
+                                                        k.username
+                                                        FROM JEDNOKRATNA_REZ jr
+                                                        JOIN REZERVACIJA r
+                                                                ON jr.rezervacijaID = r.rezervacijaID
+                                                        JOIN TERMIN_TJEDNI tt
+                                                                ON r.terminID = tt.terminID
+                                                        JOIN TEREN t
+                                                                ON tt.terenID = t.terenID
+                                                        JOIN KLUB k
+                                                                ON k.username = t.username
+                                                        WHERE jr.username = ?
+                                                        AND jr.datumRez < DATE('now')`
+                                                const oldRes = await new Promise((resolve, reject) => {
+                                                        db.all(SQLOldRes, [req.oidc.user.nickname], (err, rows) => {
+                                                        if (err) return reject(err);
+                                                        resolve(rows);
+                                                        });
+                                                });
+                                                let SQLNewRes = `SELECT jr.datumRez, 
+                                                        jr.rezervacijaID, 
+                                                        jr.transakcijaID, 
+                                                        r.statusRez,
+                                                        tt.terminID,
+                                                        t.terenId,
+                                                        tt.vrijemePocetak,
+                                                        tt.vrijemeKraj,
+                                                        t.imeTeren,
+                                                        k.username
+                                                        FROM JEDNOKRATNA_REZ jr
+                                                        JOIN REZERVACIJA r
+                                                                ON jr.rezervacijaID = r.rezervacijaID
+                                                        JOIN TERMIN_TJEDNI tt
+                                                                ON r.terminID = tt.terminID
+                                                        JOIN TEREN t
+                                                                ON tt.terenID = t.terenID
+                                                        JOIN KLUB k
+                                                                ON k.username = t.username
+                                                        WHERE jr.username = ?
+                                                        AND jr.datumRez >= DATE('now')`
+                                                const newRes = await new Promise((resolve, reject) => {
+                                                        db.all(SQLNewRes, [req.oidc.user.nickname], (err, rows) => {
+                                                        if (err) return reject(err);
+                                                        resolve(rows);
+                                                        });
+                                                });
+                                                row.oldRes = oldRes;
+                                                row.newRes = newRes;
                                         }
                                         db.close();
                                         res.render("myprofile", {

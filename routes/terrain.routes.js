@@ -177,8 +177,6 @@ router.get('/:id', requiresAuth(), async (req, res) => {
           addComment: addComment
 
       });
-  
-    
 });
 
 router.post('/:id', requiresAuth(), async (req, res) => {
@@ -309,7 +307,64 @@ router.post('/:id', requiresAuth(), async (req, res) => {
   }
 });
 
-router.post("/:terenID/addComment", requiresAuth(), async (req, res) => {
+router.get("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
+  const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+  try {
+    // Verify user
+    const isVerified = await verifyProfile(req, res);
+    if (!isVerified) return res.render("verifymail");
+
+    const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
+   
+    if(profileInDB !== "Player"){
+      return res.status(500).send("samo igrači mogu otkazivati rezervacije")
+    }
+  }catch(err){
+    console.error(err);
+    db.close();
+    return res.status(500).send(err);
+  }
+
+  const { rezervacijaID } = req.params;
+  try{
+    let SQLQuery = `SELECT * FROM JEDNOKRATNA_REZ jr WHERE jr.username = ? AND jr.rezervacijaID = ?`;
+    let row = await dbGet(db, SQLQuery, [req.oidc.user.nickname, rezervacijaID])
+    if(!row){
+      return res.status(500).send("ne možete otkazati tuđu rezervaciju")
+    }
+
+    SQLQuery = `SELECT statusRez FROM JEDNOKRATNA_REZ jr JOIN REZERVACIJA r ON 
+                jr.rezervacijaID = r.rezervacijaID
+                WHERE r.rezervacijaID = ?
+                AND jr.datumRez > date('now', '+1 day');`
+    row = await dbGet(db, SQLQuery, [rezervacijaID])
+    if(!row){
+      return res.status(500).send("rezervacije se mogu otkazati samo dan unaprijed")
+    }else if(row.statusRez != StatusRezervacije.AKTIVNA){
+      console.log(row)
+      return res.status(500).send("ne možete otkazati neaktivnu rezervaciju")
+    }
+
+    SQLQuery = `UPDATE rezervacija SET statusRez = ? WHERE rezervacijaID = ?`
+    const runQuery = (sql, params) => new Promise((resolve, reject) => {
+                                                db.run(sql, params, function(err) {
+                                                        if (err) return reject(err);
+                                                        resolve(this);
+                                                });
+                                        });
+    await runQuery(SQLQuery, [StatusRezervacije.OTKAZANA, rezervacijaID])
+
+    //treba provjeriti način plaćanja
+  }catch(err){
+    console.error(err);
+    return res.status(500).send("error canceling reservation")
+  }
+  db.close();
+  res.redirect("/myprofile");
+})
+
+router.post("/:terenID/addComment", requiresAuth(), async (req, res) => {ž
+  const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
   try {
     // Verify user
     const isVerified = await verifyProfile(req, res);
@@ -326,7 +381,7 @@ router.post("/:terenID/addComment", requiresAuth(), async (req, res) => {
     return res.status(500).send(err);
   }
 
-  const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+  
   const runQuery = (sql, params) => new Promise((resolve, reject) => {
                 db.run(sql, params, function(err) {
                         if (err) return reject(err);
