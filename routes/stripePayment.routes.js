@@ -102,12 +102,15 @@ router.get('/payment/checkout/:transakcijaID', async (req, res) => {
 
   let cijena, clubStripeId;
   try{
-    const SQLCijena = `SELECT iznos FROM TRANSAKCIJA WHERE transakcijaID = ?`
+    const SQLCijena = `SELECT iznos, nacinPlacanja FROM TRANSAKCIJA WHERE transakcijaID = ?`
     let row = await dbGet(db, SQLCijena, [transakcijaID]);
 
-    if(!row || !row.iznos){
+    if(!row || !row.iznos || !row.nacinPlacanja){
       return res.status(500).send("neki sjeb, nema cifre")
     }else{
+      if(row.nacinPlacanja != "kartica"){
+        return res.status(500).send("nacin placanja nije kartica")
+      }
       cijena = row.iznos
     }
 

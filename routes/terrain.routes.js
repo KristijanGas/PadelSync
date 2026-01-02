@@ -99,7 +99,7 @@ router.get('/:id', requiresAuth(), async (req, res) => {
   let dostupniTermini = [];
   for (let termin of termini) {
     let dejtOwO = currentDateOff(termin.danTjedan);
-    if(checkAvailability(termin.terenID, dejtOwO, termin.vrijemePocetak, termin.vrijemeKraj)) {
+    if(await checkAvailability(termin.terenID, dejtOwO, termin.vrijemePocetak, termin.vrijemeKraj)) {
       const kopija = structuredClone(termin);
       kopija.datum = dejtOwO;
       kopija.klub = clubUsername;
@@ -182,6 +182,21 @@ router.get('/:id', requiresAuth(), async (req, res) => {
 });
 
 router.post('/:id', requiresAuth(), async (req, res) => {
+  try {
+    // Verify user
+    const isVerified = await verifyProfile(req, res);
+    if (!isVerified) return res.render("verifymail");
+
+    const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
+   
+    if(profileInDB !== "Player"){
+      return res.status(500).send("samo igrači mogu rezervirat termin")
+    }
+  }catch(err){
+    console.error(err);
+    db.close();
+    return res.status(500).send(err);
+  }
   const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
   const { tipTermina, tipPlacanja, termin, teren} = req.body;
   const terminID = req.params.id;
@@ -191,6 +206,22 @@ router.post('/:id', requiresAuth(), async (req, res) => {
   let tipPretpId;
   let ID;
 
+  //check availability
+  try{
+    const sqlQueryTime = `SELECT vrijemeKraj, vrijemePocetak FROM TERMIN_TJEDNI WHERE terminId = ?`
+    const row = await dbGet(db, sqlQueryTime, [terminID]);
+    if(!row.vrijemeKraj || !row.vrijemePocetak){
+      return res.status(500).send("error checking availability")
+    }
+    const res = await checkAvailability(teren.terenID, datum, row.vrijemePocetak, row.vrijemeKraj)
+    if(!res){
+      return res.status(500).send("error, termin vec zauzet")
+    }
+  }catch(err){
+    db.close();
+    console.error(err)
+    return res.status(500).send("error checking availability")
+  }
   let statusRez;
   if(tipPlacanja==="gotovina"){
     statusRez = StatusRezervacije.AKTIVNA
@@ -279,6 +310,22 @@ router.post('/:id', requiresAuth(), async (req, res) => {
 });
 
 router.post("/:terenID/addComment", requiresAuth(), async (req, res) => {
+  try {
+    // Verify user
+    const isVerified = await verifyProfile(req, res);
+    if (!isVerified) return res.render("verifymail");
+
+    const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
+   
+    if(profileInDB !== "Player"){
+      return res.status(500).send("samo igrači mogu ostavljati komentare")
+    }
+  }catch(err){
+    console.error(err);
+    db.close();
+    return res.status(500).send(err);
+  }
+
   const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
   const runQuery = (sql, params) => new Promise((resolve, reject) => {
                 db.run(sql, params, function(err) {
