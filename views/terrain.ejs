@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="styles/home.css">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="/scripts/reservations.js" defer></script>
     </head>
 
     <body>
@@ -15,16 +15,31 @@
             <%if (termini.length > 0) {%>
                 <p>Dostupni termini za ovaj tjedan su:</p>
                 <% for(let termin of termini) {%>
-                    <form class="formaRezervacije" action="/terrain/<%= termin.terenID %>" method="POST">
+                    <form class="formaRezervacije" enctype="multipart/form-data" method="POST">
                         <p><%= termin.datum %> u <%= termin.vrijemePocetak %> do <%= termin.vrijemeKraj %> sati.</p>
                         <p>Koji tip termina zelite rezervirati?</p>
                         <input type="radio" id="jdn" name="tipTermina" value="jednokratni" required>
                         <label for="jdn">Jednokrantni termin</label>
                         <input type="radio" id="pon" name="tipTermina" value="ponavljajuci">
                         <label for="pon">Ponavljajuci termin</label>
+                        <%if(cardAllowed){%>
+                            <p>Odaberite način plaćanja</p>
+                            <input type="radio" id="gotovina" name="tipPlacanja" value="gotovina" required>
+                            <label for="tipPlacanja">Gotovina</label>
+                            <input type="radio" id="kartica" name="tipPlacanja" value="kartica">
+                            <label for="tipPlacanja">Kartica</label>
+                        <%}else{%>
+                            <p>Ovaj klub podržava samo plaćanje gotovinom</p>
+                        <%}%>
                         <input type="hidden" name="terminID" value=<%= termin.terminID %>>
                         <input type="hidden" name="datum" value=<%= termin.datum %>><br>
                         <input type="hidden" name="klub" value=<%= termin.klub %>>
+                        <div
+                        id="terminInfo"
+                        data-termin='<%- JSON.stringify(termin) %>'
+                        data-teren='<%- JSON.stringify(teren) %>'
+                        ></div>
+
                         <input type="submit" value="Rerezviraj?">
                     </form>
                 <% }%>

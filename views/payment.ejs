@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8">
+  <title>Plaćanje</title>
+</head>
+<body>
+
+  <h2>
+    Plaćanje <%= cijena %> € za rezervaciju u klubu <%= klub %>
+  </h2>
+
+  <button
+    id="payBtn"
+    data-transakcija-id="<%= transakcijaID %>">
+    Plati karticom
+  </button>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const payBtn = document.getElementById("payBtn");
+
+      payBtn.addEventListener("click", () => {
+        const transakcijaID = payBtn.dataset.transakcijaId;
+        window.location.href = `checkout/${transakcijaID}`;
+      });
+    });
+  </script>
+
+</body>
+</html>

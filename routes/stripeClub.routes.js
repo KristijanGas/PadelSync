@@ -51,14 +51,14 @@ router.get("/", requiresAuth(), async (req, res) => {
       // Store stripeId in DB
       await dbRun(db, "UPDATE klub SET stripeId = ? WHERE username = ?", [stripeId, req.oidc.user.nickname]);
 
-      console.log(account);
     }
 
+    const currentUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
     // Generate accountLink for onboarding
     const accountLink = await stripe.accountLinks.create({
       account: stripeId,
-      refresh_url: process.env.REFRESH_URL || `https://maryanna-nonrealizable-ambroise.ngrok-free.dev/stripe/fail`,
-      return_url: process.env.RETURN_URL || `https://maryanna-nonrealizable-ambroise.ngrok-free.dev/stripe/complete`,
+      refresh_url: process.env.REFRESH_URL || `${currentUrl}/fail`,
+      return_url: process.env.RETURN_URL || `${currentUrl}/complete`,
       type: "account_onboarding"
     });
 

@@ -13,7 +13,7 @@ const config = {
   authRequired: false,
   auth0Logout: true,
   secret: process.env.SECRET,
-  baseURL: /* process.env.BASEURL ||  */"https://maryanna-nonrealizable-ambroise.ngrok-free.dev",
+  baseURL: process.env.BASEURL,
   clientID: process.env.CLIENTID,
   issuerBaseURL: process.env.ISSUER,
   clientSecret: process.env.CLIENTSECRET,
@@ -24,19 +24,28 @@ const config = {
   },
   session: {
       cookie: {
-        secure: true, // REQUIRED for ngrok
-        sameSite: 'None'
+        secure: false,
+        sameSite: 'Lax'
       }
     }
 };
 
-app.set('trust proxy', 1);
+/* app.set('trust proxy', 1); */
 app.set('views','./views');
 app.set('view engine', 'ejs');
 app.engine('html', require('ejs').renderFile);
 
+
+app.post(
+  "/stripe/webhook",
+  express.raw({ type: "application/json" }),
+  require("./routes/stripePayment.routes").webhookHandler
+);
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 
 app.use(session({
     secret: 'verysecretyesyes', // used to sign the session ID cookie
@@ -77,14 +86,15 @@ const user_searchRouter = require('./routes/user_search.routes');
 const terrainRouter = require('./routes/terrain.routes');
 const terrain_searchRouter = require('./routes/terrain_search.routes');
 const stripeClubRouter = require('./routes/stripeClub.routes')
-const stripePayment = require('./routes/stripePayment.routes')
+const stripePaymentRouter = require('./routes/stripePayment.routes')
+
 app.use('/home', homeRouter);
 app.use('/user_search', user_searchRouter);
 app.use('/user', userRouter);
 app.use('/terrain_search', terrain_searchRouter);
 app.use('/terrain', terrainRouter);
 app.use('/stripeClub', stripeClubRouter)
-app.use('/create-payment-intent', stripePayment)
+app.use('/stripe', stripePaymentRouter.router)
 
 app.get('/react', (req, res) => {
   res.redirect('http://localhost:8080');
@@ -126,9 +136,6 @@ app.use('/signup', (req, res) => {
   }
 })
 
-app.get("/pay", (req, res) => {
-  res.render("testPayment")
-})
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });

@@ -13,7 +13,7 @@ const form = document.getElementById("payment-form");
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const response = await fetch("/create-payment-intent", {
+  const response = await fetch("/payment", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -33,6 +33,7 @@ form.addEventListener("submit", async (e) => {
     document.getElementById("error-message").textContent =
       result.error.message;
   } else if (result.paymentIntent.status === "succeeded") {
+    console.log(result)
     alert("Payment successful!");
   }
 });
