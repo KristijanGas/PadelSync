@@ -8,6 +8,8 @@ require("dotenv").config();
 const session = require('express-session')
 const { auth } = require('express-openid-connect');
 const path = require("path");
+const {checkPayments, checkPonavljajuce} = require('./backendutils/periodic');
+
 
 const config = {
   authRequired: false,
@@ -122,6 +124,8 @@ const myprofileRouter = require('./routes/myprofile.routes');
 app.use('/myprofile', myprofileRouter);
 
 const editscheduleRouter = require('./routes/editschedule.routes');
+const { checkPayments } = require('./backendutils/periodic');
+const { checkAvailability } = require('./backendutils/checkAvailability');
 app.use('/editschedule', editscheduleRouter);
 
 app.use('/signup', (req, res) => {
@@ -139,5 +143,7 @@ app.use('/signup', (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
+setInterval(checkPayments, 1000 * 60 * 60 * 24);
+setInterval(checkPonavljajuce, 1000 * 60 * 60 * 24);
 
 module.exports = app;

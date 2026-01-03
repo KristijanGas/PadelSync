@@ -7,6 +7,14 @@ const { requiresAuth } = require('express-openid-connect')
 const axios = require('axios');
 const { checkAvailability } = require('../backendutils/checkAvailability');
 const { verifyInputText } = require("../backendutils/verifyInputText");
+const nodemailer = require('nodemailer');
+let transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'padelsynkovic@gmail.com',
+    pass: 'padelsync'
+  }
+});
 
 const StatusRezervacije = require('../constants/statusRez');
 const StatusPlacanja = require('../constants/statusPlacanja');
@@ -40,13 +48,6 @@ function currentDateOff(offset) {
   let day = newDate.getDate().toString();
   if(day.length == 1)
     day = "0" + day;
-  return year + '-' + month + '-' + day;
-}
-function currentDate() {
-  var date = new Date(Date.now());
-  const year = date.getFullYear();
-  const month = date.getMonth()+1;
-  const day = date.getDate();
   return year + '-' + month + '-' + day;
 }
 
@@ -287,6 +288,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
       res.status(404).send("Ne postoji covjek s tom pretplatom LoL");
     }
     const SQLQuery3 = `INSERT INTO PONAVLJAJUCA_REZ (rezervacijaID, tipPretpID) VALUES (?, ?)`
+    await new Promise((resolve, reject) => {
     db.run(SQLQuery3, [ID, tipPretpId], function(err) {
       if (err) {
         console.error(err.message);
@@ -294,9 +296,21 @@ router.post('/:id', requiresAuth(), async (req, res) => {
       }
       resolve();
     });
+  });
   } else {
-    res.status(500).send("Zasto saljes post zahtjev s nevaljajucim parametrom?")
+    const query = 'DELETE FROM rezervacija where rezervacijaID = ?';
+    await new Promise((resolve, reject) => {
+      db.run(query, [ID], function(err){
+        if(err) {
+          console.error(err.message);
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+    res.status(500).send("Zasto saljes post zahtjev s nevaljajucim parametrom?");
   }
+  
   
   const currentUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
   if(tipPlacanja==="gotovina"){

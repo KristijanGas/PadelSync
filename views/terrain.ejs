@@ -14,7 +14,7 @@
 
         <%if (typeof termini !== 'undefined') {%>
             <%if (termini.length > 0) {%>
-                <p>Dostupni termini za ovaj tjedan su:</p>
+                <p>Dostupni termini za narednih 5 tjedana su:</p>
                 <% for(let termin of termini) {%>
                     <form class="formaRezervacije" enctype="multipart/form-data" method="POST">
                         <p><%= termin.datum %> u <%= termin.vrijemePocetak %> do <%= termin.vrijemeKraj %> sati.</p>
