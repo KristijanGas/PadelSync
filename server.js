@@ -11,11 +11,29 @@ const path = require("path");
 const {checkPayments, checkPonavljajuce} = require('./backendutils/periodic');
 const cors=require("cors");
 
+let baseURL;
+let isProduction = (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "development") && !!process.env.NGROK_BASE;
+
+if (isProduction) {
+  baseURL = process.env.NGROK_BASE;
+  app.set('trust proxy', 1); // potrebno za HTTPS + secure cookies iza proxy
+} else {
+  baseURL = process.env.BASEURL || `http://localhost:${port}`;
+}
+
+app.use(session({
+    secret: 'verysecretyesyes', // used to sign the session ID cookie
+    resave: false, // do not save the session if it's not modified
+    // do not save new sessions that have not been modified
+    saveUninitialized: false,
+}));
+
+
 const config = {
   authRequired: false,
   auth0Logout: true,
   secret: process.env.SECRET,
-  baseURL: process.env.BASEURL,
+  baseURL: baseURL,
   clientID: process.env.CLIENTID,
   issuerBaseURL: process.env.ISSUER,
   clientSecret: process.env.CLIENTSECRET,
@@ -26,7 +44,7 @@ const config = {
   },
   session: {
       cookie: {
-        secure: false,
+        secure: isProduction,
         sameSite: 'Lax'
       }
     }
@@ -38,7 +56,10 @@ const corsOptions ={
 }
 
 app.use(cors(corsOptions));
-/* app.set('trust proxy', 1); */
+if(process.env.NGROK_BASE){
+  app.set('trust proxy', 1);
+}
+
 app.set('views','./views');
 app.set('view engine', 'ejs');
 app.engine('html', require('ejs').renderFile);
@@ -54,13 +75,6 @@ app.post(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
-app.use(session({
-    secret: 'verysecretyesyes', // used to sign the session ID cookie
-    resave: false, // do not save the session if it's not modified
-    // do not save new sessions that have not been modified
-    saveUninitialized: false,
-}));
 
 // Middleware to log session data
 app.use((req, res, next) => {

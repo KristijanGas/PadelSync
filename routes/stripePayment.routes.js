@@ -1,6 +1,12 @@
 const express = require('express');
 const Stripe = require("stripe");
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+let stripeSecretKey;
+if(process.env.NODE_ENV === "test"){
+  stripeSecretKey = process.env.STRIPE_SECRET_KEY_TEST
+}else{
+  stripeSecretKey = process.env.STRIPE_SECRET_KEY
+}
+const stripe = new Stripe(stripeSecretKey);
 const router = express.Router();
 const sqlite3 = require('sqlite3').verbose();
 const { verifyProfile, verifyDBProfile } = require("../backendutils/verifyProfile");
@@ -240,11 +246,19 @@ const webhookHandler = async (req, res) => {
   const sig = req.headers["stripe-signature"];
 
   let event;
+  let webhookSecret;
+  if(process.env.NODE_ENV === "test"){
+    webhookSecret = process.env.STRIPE_WEBHOOK_SECRET_TEST
+  }else if(process.env.NODE_ENV === "development"){
+    webhookSecret = process.env.STRIPE_WEBHOOK_SECTER_NGROK
+  }else{
+    webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+  }
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET
+      webhookSecret
     );
   } catch (err) {
     console.error("Webhook signature error:", err.message);

@@ -1,6 +1,12 @@
 const express = require('express');
 const Stripe = require("stripe");
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+let stripeSecretKey;
+if(process.env.NODE_ENV === "test"){
+  stripeSecretKey = process.env.STRIPE_SECRET_KEY_TEST
+}else{
+  stripeSecretKey = process.env.STRIPE_SECRET_KEY
+}
+const stripe = new Stripe(stripeSecretKey);
 const router = express.Router();
 const sqlite3 = require('sqlite3').verbose();
 const { verifyProfile, verifyDBProfile } = require("../backendutils/verifyProfile");
