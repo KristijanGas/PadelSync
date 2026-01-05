@@ -5,6 +5,7 @@
     "@stripe/stripe-js": "^8.6.0",
     "axios": "^1.12.2",
     "corepack": "^0.32.0",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express": "^5.1.0",

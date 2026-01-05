@@ -50,6 +50,15 @@ function currentDateOff(offset) {
     day = "0" + day;
   return year + '-' + month + '-' + day;
 }
+function dateForReact(offset) {
+  var date = new Date(Date.now());
+  var newDate = new Date(date);
+  newDate.setDate(newDate.getDate()-date.getDay()+offset);
+  let year = newDate.getFullYear().toString();
+  let month = (newDate.getMonth()).toString();
+  let day = newDate.getDate().toString();
+  return year + '-' + month + '-' + day;
+}
 
 router.get('/:id', requiresAuth(), async (req, res) => {
   const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
@@ -310,7 +319,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
     });
     res.status(500).send("Zasto saljes post zahtjev s nevaljajucim parametrom?");
   }
-  
+
   
   const currentUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
   if(tipPlacanja==="gotovina"){
@@ -377,7 +386,7 @@ router.get("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
   res.redirect("/myprofile");
 })
 
-router.post("/:terenID/addComment", requiresAuth(), async (req, res) => {ž
+router.post("/:terenID/addComment", requiresAuth(), async (req, res) => {
   const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
   try {
     // Verify user
@@ -433,6 +442,24 @@ router.post("/:terenID/addComment", requiresAuth(), async (req, res) => {ž
   }
   db.close();
   res.status(200).json({redirect : `/terrain/${req.params.terenID}`})
-})
+});
+
+router.get("/:terenID/matches", async (req, res) => {
+  const id = req.params.terenID;
+  const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+  const terminiQuery = 'SELECT * FROM TERMIN_TJEDNI WHERE terenID = ? ORDER BY danTjedan asc';
+  let termini;
+  try {
+    termini = await fetchAll(db, terminiQuery, [id]);
+  } catch (error) {
+    console.error(error);
+  }
+  db.close();
+  for (let termin of termini) {
+    const dejtOwO = dateForReact(termin.danTjedan);
+    termin.date = dejtOwO;
+  }
+  res.json(termini);
+});
 
 module.exports = router;

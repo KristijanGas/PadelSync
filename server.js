@@ -9,7 +9,7 @@ const session = require('express-session')
 const { auth } = require('express-openid-connect');
 const path = require("path");
 const {checkPayments, checkPonavljajuce} = require('./backendutils/periodic');
-
+const cors=require("cors");
 
 const config = {
   authRequired: false,
@@ -31,7 +31,13 @@ const config = {
       }
     }
 };
+const corsOptions ={
+   origin: "http://localhost:8080", 
+   credentials:true,            //access-control-allow-credentials:true
+   optionSuccessStatus:200,
+}
 
+app.use(cors(corsOptions));
 /* app.set('trust proxy', 1); */
 app.set('views','./views');
 app.set('view engine', 'ejs');
@@ -102,8 +108,11 @@ app.get('/react', (req, res) => {
   res.redirect('http://localhost:8080');
 });
 app.use("/calendar", express.static(path.join(__dirname, "../progi_g12_4/frontend/build")));
-app.get("/react-calendar", (req, res) =>{
-  res.render("calendar");
+app.get("/terrain/:id/react-calendar", (req, res) =>{
+  const id = req.params.id;
+  res.render("calendar", {
+    terrainID: id
+  });
 });
 /* const registrationRouter = require('./routes/registration.routes');
 const loginRouter = require('./routes/login.routes');
@@ -124,7 +133,6 @@ const myprofileRouter = require('./routes/myprofile.routes');
 app.use('/myprofile', myprofileRouter);
 
 const editscheduleRouter = require('./routes/editschedule.routes');
-const { checkPayments } = require('./backendutils/periodic');
 const { checkAvailability } = require('./backendutils/checkAvailability');
 app.use('/editschedule', editscheduleRouter);
 
