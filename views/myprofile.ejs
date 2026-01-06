@@ -51,32 +51,43 @@
                                 </div>
                                 
                                 <% if( userInfo.oldRes && userInfo.oldRes.length > 0 ) { %>
-                                        <ul>
-                                        <% userInfo.oldRes.forEach(function(old) { %>
-                                        <ul>
-                                                <li>Datum: <%= old.datumRez %></li>
-                                                <li>Teren: <%= old.imeTeren %></li>
-                                                <li>Početak: <%= old.vrijemePocetak %></li>
-                                                <li>Kraj: <%= old.vrijemeKraj %></li>
-                                                <li>Korisnik: <%= old.username %></li>
+
+                                        <ul class="reservations">
+                                                <% userInfo.oldRes.forEach(function(old) { %>
+                                                        <li class="reservationCard">
+                                                        <ul>
+                                                                <li><strong>Datum:</strong> <%= old.datumRez %></li>
+                                                                <li><strong>Teren:</strong> <%= old.imeTeren %></li>
+                                                                <li><strong>Početak:</strong> <%= old.vrijemePocetak %></li>
+                                                                <li><strong>Kraj:</strong> <%= old.vrijemeKraj %></li>
+                                                                <li><strong>Korisnik:</strong> <%= old.username %></li>
+                                                        </ul>
+                                                        </li>
+                                                <% }); %>
                                         </ul>
-                                        <% }); %>
-                                        </ul>
+
                                 <% } else { %>
                                         <p>nema stari rez.</p>
                                 <% } %>
 
                                 <% if (userInfo.newRes && userInfo.newRes.length > 0) { %>
-                                        <% userInfo.newRes.forEach(function(newr) { %>
-                                        <ul>
-                                                <li>Datum: <%= newr.datumRez %></li>
-                                                <li>Teren: <%= newr.imeTeren %></li>
-                                                <li>Početak: <%= newr.vrijemePocetak %></li>
-                                                <li>Kraj: <%= newr.vrijemeKraj %></li>
-                                                <li>Korisnik: <%= newr.username %></li>
+
+                                        <ul class="reservations">
+                                                <% userInfo.newRes.forEach(function(newr) { %>
+                                                        <li class="reservationCard">
+                                                        <ul>
+                                                                <li><strong>Datum:</strong> <%= newr.datumRez %></li>
+                                                                <li><strong>Teren:</strong> <%= newr.imeTeren %></li>
+                                                                <li><strong>Početak:</strong> <%= newr.vrijemePocetak %></li>
+                                                                <li><strong>Kraj:</strong> <%= newr.vrijemeKraj %></li>
+                                                                <li><strong>Korisnik:</strong> <%= newr.username %></li>
+                                                        </ul>
+
+                                                        <a href="/terrain/cancel/<%= newr.rezervacijaID %>">cancel rez</a>
+                                                        </li>
+                                                <% }); %>
                                         </ul>
-                                        <a href="/terrain/cancel/<%= newr.rezervacijaID %>">cancel rez</a>
-                                <% }) %>
+
                                 <% } else { %>
                                         <p>nema novi rez.</p>
                                 <% } %>
@@ -156,7 +167,6 @@
 
 
                                 <a href="/stripeClub">create/edit stripe acc</a>
-                                <a href="https://stripe.com/legal/customer-portal">stripe tos</a>
 
                         <%}%>
 

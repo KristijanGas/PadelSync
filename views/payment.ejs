@@ -3,18 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <title>Plaćanje</title>
+  <link rel="stylesheet" href="/styles/payment.css">
 </head>
 <body>
 
-  <h2>
-    Plaćanje <%= cijena %> € za rezervaciju u klubu <%= klub %>
-  </h2>
+  <div class="PaymentContainer">
 
-  <button
-    id="payBtn"
-    data-transakcija-id="<%= transakcijaID %>">
-    Plati karticom
-  </button>
+    <h2>Plaćanje</h2>
+
+    <div class="PaymentInfo">
+
+      <span>Iznos: <strong><%= cijena %> €</strong></span>
+      <span>Klub: <strong><%= klub %></strong></span>
+
+    </div>
+
+    <button
+      id="payBtn"
+      data-transakcija-id="<%= transakcijaID %>">
+      Plati karticom
+    </button>
+
+  </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {

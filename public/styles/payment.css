@@ -1,0 +1,174 @@
+* {
+
+    font-family: 'Segoe UI', sans-serif;
+
+    box-sizing: border-box;
+
+}
+
+body {
+
+    margin: 0;
+
+    padding: 0;
+
+    min-height: 100vh;
+
+    background-color: #0b0b0b;
+
+    color: rgba(240, 231, 231, 0.9);
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    animation: fadeIn 0.6s ease-in;
+
+}
+
+@keyframes fadeIn {
+
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+
+}
+
+.PaymentContainer {
+
+    width: 420px;
+
+    max-width: 90vw;
+
+    padding: 35px 40px;
+
+    background: linear-gradient(to right, #141414, #0d0d0d);
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 2px 16px rgba(0, 0, 0, 0.7),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 25px;
+
+    text-align: center;
+
+}
+
+.PaymentContainer h2 {
+
+    font-size: 26px;
+
+    font-weight: 600;
+
+    line-height: 1.4;
+
+    color: #f1f1f1;
+
+    margin: 0;
+
+    padding-bottom: 15px;
+
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+
+}
+
+.PaymentInfo {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin-top: 5px;
+
+}
+
+.PaymentInfo span {
+
+    font-size: 18px;
+
+    color: rgba(220,220,220,0.85);
+
+}
+
+.PaymentInfo strong {
+
+    color: #ffffff;
+
+    font-weight: 600;
+
+}
+
+#payBtn {
+
+    margin-top: 15px;
+
+    padding: 14px 30px;
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+    border-radius: 10px;
+
+    border: 2px solid #222;
+
+    background-color: #0e0e0e;
+
+    color: #f1f1f1;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.7),
+        0 4px 10px rgba(255, 255, 255, 0.05);
+
+    transition: all 0.3s ease;
+
+}
+
+#payBtn:hover {
+
+    background-color: #1a1a1a;
+
+    border-color: #444;
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.8),
+        0 6px 14px rgba(255, 255, 255, 0.08);
+
+}
+
+#payBtn:active {
+
+    transform: translateY(0);
+
+    background-color: #222;
+
+}
+
+@media screen and (max-width: 480px) {
+
+    .PaymentContainer {
+        padding: 30px 24px;
+    }
+
+    .PaymentContainer h2 {
+        font-size: 22px;
+    }
+
+    #payBtn {
+        width: 100%;
+    }
+    
+}

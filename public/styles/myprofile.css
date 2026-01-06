@@ -345,3 +345,150 @@ pre {
     align-items: center;
 
 }
+
+/* =========================
+   BUTTON CONTAINER FIX
+========================= */
+.buttonContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: space-between;
+}
+
+@media screen and (max-width: 768px) {
+    .buttonContainer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .buttonContainer button {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* =========================
+   PLAYER – REZERVACIJE
+========================= */
+
+/* vanjski UL (lista rezervacija) */
+.Content > ul {
+    margin-top: 20px;
+}
+
+/* unutarnji UL (jedna rezervacija) */
+.Content ul ul {
+    background: linear-gradient(135deg, #141414, #1a1a1a);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin: 15px 0;
+
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* pojedini red rezervacije */
+.Content ul ul li {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+
+    font-size: 0.95rem;
+    color: rgba(230,230,230,0.85);
+}
+
+/* cancel link */
+.Content a[href*="cancel"] {
+    margin-top: 10px;
+    align-self: flex-start;
+
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+
+    color: #ff6b6b;
+    border-bottom: 1px solid transparent;
+
+    transition: all 0.25s ease;
+}
+
+.Content a[href*="cancel"]:hover {
+    color: #ffaaaa;
+    border-bottom-color: #ff6b6b;
+}
+
+/* =========================
+   CLUB – TERENI
+========================= */
+
+.Content ul > li {
+    position: relative;
+}
+
+/* gumbi za teren */
+.Content ul > li button {
+    margin-right: 10px;
+    margin-top: 8px;
+}
+
+/* layout gumba u kartici terena */
+.Content ul > li {
+    display: flex;
+    flex-direction: column;
+}
+
+.Content ul > li > div,
+.Content ul > li > span,
+.Content ul > li > p {
+    margin-bottom: 5px;
+}
+
+/* =========================
+   LINK ZA STRIPE
+========================= */
+
+.Content a[href="/stripeClub"] {
+    margin-top: 30px;
+    display: inline-block;
+
+    font-weight: 600;
+    color: #0ff;
+    text-decoration: none;
+
+    transition: all 0.3s ease;
+}
+
+.Content a[href="/stripeClub"]:hover {
+    color: #8fffff;
+    text-shadow: 0 0 6px rgba(0,255,255,0.4);
+}
+
+/* =========================
+   MOBILE CONTENT WIDTH
+========================= */
+
+@media screen and (max-width: 900px) {
+    .Content {
+        width: 90%;
+        padding: 6vw;
+    }
+}
+
+.reservationCard {
+    background: linear-gradient(135deg, #141414, #1a1a1a);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 15px 20px;
+}
+
+.reservationCard ul li {
+    background: none;
+    border: none;
+    padding: 2px 0;
+}
