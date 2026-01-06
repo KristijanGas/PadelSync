@@ -15,10 +15,22 @@ const { requiresAuth } = require('express-openid-connect');
 const StatusRezervacije = require('../constants/statusRez');
 const StatusPlacanja = require('../constants/statusPlacanja');
 
+const openDb = () =>
+  new sqlite3.Database(process.env.DB_PATH || "database.db");
+
+const dbRun = (db, sql, params = []) =>
+  new Promise((resolve, reject) => {
+    db.run(sql, params, function (err) {
+      if (err) return reject(err);
+      resolve(this); // this.changes, this.lastID
+    });
+  });
 
 const dbGet = (db, sql, params = []) =>
   new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
+    db.get(sql, params, (err, row) =>
+      err ? reject(err) : resolve(row)
+    );
   });
 
 
@@ -86,7 +98,7 @@ router.get("/payment/:transakcijaID", requiresAuth(), async (req, res) => {
   })
 })
 
-router.get('/payment/checkout/:transakcijaID', async (req, res) => {
+router.get('/payment/checkout/:transakcijaID', requiresAuth(), async (req, res) => {
      const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
   const { transakcijaID } = req.params
 
@@ -179,6 +191,9 @@ router.get('/payment/checkout/:transakcijaID', async (req, res) => {
             transfer_data: {
                 destination: clubStripeId, // OVDJE ide račun kluba
             },
+            metadata: {
+              transakcijaID: String(transakcijaID),
+            },
         },
     });
 
@@ -199,41 +214,34 @@ router.get('/payment/checkout/:transakcijaID', async (req, res) => {
     }
 });
 
-async function updateRes(transakcijaID, stripePaymentId){
-  const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
-  const dbRun = (sql, params = []) =>
-      new Promise((resolve, reject) => {
-        db.run(sql, params, function (err) {
-          if (err) reject(err);
-          resolve(this);
-        });
-      });
+async function updateRes(transakcijaID, stripePaymentId) {
+  const db = openDb();
+  try {
+    await dbRun(
+      db,
+      `UPDATE TRANSAKCIJA
+       SET statusPlac = ?, stripePaymentId = ?
+       WHERE transakcijaID = ?`,
+      [StatusPlacanja.POTVRDJENO, stripePaymentId, transakcijaID]
+    );
 
-    const dbGet = (sql, params = []) =>
-      new Promise((resolve, reject) => {
-        db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
-      });
-    try{
-      await dbRun(
-        `UPDATE TRANSAKCIJA SET statusPlac = ?, stripePaymentId = ?  WHERE transakcijaID = ?`,
-        [StatusPlacanja.POTVRDJENO, stripePaymentId, transakcijaID]
-      );
+    const row = await dbGet(
+      db,
+      `SELECT rezervacijaID FROM JEDNOKRATNA_REZ WHERE transakcijaID = ?`,
+      [transakcijaID]
+    );
 
-      const row = await dbGet(
-        `SELECT rezervacijaID FROM JEDNOKRATNA_REZ WHERE transakcijaID = ?`,
-        [transakcijaID]
-      );
+    if (!row) throw new Error("Rezervacija ne postoji");
 
-      if (!row || !row.rezervacijaID) {
-        console.log("Rezervacija ne postoji");
-      }
+    await dbRun(
+      db,
+      `UPDATE REZERVACIJA
+       SET statusRez = ?
+       WHERE rezervacijaID = ?`,
+      [StatusRezervacije.AKTIVNA, row.rezervacijaID]
+    );
 
-      await dbRun(
-        `UPDATE REZERVACIJA SET statusRez = ? WHERE rezervacijaID = ?`,
-        [StatusRezervacije.AKTIVNA, row.rezervacijaID]
-      );
-
-      return 200;
+    return 200;
   } catch (err) {
     console.error(err);
     return 500;
@@ -241,6 +249,7 @@ async function updateRes(transakcijaID, stripePaymentId){
     db.close();
   }
 }
+
 
 const webhookHandler = async (req, res) => {
   const sig = req.headers["stripe-signature"];
@@ -273,16 +282,194 @@ const webhookHandler = async (req, res) => {
 
     const rez = await updateRes(transakcijaID, stripePaymentId);
     
+  }else if (event.type === "charge.refunded") {
+   const charge = event.data.object;
+
+  const transakcijaID = charge.metadata.transakcijaID;
+
+  if (!transakcijaID) {
+    console.error("Nema transakcijaID u charge.metadata");
+    return res.json({ received: true });
   }
+
+  const db = openDb();
+  try {
+    console.log(transakcijaID)
+    await dbRun(
+      db,
+      `UPDATE TRANSAKCIJA
+       SET statusPlac = ?
+       WHERE transakcijaID = ?`,
+      [StatusPlacanja.VRACENO, transakcijaID]
+    );
+
+    const row = await dbGet(
+      db,
+      `SELECT rezervacijaID
+       FROM JEDNOKRATNA_REZ
+       WHERE transakcijaID = ?`,
+      [transakcijaID]
+    );
+
+    console.log(row)
+    if (row) {
+      await dbRun(
+        db,
+        `UPDATE REZERVACIJA
+         SET statusRez = ?
+         WHERE rezervacijaID = ?`,
+        [StatusRezervacije.OTKAZANA, row.rezervacijaID]
+      );
+    }
+  } catch (err) {
+    console.error(err);
+  } finally {
+    db.close();
+  }
+}else if (event.type === "refund.failed") {
+    const refund = event.data.object;
+    const transakcijaID = refund.metadata.transakcijaID;
+    const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+    try{
+      await dbRun(
+        db,
+        `UPDATE transakcija
+        SET statusPlac = ?
+        WHERE transakcijaID = ?`,
+        [StatusPlacanja.POTVRDJENO, transakcijaID]
+      );
+    }catch(err){
+      console.error(err);
+    }finally{
+      db.close();
+    }
+    
+  }else if (event.type === "checkout.session.expired") {
+    const session = event.data.object;
+
+    const transakcijaID = session.metadata.transakcijaID;
+
+    const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+      const dbRun = (sql, params = []) =>
+          new Promise((resolve, reject) => {
+            db.run(sql, params, function (err) {
+              if (err) reject(err);
+              resolve(this);
+            });
+          });
+
+        const dbGet = (sql, params = []) =>
+          new Promise((resolve, reject) => {
+            db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
+          });
+      try{
+        const row = await dbGet(
+              `SELECT * FROM transakcija WHERE transakcijaID = ?`,
+              [transakcijaID]
+            );
+
+          if (!row || !row.rezervacijaID) {
+            console.log("Transakcija ne postoji");
+            return 400;
+          }
+          await dbRun(
+            `UPDATE TRANSAKCIJA SET statusPlac = ? WHERE transakcijaID = ?`,
+            [StatusPlacanja.OTKAZANO, transakcijaID]
+          );
+
+          await dbRun(
+            `UPDATE REZERVACIJA SET statusRez = ? WHERE rezervacijaID = ?`,
+            [StatusRezervacije.OTKAZANA, row.rezervacijaID]
+          );
+          
+          return 200;
+      } catch (err) {
+        console.error(err);
+        return 500;
+      } finally {
+        db.close();
+      }
+
+  }
+
 
   res.json({ received: true });
 };
 
 
 
-router.get("/refund", (req, res) => {
+router.get("/refund/:transakcijaID", requiresAuth(), async (req, res) => {
+  const { transakcijaID } = req.params;
+  const db = openDb();
 
-})
+  try {
+    const isVerified = await verifyProfile(req, res);
+    if (!isVerified) return res.render("verifymail");
+
+    const role = await verifyDBProfile(
+      req.oidc.user.nickname,
+      req.oidc.user.email,
+      res
+    );
+
+    if (role !== "Player")
+      return res.status(403).send("Samo igrači mogu dobiti povrat");
+
+    const row = await dbGet(
+      db,
+      `SELECT * FROM TRANSAKCIJA WHERE transakcijaID = ?`,
+      [transakcijaID]
+    );
+
+    if (!row) return res.status(404).send("Transakcija ne postoji");
+
+    if (row.nacinPlacanja !== "kartica")
+      return res.status(400).send("Samo kartične transakcije");
+
+    if (row.statusPlac !== StatusPlacanja.POTVRDJENO)
+      return res.status(400).send("Refund nije dozvoljen");
+
+    const result = await dbRun(
+      db,
+      `UPDATE TRANSAKCIJA
+       SET statusPlac = ?
+       WHERE transakcijaID = ?
+       AND statusPlac = ?`,
+      [StatusPlacanja.REFUND_U_TOKU, transakcijaID, StatusPlacanja.POTVRDJENO]
+    );
+
+    if (result.changes === 0)
+      return res.status(400).send("Refund je već u tijeku");
+
+    await stripe.refunds.create(
+      {
+        payment_intent: row.stripePaymentID, // pi_...
+      },
+      {
+        idempotencyKey: `refund_${transakcijaID}`,
+      }
+    );
+
+    res.redirect("/myprofile");
+  } catch (err) {
+    console.error(err);
+
+    await dbRun(
+      db,
+      `UPDATE TRANSAKCIJA
+       SET statusPlac = ?
+       WHERE transakcijaID = ?`,
+      [StatusPlacanja.POTVRDJENO, transakcijaID]
+    );
+
+    res.status(500).send("Greška kod refunda");
+  } finally {
+    db.close();
+  }
+  res.redirect("/myprofile")
+});
+
+
 
 module.exports = {
   router,
