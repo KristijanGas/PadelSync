@@ -364,19 +364,32 @@ router.get("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
     if(!row){
       return res.status(500).send("rezervacije se mogu otkazati samo dan unaprijed")
     }else if(row.statusRez != StatusRezervacije.AKTIVNA){
-      console.log(row)
       return res.status(500).send("ne možete otkazati neaktivnu rezervaciju")
     }
 
-    SQLQuery = `UPDATE rezervacija SET statusRez = ? WHERE rezervacijaID = ?`
-    const runQuery = (sql, params) => new Promise((resolve, reject) => {
-                                                db.run(sql, params, function(err) {
-                                                        if (err) return reject(err);
-                                                        resolve(this);
-                                                });
-                                        });
-    await runQuery(SQLQuery, [StatusRezervacije.OTKAZANA, rezervacijaID])
+    SQLQuery = `SELECT * FROM JEDNOKRATNA_REZ jr JOIN TRANSAKCIJA t
+                ON jr.transakcijaID = t.transakcijaID
+                WHERE jr.rezervacijaID = ?`;
+    const row2 = await dbGet(db, SQLQuery, [rezervacijaID]);
+    if(!row2 || !row2.transakcijaID){
+      return res.status(500).send("nema te transakcije!")
+    }
+    if(row2.nacinPlacanja === "kartica" && row2.statusPlac == StatusPlacanja.POTVRDJENO){
+      //treba izvrsiti povrat
+      db.close();
+      return res.redirect(`/stripe/refund/${row2.transakcijaID}`);
+    }
 
+    if(row2.nacinPlacanja === "gotovina"){
+       SQLQuery = `UPDATE rezervacija SET statusRez = ? WHERE rezervacijaID = ?`
+      const runQuery = (sql, params) => new Promise((resolve, reject) => {
+                                                  db.run(sql, params, function(err) {
+                                                          if (err) return reject(err);
+                                                          resolve(this);
+                                                  });
+                                          });
+      await runQuery(SQLQuery, [StatusRezervacije.OTKAZANA, rezervacijaID])
+    }
     //treba provjeriti način plaćanja
   }catch(err){
     console.error(err);
