@@ -441,9 +441,11 @@ router.get("/refund/:transakcijaID", requiresAuth(), async (req, res) => {
     if (result.changes === 0)
       return res.status(400).send("Refund je već u tijeku");
 
+    const povrat = row.iznos;
     await stripe.refunds.create(
       {
-        payment_intent: row.stripePaymentID, // pi_...
+        payment_intent: row.stripePaymentID, 
+        amount: povrat * 100 - 60 
       },
       {
         idempotencyKey: `refund_${transakcijaID}`,

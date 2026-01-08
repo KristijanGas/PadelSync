@@ -126,8 +126,8 @@ async function checkTerrainInfo(data){
                 }
         }
 
-        if (data.cijenaTeren < 0 && data.cijenaTeren) {
-                errors.push("'cijenaTeren' must be a non-negative number.");
+        if (data.cijenaTeren < 0.7 && data.cijenaTeren) {
+                errors.push("'cijenaTeren' must be greater then 0.7");
         }
 
         const rez = await verifyInputText(data.imeTeren)
