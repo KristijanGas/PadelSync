@@ -3,6 +3,54 @@ const photosContainer = document.getElementById("photosContainer");
 const clubForm = document.getElementById("clubInfo");
 const playerForm = document.getElementById("playerInfo");
 const currentUrl = window.location.href;
+const adresa = document.getElementById("adresaKlub");
+const results = document.getElementById("address-results");
+let lat = 1000;
+let long = 1000;
+
+const mapboxToken = "pk.eyJ1IjoicGFkZWwtc3luYyIsImEiOiJjbWs1dDJyeHowYWU2M2dzOGdxNTBud2x0In0.CnxOxyhcmKh4rhsVwRZt4A"
+async function fetchAddresses(query) {
+        if (!query) return [];
+        if(query.length < 3) return;
+        const res = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+        query
+        )}.json?access_token=${mapboxToken}&autocomplete=true&limit=5&country=HR`
+        );
+
+        return res.json();
+}
+
+let timeout;
+if(adresa){
+        adresa.addEventListener("input", () => {
+                console.log("pisem")
+        clearTimeout(timeout);
+        timeout = setTimeout(async () => {
+        const data = await fetchAddresses(adresa.value);
+        console.log(data);
+        if(data){
+                renderRes(data.features);
+        }
+        }, 400);
+        });
+}
+
+function renderRes(features){
+        results.innerHTML = "";
+        features.forEach((feature) => {
+                const li = document.createElement("li");
+                li.textContent = feature.place_name;
+
+                li.addEventListener("click", () => {
+                        adresa.value = feature.place_name;
+                        lat = feature.center[0];
+                        long = feature.center[1];
+                        results.innerHTML = "";
+                })
+                results.appendChild(li);
+        });
+}
 
 let selectedFiles = [];
 let eraseFiles = [];
@@ -62,12 +110,26 @@ function eraseNewPhoto(file, img, button){
 if(clubForm){
         clubForm.addEventListener("submit", async (event) => {
         event.preventDefault();
-
+        
+        /* if(adresa.value){
+                const koordinateRes = await fetchAddresses(adresa.value);
+                if(!koordinateRes || !koordinateRes.features){
+                        alert("Adresa nije dovoljno specificna")
+                        return;
+                }else if(koordinateRes.features.length === 0){
+                        alert("nepostojeća adresa")
+                        return;
+                }else if(!koordinateRes.features[0].center[0] || !koordinateRes.features[0].center[1]){
+                        alert("nepostojeća adresa");
+                        return;
+                }
+        } */
         const formData = new FormData(clubForm);
-        console.log(formData)
         selectedFiles.forEach((file) => formData.append("slike", file));
         formData.append('erasePhotos[]', '');
         eraseFiles.forEach(photoId => formData.append('erasePhotos[]', photoId));
+        formData.append('lat', lat);
+        formData.append('long', long);
         let res;
         res = await fetch(`${currentUrl}/insertClubInfo`, {
         method: "POST",
@@ -80,8 +142,9 @@ if(clubForm){
                 }
         }else if(res.status === 400){
                 const data = await res.json();
-                console.log(data);
+                console.log(data.errors)
                 alert(data.errors);
+                return;
         }else{
                 console.log("error submitting clubForm");
         }
@@ -105,8 +168,8 @@ if(playerForm){
                         }
                 }else if(res.status === 400){
                         const data = await res.json();
-                        console.log(data);
                         alert(data.errors);
+                        return;
                 }else{
                         console.log("error submitting playerForm");
                 }
