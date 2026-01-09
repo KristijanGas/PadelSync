@@ -114,16 +114,22 @@ router.get('/:id', requiresAuth(), async (req, res) => {
       }
     }
   }
-  const pretpQuery = `SELECT * FROM TIP_PRETPLATE WHERE username = ? and pretpDostupnost = 1`;
+  const pretpQuery = `select rezervacijaID, terminID, tipPretpID, terenID, danTjedan,
+                     vrijemePocetak, vrijemeKraj from rezervacija natural join PONAVLJAJUCA_REZ
+                     natural join TERMIN_TJEDNI natural join TIP_PRETPLATE 
+                     WHERE username = ? and pretpDostupnost = 1
+                     and tipPretpID not in (select tipPretpID from pretplata where pretpAktivna = 1)`;
+  const hahahaha = `select * from tip_pretplate where username = ?
+                    and tipPretpID not in (select tipPretpID from pretplata where pretpAktivna = 1)`
   const tipoviPretplate = await fetchAll(db, pretpQuery, [clubUsername]);
-  const ponQuery = `SELECT * FROM TERMIN_TJEDNI WHERE terenID = ? and tipTermina ='ponavljajuci' AND tipPretpID = ?`;
-  for(let tipPretplate of tipoviPretplate) {
-    let ponTermini = await fetchAll(db, ponQuery, [id, tipPretplate.tipPretpID]);
-    if(ponTermini.length == 0) {
-      continue;
+  let pretplate = await fetchAll(db, hahahaha, [clubUsername]);
+  for (let pretplata of pretplate) {
+    if(typeof pretplata.termini === 'undefined') pretplata.termini = [];
+    for(let entry of tipoviPretplate) {
+      if(entry.tipPretpID == pretplata.tipPretpID) {
+        pretplata.termini.push(entry);
+      }
     }
-    tipPretplate.termini = ponTermini;
-    console.log(tipPretplate);
   }
   
   let row = await dbGet(db, "SELECT stripeId FROM klub WHERE username = ?", [clubUsername]);
@@ -177,7 +183,7 @@ router.get('/:id', requiresAuth(), async (req, res) => {
   res.render('terrain', {
           teren: tereni[0],
           jednokratniTermini: dostupniTermini,
-          pretplate: tipoviPretplate,
+          pretplate: pretplate,
           cardAllowed,
           addComment: addComment
 
