@@ -55,8 +55,13 @@
                 <%}%>
                 <p>Termini koji se vežu uz ovu pretplatu su: (0 = nedjelja za dan tjedna)</p>
                 <div class="pretpTermini">
-                <%for(let termin of pretplata.termini){%>
-                    <p>Danom <%=termin.danTjedan%> u <%=termin.vrijemePocetak%> do <%=termin.vrijemeKraj%></p>
+                <%if (typeof pretplata.termini === 'undefined' || pretplata.termini.length === 0) { %>
+                    <p>Trenutno nema dostupnih termina za ovu pretplatu.</p>
+                <% } %>
+                <%if (typeof pretplata.termini !== 'undefined' && pretplata.termini.length > 0) { %>
+                    <%for(let termin of pretplata.termini){%>
+                        <p>Danom <%=termin.danTjedan%> u <%=termin.vrijemePocetak%> do <%=termin.vrijemeKraj%></p>
+                    <%}%>
                 <%}%>
                 </div>
                 <div id="pretpInfo"
