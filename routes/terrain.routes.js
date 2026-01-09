@@ -330,9 +330,9 @@ router.post('/:id', requiresAuth(), async (req, res) => {
   }
 
   
-  const currentUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+  const currentUrl = `${req.protocol}://${req.get('host')}`;
   if(tipPlacanja==="gotovina"){
-    res.json({redirect : currentUrl})
+    res.json({redirect : `${currentUrl}/terrain/${teren.terenID}`})
   }else{
     const url = req.protocol + "://" + req.headers.host
     res.json({checkoutUrl : `${url}/stripe/payment`, transakcijaID})

@@ -8,6 +8,7 @@
             <link rel="stylesheet" type="text/css" href="styles/terrain_search.css">
         <% } %>
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="/scripts/userLocation.js" defer></script>
     </head>
 
     <body>
@@ -39,7 +40,7 @@
                 </div><br>
 
                 <label>Cijena (jeftinije od):
-                    <input type="number" id="cijena" name="cijena" min="0" step="any">
+                    <input type="number" id="cijena" name="cijena" min="1" step="any">
                 </label><br><br>
 
                 <label>Osvjetljenje:</label>
@@ -57,10 +58,16 @@
                     <label><input type="checkbox" id="drvo" name="tipPodloge[]" value="drvo"> Drvo</label>
                 </div><br>
 
+                <label>Trenutna udaljenost u kilometrima:</label>
+                <input type="number" id="udaljenost" name="udaljenost" step="0.01" min="0.2">
+
                 <div class="FormButtons">
                     <button type="submit" class="searchButton">Pretraži</button>
                     <button type="button" class="backButton" onclick="location.href='/home'">← Back to Home</button>
                 </div>
+
+                <input type="hidden" id="userLat" name="userLat">
+                <input type="hidden" id="userLong" name="userLong">
                 
             </form>
         </div>

@@ -285,12 +285,6 @@ async function checkClubInfo(data) {
   if (!nameRegex.test(ime) && data.imeKlub)
     errors.push("'imeKlub' must be 3–30 chars and contain only letters, numbers and spaces.");
 
- /*  const adressRegex = /^[\p{L}\p{N} ]{3,70}$/u;
-  const adresa = (data.adresaKlub || "").trim().replace(/\s+/g, " ");
-  if (!adressRegex.test(adresa) && data.adresaKlub)
-    errors.push("'adresaKlub' must be 3–70 chars and contain only letters, numbers and spaces.");
- */
-
   if(data.adresaKlub){
         try {
                 const koordinateRes = await fetchAddresses(data.adresaKlub);
@@ -298,21 +292,19 @@ async function checkClubInfo(data) {
                 if (!koordinateRes || !Array.isArray(koordinateRes.features) || koordinateRes.features.length === 0) {
                         errors.push("'nepostojeća adresa'");
                 } else {
-                        // Provjera postoji li dostavljena adresa među rezultatima
                         const adresaUnesena = data.adresaKlub.trim().toLowerCase();
-
-                        // Mapiraj sve place_name iz rezultata u lower case radi usporedbe
+                        
                         const found = koordinateRes.features.some(feature => 
                         feature.place_name.toLowerCase() === adresaUnesena
                         );
 
-                if (!found) {
-                        errors.push("'neispravna adresa, odaberite iz izbornika'");
+                        if (!found) {
+                                errors.push("'neispravna adresa, odaberite iz izbornika'");
+                        }
                 }
-                }
-                } catch (err) {
-  return err;
-}
+        } catch (err) {
+                return err;
+        }
 
   }
   
@@ -328,7 +320,6 @@ async function checkClubInfo(data) {
 router.post('/:username/insertClubInfo', requiresAuth(), upload.array("slike"), processImages, async (req, res) => {
         const errors = await checkClubInfo(req.body);
         if(!Array.isArray(errors)){
-                console.log(errors);
                 return res.status(500).send(errors);
         }
         if (errors.length > 0) {

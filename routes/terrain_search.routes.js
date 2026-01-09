@@ -1,6 +1,7 @@
 const express = require('express');
 var sqlite3 = require('sqlite3').verbose();
 const {verifyInputText} = require('../backendutils/verifyInputText');
+const { fetchAddresses } = require("../backendutils/mapbox");
 const router = express.Router();
 // podstranica za pretraživanje klubova, igrača
 
@@ -95,7 +96,7 @@ async function searchTerrains(criteria) {
 // Search results route
 router.get('/results', async (req, res) => {
     // Extract and parse array fields
-    let { username, visinaStropa, tipTeren, cijena, osvjetljenje, tipPodloge } = req.query;
+    let { username, visinaStropa, tipTeren, cijena, osvjetljenje, tipPodloge, udaljenost } = req.query;
 
     tipTeren = req.query['tipTeren[]'];
     tipPodloge = req.query['tipPodloge[]'];
@@ -146,15 +147,88 @@ router.get('/results', async (req, res) => {
         });
     }
 
+    if(udaljenost && udaljenost < 0.2){
+        return res.status(400).send('Invalid input for distance');
+    }
+
     const results = await searchTerrains({ username, visinaStropa, tipTeren, cijena, osvjetljenje, tipPodloge, unutarnjiVanjski });
+
+    if(udaljenost){
+        const userLat = parseFloat(req.query.userLat);
+        const userLong = parseFloat(req.query.userLong);
+        const db = new sqlite3.Database("database.db");
+        const getRow = (sql, params) => new Promise((resolve, reject) => {
+                                            db.get(sql, params, (err, row) => {
+                                            if (err) return reject(err);
+                                            resolve(row);
+                                            });
+                                    });
+        if (!isNaN(userLat) && !isNaN(userLong)) {
+            const SQLQuery = `SELECT adresaKlub AS adresa 
+                                FROM teren JOIN klub
+                                    ON teren.username = klub.username
+                                WHERE teren.terenId = ?`;
+            for (const teren of results) {
+                try {
+                    let clubLat, clubLong;
+                    const row = await getRow(SQLQuery, [teren.terenID]);
+                    if(!row){
+                        console.log('nema tog terena')
+                    }const koordinateRes = await fetchAddresses(row.adresa);
+
+                    if (!koordinateRes || !Array.isArray(koordinateRes.features) || koordinateRes.features.length === 0) {
+                        console.log("neispravna adresa");
+                    } else {
+                        const adresaUnesena = row.adresa.trim().toLowerCase();
+                        const featureFound = koordinateRes.features.find(
+                            feature => feature.place_name.toLowerCase() === adresaUnesena
+                        );
+
+                        if (!featureFound) {
+                            console.log("'neispravna adresa'");
+                        } else {
+                            [clubLong, clubLat] = featureFound.center;
+                            teren.udaljenost = getDistanceFromLatLonInKm(userLat, userLong, clubLat, clubLong);
+                        }
+                    }
+                } catch(err) {
+                    console.log(err);
+                }
+            }
+        }else{
+            return res.status(500).send("neispravne koordinate ili niste dali dopuštenje")
+        }
+        db.close();
+    }
+
+    let filteredTerreni;
+    if(udaljenost){
+        filteredTerreni = results.filter(teren => teren.udaljenost && teren.udaljenost < udaljenost);
+    }else{
+        filteredTerreni = results;
+    }
+    
+
+
     res.render('terrain_search', {
         show_search_results: true,
-        results: results,
+        results: filteredTerreni,
         searchParams: req.query
     });
 });
 
 
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Earth radius in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
 
 
 module.exports = router;
