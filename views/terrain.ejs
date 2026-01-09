@@ -4,6 +4,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="/scripts/reservations.js" defer></script>
         <script src="/scripts/commentHandler.js" defer></script>
+        <link rel="stylesheet" href="/styles/terrain.css">
     </head>
 
     <body>
@@ -12,17 +13,12 @@
         <p>Tip podloge je <%= teren.tipPodloge %> i teren je <%= teren.vanjskiUnutarnji %></p>
         <p>Cijena terena je <%= teren.cijenaTeren %></p>
 
-        <%if (typeof termini !== 'undefined') {%>
-            <%if (termini.length > 0) {%>
-                <p>Dostupni termini za narednih 5 tjedana su:</p>
-                <% for(let termin of termini) {%>
+        <%if (typeof jednokratniTermini !== 'undefined') {%>
+            <%if (jednokratniTermini.length > 0) {%>
+                <p>Dostupni jednokratni termini za narednih 5 tjedana su:</p>
+                <% for(let termin of jednokratniTermini) {%>
                     <form class="formaRezervacije" enctype="multipart/form-data" method="POST">
                         <p><%= termin.datum %> u <%= termin.vrijemePocetak %> do <%= termin.vrijemeKraj %> sati.</p>
-                        <p>Koji tip termina zelite rezervirati?</p>
-                        <input type="radio" id="jdn" name="tipTermina" value="jednokratni" required>
-                        <label for="jdn">Jednokrantni termin</label>
-                        <input type="radio" id="pon" name="tipTermina" value="ponavljajuci">
-                        <label for="pon">Ponavljajuci termin</label>
                         <%if(cardAllowed){%>
                             <p>Odaberite način plaćanja</p>
                             <input type="radio" id="gotovina" name="tipPlacanja" value="gotovina" required>
@@ -39,6 +35,7 @@
                         id="terminInfo"
                         data-termin='<%- JSON.stringify(termin) %>'
                         data-teren='<%- JSON.stringify(teren) %>'
+                        data-tip-termina="jednokratni"
                         ></div>
 
                         <input type="submit" value="Rerezviraj?">
@@ -48,7 +45,29 @@
                 <p>Nema dostupnih termina.</p>
             <%}%>
         <%}%>
-
+        <%if(typeof pretplate !== 'undefined') {%>
+            <p>Klub trenutno nudi iduće pretplate za ponavljajuće termine:</p>
+            <%for(let pretplata of pretplate) {%>
+                <form class="formaPretplata" enctype="multipart/form-data" method="post">
+                <p>Pretplata <%=pretplata.pretpNaziv%>, cijene <%=pretplata.pretpCijena%>€ tjedno.</p>
+                <%if(pretplata.poducavanje !== null){%>
+                    <p>Ova pretplata nudi podučavanja.</p>
+                <%}%>
+                <p>Termini koji se vežu uz ovu pretplatu su: (0 = nedjelja za dan tjedna)</p>
+                <div class="pretpTermini">
+                <%for(let termin of pretplata.termini){%>
+                    <p>Danom <%=termin.danTjedan%> u <%=termin.vrijemePocetak%> do <%=termin.vrijemeKraj%></p>
+                <%}%>
+                </div>
+                <div id="pretpInfo"
+                data-pretp='<%- JSON.stringify(pretplata) %>'
+                data-tip-termina="ponavljajuci"></div>
+                <input type="submit" value="Rezerviraj?">
+                </form>
+            <%}%>
+        <%} else { %>
+            <p>Ovaj klub trenutno nema dostupnih pretplata za ponavljajuce rezervacije za ovaj teren.</p>
+        <%}%>
         <%if(addComment){%>
             <form class="commentForm" action="/terrain/<%= teren.terenID %>/addComment" method="POST">
                 <label for="komentar">Dodajte svoj komentar:</label>

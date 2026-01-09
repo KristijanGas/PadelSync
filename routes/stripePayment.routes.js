@@ -14,6 +14,15 @@ const { requiresAuth } = require('express-openid-connect');
 
 const StatusRezervacije = require('../constants/statusRez');
 const StatusPlacanja = require('../constants/statusPlacanja');
+const nodemailer = require('nodemailer');
+const SendmailTransport = require('nodemailer/lib/sendmail-transport');
+const transport = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'padelsynkovic@gmail.com',
+    pass: process.env.ADMIN_PASSWORD
+  }
+});
 
 const openDb = () =>
   new sqlite3.Database(process.env.DB_PATH || "database.db");
@@ -131,8 +140,10 @@ router.get('/payment/checkout/:transakcijaID', requiresAuth(), async (req, res) 
       }
       cijena = row.iznos
     }
-
-    const SQLStripeClubId = `SELECT stripeId FROM
+    
+    let clubUsername;
+    let clubEmail;
+    const SQLStripeClubId = `SELECT stripeId, k.username as username FROM
           TRANSAKCIJA t JOIN JEDNOKRATNA_REZ jr
             ON t.transakcijaId = jr.transakcijaId
           JOIN REZERVACIJA r
@@ -148,10 +159,19 @@ router.get('/payment/checkout/:transakcijaID', requiresAuth(), async (req, res) 
     if(!row || !row.stripeId){
       return res.status(500).send("neki sjeb, nema stripe id")
     }else{
-      clubStripeId = row.stripeId
+      clubStripeId = row.stripeId;
+      clubUsername = row.username;
     }
 
-    const SQLQuery = `SELECT tt.terenID FROM 
+    const qry = `SELECT email FROM KORISNIK WHERE USERNAME = ?`;
+    row = await dbGet(db, qry, [clubUsername]);
+    if(!row || !row.email) {
+      return res.status(500).send("ne znam");
+    } else {
+      clubEmail = row.email;
+    }
+    let datum, vPoc, vKr;
+    const SQLQuery = `SELECT tt.terenID, jr.datumRez, tt.vrijemePocetak, tt.vrijemeKraj FROM 
                     JEDNOKRATNA_REZ jr JOIN REZERVACIJA r
                       ON jr.rezervacijaID = r.rezervacijaID
                     JOIN TERMIN_TJEDNI tt
@@ -162,7 +182,10 @@ router.get('/payment/checkout/:transakcijaID', requiresAuth(), async (req, res) 
       if(!row || !row.terenID){
         return res.status(500).send("neki sjeb, nema teren id")
       }else{
-        terenID = row.terenID
+        terenID = row.terenID;
+        datum = row.datumRez;
+        vPoc = row.vrijemePocetak;
+        vKr = row.VrijemeKraj;
       }
       if (!transakcijaID) {
           return res.status(404).send('Transakcija ne postoji');
@@ -185,7 +208,14 @@ router.get('/payment/checkout/:transakcijaID', requiresAuth(), async (req, res) 
          success_url: `${currentUrl}/terrain/${terenID}`,
         cancel_url: `${currentUrl}/payment/cancel`,
         metadata: {
-              transakcijaID: transakcijaID, 
+              transakcijaID: transakcijaID,
+              igracUsername: req.oidc.user.nickname,
+              igracMail: req.oidc.user.email,
+              klubUsername: clubUsername,
+              klubMail: clubEmail,
+              datum: datum,
+              vPoc: vPoc,
+              vKr: vKr
             },
         payment_intent_data: {
             transfer_data: {
@@ -279,7 +309,17 @@ const webhookHandler = async (req, res) => {
 
     const stripePaymentId = session.payment_intent;
     const transakcijaID = session.metadata.transakcijaID;
-
+    const datum = session.metadata.datum;
+    const vPoc = session.metadata.vPoc;
+    const vKr = session.metadata.vKr;
+    const igracUsername = session.metadata.igracUsername;
+    let successOptionsClub = {
+      from: 'padelsynkovic@gmail.com',
+      to : clubEmail,
+      subject: 'Uspješno plaćen termin',
+      text: `Korisnik ${igracUsername} je uspješno platio rezervaciju za termin na datum ${datum}, od ${vPoc} do ${vKr}`
+    }
+    
     const rez = await updateRes(transakcijaID, stripePaymentId);
     
   }else if (event.type === "charge.refunded") {

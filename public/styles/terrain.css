@@ -1,0 +1,10 @@
+.formaRezervacije {
+    border: 1px solid black;
+}
+.formaPretplata {
+    border: 2px solid red;
+}
+.pretpTermini {
+    border: 1px solid green;
+    margin-bottom: 10px;
+}

@@ -2,7 +2,7 @@ const axios = require('axios');
 const fetchAll = require('./fetchAll');
 const sqlite3 = require('sqlite3').verbose();
 
-
+//funckija za provjeru dostupnosti jednokratnih termina
 async function checkAvailability(terrainId, date, startTime, endTime) {
     const db = new sqlite3.Database(process.env.DB_PATH || 'database.db', sqlite3.OPEN_READONLY, (err) => {
         if (err) {
@@ -20,18 +20,7 @@ async function checkAvailability(terrainId, date, startTime, endTime) {
     } catch (error) {
         console.log(error);
     }
-    let ponavljajuciTermini;
-    const query2 = `select * from REZERVACIJA join PONAVLJAJUCA_REZ on REZERVACIJA.rezervacijaID = PONAVLJAJUCA_REZ.rezervacijaID
-                    join TERMIN_TJEDNI on REZERVACIJA.terminID = TERMIN_TJEDNI.terminID
-                    where strftime('%w', ?) = TERMIN_TJEDNI.danTjedan and TERMIN_TJEDNI.terenID = ?
-                    and NOT(TERMIN_TJEDNI.vrijemeKraj <= ? or TERMIN_TJEDNI.vrijemePocetak >= ?)`;
-    try {
-        ponavljajuciTermini = await fetchAll(db, query2,[date, terrainId, startTime, endTime]);
-    } catch (error) {
-        console.log(error);
-    }
-    db.close();
-    if(jednokratniTermini.length > 0 || ponavljajuciTermini.length > 0) {
+    if(jednokratniTermini.length > 0) {
         return false;
     } else return true;
 }
