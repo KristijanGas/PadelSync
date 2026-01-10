@@ -426,3 +426,15 @@ input[type="checkbox"]:focus, input[type="radio"]:focus {
     height: 8vh;
 
 }
+
+@media screen and (max-width: 900px) {
+
+    .SearchContainer, .ResultsSection {
+
+        width: 95%;
+
+        padding: 6vw;
+
+    }
+
+}
