@@ -1,15 +1,23 @@
 
 const express = require('express');
+const { Server } = require('socket.io')
 const app = express();
 const port = 3000;
 app.use(express.static("public"));
 require("dotenv").config();
+const http = require("http");
+const sharedSession = require("express-socket.io-session");
+
 
 const session = require('express-session')
 const { auth } = require('express-openid-connect');
 const path = require("path");
 const {checkPayments, checkPonavljajuce} = require('./backendutils/periodic');
 const cors=require("cors");
+
+const { initSocket } = require("./socket/index.js");
+
+
 
 let baseURL;
 let isProduction = (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "development") && !!process.env.NGROK_BASE;
@@ -20,13 +28,6 @@ if (isProduction) {
 } else {
   baseURL = process.env.BASEURL || `http://localhost:${port}`;
 }
-
-app.use(session({
-    secret: 'verysecretyesyes', // used to sign the session ID cookie
-    resave: false, // do not save the session if it's not modified
-    // do not save new sessions that have not been modified
-    saveUninitialized: false,
-}));
 
 
 const config = {
@@ -49,6 +50,36 @@ const config = {
       }
     }
 };
+
+
+//place auth0 middleware here
+app.use(auth(config));
+
+
+const sessionMiddleware = session({
+  secret: "verysecretyesyes",
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } // ili true ako je production i https
+});
+
+app.use(sessionMiddleware);
+
+const server = http.createServer(app);
+const io =  new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
+
+
+
+initSocket(io);
+
+
+
 const corsOptions ={
    origin: "http://localhost:8080", 
    credentials:true,            //access-control-allow-credentials:true
@@ -88,8 +119,6 @@ app.use((req, res, next) => {
     next();
 });
 
-//place auth0 middleware here
-app.use(auth(config));
 
 app.get('/login/google', (req, res) => {
   res.redirect('/login?connection=google-oauth2');
@@ -108,7 +137,8 @@ const user_searchRouter = require('./routes/user_search.routes');
 const terrainRouter = require('./routes/terrain.routes');
 const terrain_searchRouter = require('./routes/terrain_search.routes');
 const stripeClubRouter = require('./routes/stripeClub.routes')
-const stripePaymentRouter = require('./routes/stripePayment.routes')
+const stripePaymentRouter = require('./routes/stripePayment.routes');
+const socketRouter = require('./routes/socket.routes')
 
 app.use('/home', homeRouter);
 app.use('/user_search', user_searchRouter);
@@ -117,6 +147,7 @@ app.use('/terrain_search', terrain_searchRouter);
 app.use('/terrain', terrainRouter);
 app.use('/stripeClub', stripeClubRouter)
 app.use('/stripe', stripePaymentRouter.router)
+app.use('/socket', socketRouter);
 
 app.get('/react', (req, res) => {
   res.redirect('http://localhost:8080');
@@ -162,7 +193,7 @@ app.use('/signup', (req, res) => {
   }
 })
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
 setInterval(checkPayments, 1000 * 60 * 60 * 24);
