@@ -65,7 +65,7 @@ router.get("/payment/:transakcijaID", requiresAuth(), async (req, res) => {
 
   let cijena, clubUsername;
   try{
-    const SQLCijena = `SELECT iznos FROM TRANSAKCIJA WHERE transakcijaID = ?`
+    const SQLCijena = `SELECT iznos, FROM TRANSAKCIJA WHERE transakcijaID = ?`
     let row = await dbGet(db, SQLCijena, [transakcijaID]);
 
     if(!row || !row.iznos){
@@ -74,7 +74,13 @@ router.get("/payment/:transakcijaID", requiresAuth(), async (req, res) => {
       cijena = row.iznos
     }
 
-    const SQLStripeClubId = `SELECT k.imeKlub AS username, stripeId FROM
+    const SQLTest = `SELECT pretpID FROM TRANSAKCIJA WHERE transakcijaID = ?`;
+    row = await dbGet(db, SQLTest, [transakcijaID]);
+    if(!row)
+      return res.status(500).send("ne postoji transakcija s tim ID-om");
+    else if (row.pretpID == null) {
+      //jednokratna
+      const SQLStripeClubId = `SELECT k.imeKlub AS username, stripeId FROM
           TRANSAKCIJA t JOIN JEDNOKRATNA_REZ jr
             ON t.transakcijaId = jr.transakcijaId
           JOIN REZERVACIJA r
@@ -86,12 +92,25 @@ router.get("/payment/:transakcijaID", requiresAuth(), async (req, res) => {
           JOIN KLUB k
             ON t.username = k.username
           WHERE t.transakcijaId = ?`
-    row = await dbGet(db, SQLStripeClubId, [transakcijaID]) 
-    if(!row || !row.stripeId){
-      return res.status(500).send("neki sjeb, nema stripe id")
-    }else{
-      clubUsername = row.username
+      row = await dbGet(db, SQLStripeClubId, [transakcijaID]) 
+      if(!row || !row.stripeId){
+        return res.status(500).send("neki sjeb, nema stripe id")
+      }else{
+        clubUsername = row.username
+      }
+    } else {
+      //ponavljajuca
+      const ponSQL = `SELECT imeKlub as username, stripeId
+                      FROM TRANSAKCIJA NATURAL JOIN PRETPLATA NATURAL JOIN TIP_PRETPLATE NATURAL JOIN KLUB
+                      WHERE transakcijaID = ?`;
+      row = dbGet(db, ponSQL, [transakcijaID]);
+      if(!row || !row.stripeId){
+        return res.status(500).send("neki sjeb, nema stripe id")
+      }else{
+        clubUsername = row.username;
+      }
     }
+
    }catch(err){
     console.error(err);
     db.close();
@@ -129,7 +148,7 @@ router.get('/payment/checkout/:transakcijaID', requiresAuth(), async (req, res) 
 
   let cijena, clubStripeId;
   try{
-    const SQLCijena = `SELECT iznos, nacinPlacanja FROM TRANSAKCIJA WHERE transakcijaID = ?`
+    const SQLCijena = `SELECT iznos, nacinPlacanja, pretpID FROM TRANSAKCIJA WHERE transakcijaID = ?`
     let row = await dbGet(db, SQLCijena, [transakcijaID]);
 
     if(!row || !row.iznos || !row.nacinPlacanja){
@@ -140,10 +159,13 @@ router.get('/payment/checkout/:transakcijaID', requiresAuth(), async (req, res) 
       }
       cijena = row.iznos
     }
-    
-    let clubUsername;
-    let clubEmail;
-    const SQLStripeClubId = `SELECT stripeId, k.username as username FROM
+
+    let clubUsername, clubEmail, reservationType;
+    let datum, vPoc, vKr, terenID;
+    if (row.pretpID == null) {
+      //jednokratna
+      reservationType = "jednokratna";
+      const SQLStripeClubId = `SELECT stripeId, k.username as username FROM
           TRANSAKCIJA t JOIN JEDNOKRATNA_REZ jr
             ON t.transakcijaId = jr.transakcijaId
           JOIN REZERVACIJA r
@@ -155,12 +177,54 @@ router.get('/payment/checkout/:transakcijaID', requiresAuth(), async (req, res) 
           JOIN KLUB k
             ON t.username = k.username
           WHERE t.transakcijaId = ?`
-    row = await dbGet(db, SQLStripeClubId, [transakcijaID]) 
-    if(!row || !row.stripeId){
-      return res.status(500).send("neki sjeb, nema stripe id")
-    }else{
-      clubStripeId = row.stripeId;
-      clubUsername = row.username;
+      row = await dbGet(db, SQLStripeClubId, [transakcijaID]) 
+      if(!row || !row.stripeId){
+        return res.status(500).send("neki sjeb, nema stripe id")
+      }else{
+        clubStripeId = row.stripeId;
+        clubUsername = row.username;
+      }
+      const SQLQuery = `SELECT tt.terenID, jr.datumRez, tt.vrijemePocetak, tt.vrijemeKraj FROM 
+                    JEDNOKRATNA_REZ jr JOIN REZERVACIJA r
+                      ON jr.rezervacijaID = r.rezervacijaID
+                    JOIN TERMIN_TJEDNI tt
+                      ON r.terminId = tt.terminID 
+                    WHERE jr.transakcijaID = ?`
+      row = await dbGet(db, SQLQuery, [transakcijaID])
+      if(!row || !row.terenID){
+        return res.status(500).send("neki sjeb, nema teren id")
+      }else{
+        terenID = row.terenID;
+        datum = row.datumRez;
+        vPoc = row.vrijemePocetak;
+        vKr = row.VrijemeKraj;
+      }
+    } else {
+      //ponavljajuca
+      reservationType = "ponavljajuca";
+      const ponSQL = `SELECT imeKlub as username, stripeId
+                      FROM TRANSAKCIJA NATURAL JOIN PRETPLATA NATURAL JOIN TIP_PRETPLATE NATURAL JOIN KLUB
+                      WHERE transakcijaID = ?`;
+      row = dbGet(db, ponSQL, [transakcijaID]);
+      if(!row || !row.stripeId){
+        return res.status(500).send("neki sjeb, nema stripe id")
+      }else{
+        clubUsername = row.username;
+        clubStripeId = row.stripeId;
+      }
+      const ponQry = `select terenID from 
+                      TRANSAKCIJA natural join PRETPLATA natural join
+                      PONAVLJAJUCA_REZ natural join REZERVACIJA natural join TERMIN_TJEDNI
+                      where transakcijaID = ?`;
+      row = dbGet(db, ponQry, [transakcijaID]);
+      if(!row){
+        return res.status(500).send("neki sjeb");
+      } else {
+        terenID = row.terenID;
+        datum = null;
+        vPoc = null;
+        vKr = null;
+      }
     }
 
     const qry = `SELECT email FROM KORISNIK WHERE USERNAME = ?`;
@@ -170,23 +234,7 @@ router.get('/payment/checkout/:transakcijaID', requiresAuth(), async (req, res) 
     } else {
       clubEmail = row.email;
     }
-    let datum, vPoc, vKr;
-    const SQLQuery = `SELECT tt.terenID, jr.datumRez, tt.vrijemePocetak, tt.vrijemeKraj FROM 
-                    JEDNOKRATNA_REZ jr JOIN REZERVACIJA r
-                      ON jr.rezervacijaID = r.rezervacijaID
-                    JOIN TERMIN_TJEDNI tt
-                      ON r.terminId = tt.terminID 
-                    WHERE jr.transakcijaID = ?`
-      row = await dbGet(db, SQLQuery, [transakcijaID])
-      let terenID
-      if(!row || !row.terenID){
-        return res.status(500).send("neki sjeb, nema teren id")
-      }else{
-        terenID = row.terenID;
-        datum = row.datumRez;
-        vPoc = row.vrijemePocetak;
-        vKr = row.VrijemeKraj;
-      }
+
       if (!transakcijaID) {
           return res.status(404).send('Transakcija ne postoji');
       }
@@ -215,7 +263,8 @@ router.get('/payment/checkout/:transakcijaID', requiresAuth(), async (req, res) 
               klubMail: clubEmail,
               datum: datum,
               vPoc: vPoc,
-              vKr: vKr
+              vKr: vKr,
+              resType: reservationType
             },
         payment_intent_data: {
             transfer_data: {
@@ -254,22 +303,30 @@ async function updateRes(transakcijaID, stripePaymentId) {
        WHERE transakcijaID = ?`,
       [StatusPlacanja.POTVRDJENO, stripePaymentId, transakcijaID]
     );
-
-    const row = await dbGet(
+    const SQLTest = `SELECT pretpID FROM TRANSAKCIJA WHERE transakcijaID = ?`;
+    let row = await dbGet(db, SQLTest, [transakcijaID]);
+    const pretpID = row?.pretpID;
+    if(pretpID == null) {
+      //jednokratna
+      row = await dbGet(
       db,
       `SELECT rezervacijaID FROM JEDNOKRATNA_REZ WHERE transakcijaID = ?`,
       [transakcijaID]
-    );
+      );
 
-    if (!row) throw new Error("Rezervacija ne postoji");
+      if (!row) throw new Error("Rezervacija ne postoji");
 
-    await dbRun(
-      db,
-      `UPDATE REZERVACIJA
-       SET statusRez = ?
-       WHERE rezervacijaID = ?`,
-      [StatusRezervacije.AKTIVNA, row.rezervacijaID]
-    );
+      await dbRun(
+        db,
+        `UPDATE REZERVACIJA
+        SET statusRez = ?
+        WHERE rezervacijaID = ?`,
+        [StatusRezervacije.AKTIVNA, row.rezervacijaID]
+      );
+    } else {
+      //ponavljajuca
+      await dbRun(db, `UPDATE PRETPLATA SET pretpAktivna = 1 WHERE pretpID = ?`, [pretpID]);
+    }
 
     return 200;
   } catch (err) {
@@ -331,10 +388,13 @@ const webhookHandler = async (req, res) => {
     console.error("Nema transakcijaID u charge.metadata");
     return res.json({ received: true });
   }
-
+  
   const db = openDb();
   try {
-    console.log(transakcijaID)
+    console.log(transakcijaID);
+    const SQLTest = `SELECT pretpID FROM TRANSAKCIJA WHERE transakcijaID = ?`;
+    let row = await dbGet(db, SQLTest, [transakcijaID]);
+    const pretpID = row?.pretpID;
     await dbRun(
       db,
       `UPDATE TRANSAKCIJA
@@ -342,25 +402,31 @@ const webhookHandler = async (req, res) => {
        WHERE transakcijaID = ?`,
       [StatusPlacanja.VRACENO, transakcijaID]
     );
-
-    const row = await dbGet(
-      db,
-      `SELECT rezervacijaID
-       FROM JEDNOKRATNA_REZ
-       WHERE transakcijaID = ?`,
-      [transakcijaID]
-    );
-
-    console.log(row)
-    if (row) {
-      await dbRun(
+    if(pretpID == null) {
+      //jednokratna
+      row = await dbGet(
         db,
-        `UPDATE REZERVACIJA
-         SET statusRez = ?
-         WHERE rezervacijaID = ?`,
-        [StatusRezervacije.OTKAZANA, row.rezervacijaID]
+        `SELECT rezervacijaID
+        FROM JEDNOKRATNA_REZ
+        WHERE transakcijaID = ?`,
+        [transakcijaID]
       );
+
+      console.log(row)
+      if (row) {
+        await dbRun(
+          db,
+          `UPDATE REZERVACIJA
+          SET statusRez = ?
+          WHERE rezervacijaID = ?`,
+          [StatusRezervacije.OTKAZANA, row.rezervacijaID]
+        );
+      }
+    } else {
+      //ponavljajuca
+      await dbRun(db, `UPDATE PRETPLATA SET pretpAktivna = 0 WHERE pretpID = ?`, [pretpID]);
     }
+    
   } catch (err) {
     console.error(err);
   } finally {
@@ -403,7 +469,7 @@ const webhookHandler = async (req, res) => {
             db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
           });
       try{
-        const row = await dbGet(
+        let row = await dbGet(
               `SELECT * FROM transakcija WHERE transakcijaID = ?`,
               [transakcijaID]
             );
@@ -412,15 +478,23 @@ const webhookHandler = async (req, res) => {
             console.log("Transakcija ne postoji");
             return 400;
           }
+          const SQLTest = `SELECT pretpID FROM TRANSAKCIJA WHERE transakcijaID = ?`;
+          row = await dbGet(db, SQLTest, [transakcijaID]);
+          const pretpID = row?.pretpID;
           await dbRun(
             `UPDATE TRANSAKCIJA SET statusPlac = ? WHERE transakcijaID = ?`,
             [StatusPlacanja.OTKAZANO, transakcijaID]
           );
-
-          await dbRun(
+          if (pretpID == null) {
+            //jednokratna
+            await dbRun(
             `UPDATE REZERVACIJA SET statusRez = ? WHERE rezervacijaID = ?`,
             [StatusRezervacije.OTKAZANA, row.rezervacijaID]
           );
+          } else {
+            //pon
+            await dbRun(db, `UPDATE PRETPLATA SET pretpAktivna = 0 WHERE pretpID = ?`, [pretpID]);
+          }
           
           return 200;
       } catch (err) {

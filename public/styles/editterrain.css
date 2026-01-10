@@ -318,3 +318,15 @@ button:active {
     margin-right: 15px;
     
 }
+
+@media screen and (max-width: 900px) {
+
+    .SettingsMenu {
+
+        width: 95%;
+
+        padding: 6vw;
+
+    }
+
+}
