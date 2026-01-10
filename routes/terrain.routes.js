@@ -60,7 +60,7 @@ function dateForReact(offset) {
   return year + '-' + month + '-' + day;
 }
 
-router.get('/:id', requiresAuth(), async (req, res) => {
+router.get('/:id', async (req, res) => {
   const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
   const id = req.params.id;
   let tereni, termini, termini2, clubUsername;
@@ -71,13 +71,15 @@ router.get('/:id', requiresAuth(), async (req, res) => {
   } catch (error) {
       console.error(error);
   }
+  clubUsername = tereni[0].username;
+  /*
   const isVerified = await verifyProfile(req, res);
   if (isVerified) {
-    clubUsername = tereni[0].username;
-    let playerUsername = req.oidc.user.nickname;
+    
   } else {
     res.status(401).send("Moraš bit ulogiran u stranicu da bi gledao termine");
   }
+    */
   //termini koje cu prikazat za trenutni tjedan
   let terminiQuery = `SELECT * FROM TERMIN_TJEDNI WHERE terenID = ?
                       AND danTjedan >= (select strftime('%w', date('now'))) AND tipTermina = 'jednokratni'`;
@@ -119,10 +121,10 @@ router.get('/:id', requiresAuth(), async (req, res) => {
                      natural join TERMIN_TJEDNI natural join TIP_PRETPLATE 
                      WHERE username = ? and pretpDostupnost = 1
                      and tipPretpID not in (select tipPretpID from pretplata where pretpAktivna = 1)`;
-  const hahahaha = `select * from tip_pretplate where username = ?
+  const pretplateQuery = `select * from tip_pretplate where username = ?
                     and tipPretpID not in (select tipPretpID from pretplata where pretpAktivna = 1)`
   const tipoviPretplate = await fetchAll(db, pretpQuery, [clubUsername]);
-  let pretplate = await fetchAll(db, hahahaha, [clubUsername]);
+  let pretplate = await fetchAll(db, pretplateQuery, [clubUsername]);
   for (let pretplata of pretplate) {
     if(typeof pretplata.termini === 'undefined') pretplata.termini = [];
     for(let entry of tipoviPretplate) {
@@ -142,7 +144,13 @@ router.get('/:id', requiresAuth(), async (req, res) => {
   }
   let addComment = false;
   if(req.oidc){
-      const userType = await findUserType(req.oidc.user.nickname);
+    let userType;
+      if(!req.oidc.isAuthenticated()){
+        userType = "UserDidntChoose";
+      }
+      else{
+        userType = await findUserType(req.oidc.user.nickname);
+      }
       if(userType == "Player"){
 
         
