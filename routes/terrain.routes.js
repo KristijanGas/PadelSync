@@ -221,19 +221,14 @@ router.post('/:id', requiresAuth(), async (req, res) => {
 
     //check availability
     try{
-      const sqlQueryTime = `SELECT vrijemeKraj, vrijemePocetak FROM TERMIN_TJEDNI WHERE terminId = ?`
-      const row = await dbGet(db, sqlQueryTime, [terminID]);
-      if(!row.vrijemeKraj || !row.vrijemePocetak){
-        return res.status(500).send("error checking availability")
-      }
-      const res = await checkAvailability(teren.terenID, datum, row.vrijemePocetak, row.vrijemeKraj)
+      const res = await checkAvailability(teren.terenID, datum, termin.vrijemePocetak, termin.vrijemeKraj);
       if(!res){
-        return res.status(500).send("error, termin vec zauzet")
+        return res.status(500).send("error, termin vec zauzet");
       }
     }catch(err){
       db.close();
-      console.error(err)
-      return res.status(500).send("error checking availability")
+      console.error(err);
+      return res.status(500).send("error checking availability");
     }
     let statusRez;
     if(tipPlacanja==="gotovina"){
@@ -260,7 +255,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
     const cijena = teren.cijenaTeren;
 
     const SQLTransaction = `INSERT INTO TRANSAKCIJA(iznos, statusPlac, nacinPlacanja, datumPlacanja, pretpID, stripePaymentId)
-                            VALUES (?, ?, ?, ?, null, ?)`
+                            VALUES (?, ?, ?, ?, null, null)`
     transakcijaID = await new Promise((resolve, reject) => {
     db.run(SQLTransaction, [cijena, statusPlac, tipPlacanja, currentDateUTC], function(err) {
       if (err) {
@@ -281,8 +276,14 @@ router.post('/:id', requiresAuth(), async (req, res) => {
       resolve();
       });
     });
-    
-    
+
+    const currentUrl = `${req.protocol}://${req.get('host')}`;
+    if(tipPlacanja==="gotovina"){
+      res.json({redirect : `${currentUrl}/terrain/${teren.terenID}`});
+    }else{
+      const url = req.protocol + "://" + req.headers.host;
+      res.json({checkoutUrl : `${url}/stripe/payment`, transakcijaID});
+    }
 
   }else if(tipTermina == 'ponavljajuci') {
     //OVDJE SE REQ.PARAMS.ID INTERPRETIRA KAO tipPretpID, a ne TERMIN ID!!
@@ -293,14 +294,14 @@ router.post('/:id', requiresAuth(), async (req, res) => {
     const cijena = req.body.pretpCijena;
 
     let futureDate = new Date();
-    futureDate = futureDate.setDate(futureDate.getDate()+7);
+    futureDate.setDate(futureDate.getDate()+30);
     let result = futureDate.toISOString().split('T')[0];
     //treba popravit
     let pretpID;
     const query = `INSERT INTO PRETPLATA(pretpPocetak, pretpKraj, pretpPlacenaDo, pretpAktivna, tipPretpID)
                     VALUES(?, null, ?, ?, ?) RETURNING pretpID`;
     await new Promise((resolve, reject) => {
-      db.get(query, [currentDateUTC, result, 1, req.params.id], function (err, row) {
+      db.get(query, [currentDateUTC, result, 0, req.params.id], function (err, row) {
         if(err) {
           return reject(err);
         }
@@ -309,7 +310,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
       });
     });
     const SQLTransaction = `INSERT INTO TRANSAKCIJA(iznos, statusPlac, nacinPlacanja, datumPlacanja, pretpID, stripePaymentId)
-                            VALUES (?, ?, ?, ?, null, ?, null)`
+                            VALUES (?, ?, ?, ?, ?, null)`
     transakcijaID = await new Promise((resolve, reject) => {
     db.run(SQLTransaction, [cijena, statusPlac, tipPlacanja, currentDateUTC, pretpID], function(err) {
       if (err) {
@@ -319,30 +320,13 @@ router.post('/:id', requiresAuth(), async (req, res) => {
       resolve(this.lastID);
         });
     });
-    //dovrsit placanja za ponavljajuce termine
+    const url = req.protocol + "://" + req.headers.host;
+    res.json({checkoutUrl : `${url}/stripe/payment`, transakcijaID});
   } else {
-    /*
-    const query = 'DELETE FROM rezervacija where rezervacijaID = ?';
-    await new Promise((resolve, reject) => {
-      db.run(query, [ID], function(err){
-        if(err) {
-          console.error(err.message);
-          return reject(err);
-        }
-        resolve();
-      });
-    });*/
     res.status(500).send("Zasto saljes post zahtjev s nevaljajucim parametrom?");
   }
-
+  db.close();
   
-  const currentUrl = `${req.protocol}://${req.get('host')}`;
-  if(tipPlacanja==="gotovina"){
-    res.json({redirect : `${currentUrl}/terrain/${teren.terenID}`})
-  }else{
-    const url = req.protocol + "://" + req.headers.host
-    res.json({checkoutUrl : `${url}/stripe/payment`, transakcijaID})
-  }
 });
 
 router.get("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {

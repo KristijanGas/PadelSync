@@ -45,7 +45,7 @@
                 <p>Nema dostupnih termina.</p>
             <%}%>
         <%}%>
-        <%if(typeof pretplate !== 'undefined') {%>
+        <%if(typeof pretplate !== 'undefined' && cardAllowed) {%>
             <p>Klub trenutno nudi iduće pretplate za ponavljajuće termine:</p>
             <%for(let pretplata of pretplate) {%>
                 <form class="formaPretplata" enctype="multipart/form-data" method="post">
