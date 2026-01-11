@@ -168,6 +168,8 @@ input[type="text"], input[type="number"] {
 
     transition: all 0.25s ease;
 
+    width: 100%;
+
 }
 
 input:focus {
