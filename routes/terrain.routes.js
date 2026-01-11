@@ -83,7 +83,7 @@ router.get('/:id', async (req, res) => {
     */
   //termini koje cu prikazat za trenutni tjedan
   let terminiQuery = `SELECT * FROM TERMIN_TJEDNI WHERE terenID = ?
-                      AND danTjedan >= (select strftime('%w', date('now'))) AND tipTermina = 'jednokratni'`;
+                      AND danTjedan > (select strftime('%w', date('now'))) AND tipTermina = 'jednokratni'`;
   //i za 3 naredna tjedna
   let terminiQuery2 = `SELECT * FROM TERMIN_TJEDNI WHERE terenID = ? AND tipTermina = 'jednokratni'`;
   try {
@@ -288,7 +288,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
 
     const currentUrl = `${req.protocol}://${req.get('host')}`;
     if(tipPlacanja==="gotovina"){
-      zahtjevZaRezervacijomKlub("obavijestORezervacijiKlub", teren.username, username, datum, termin.vrijemePocetak, termin.vrijemeKraj, teren.terenID, teren.imeTeren);
+      sendNotificationFromTemplate("zahtjevZaRezervacijom", teren.username, username, datum, termin.vrijemePocetak, termin.vrijemeKraj, teren.terenID, teren.imeTeren);
       res.json({redirect : `${currentUrl}/terrain/${teren.terenID}`});
     }else{
       const url = req.protocol + "://" + req.headers.host;

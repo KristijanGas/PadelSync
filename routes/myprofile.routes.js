@@ -122,6 +122,9 @@ router.get('/', requiresAuth(), async (req, res) => {
                                                 row.pretplate = pretplate;
                                         }
                                         db.close();
+                                        let currentDateUTC = new Date();
+                                        currentDateUTC.setDate(currentDateUTC.getDate()+1);
+                                        const nextDate = currentDateUTC.toISOString().split('T')[0];
                                         res.render("myprofile", {
                                         username: req.oidc.user["https://yourapp.com/username"],
                                         isAuthenticated: req.oidc.isAuthenticated(),
@@ -130,7 +133,8 @@ router.get('/', requiresAuth(), async (req, res) => {
                                         oidcWhole: req.oidc,
                                         tokenInfo: req.oidc.accessToken,
                                         profileType: profileInDB,
-                                        userInfo: row
+                                        userInfo: row,
+                                        date: nextDate
                                         })
                                 }catch(err){
                                         console.error(err.message);

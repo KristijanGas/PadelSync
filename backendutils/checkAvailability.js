@@ -1,5 +1,6 @@
 const axios = require('axios');
 const fetchAll = require('./fetchAll');
+const StatusRezervacije = require('../constants/statusRez');
 const sqlite3 = require('sqlite3').verbose();
 
 //funckija za provjeru dostupnosti jednokratnih termina
@@ -14,9 +15,10 @@ async function checkAvailability(terrainId, date, startTime, endTime) {
     const query1 = `select * from REZERVACIJA join JEDNOKRATNA_REZ on REZERVACIJA.rezervacijaID = JEDNOKRATNA_REZ.rezervacijaID
                     join TERMIN_TJEDNI on REZERVACIJA.terminID = TERMIN_TJEDNI.terminID
                     where JEDNOKRATNA_REZ.datumRez = ? and termin_tjedni.terenID = ?
+                    and (REZERVACIJA.statusRez = ? or REZERVACIJA.statusRez = ?)
                     and NOT(TERMIN_TJEDNI.vrijemeKraj <= ? or TERMIN_TJEDNI.vrijemePocetak >= ?)`;
     try {
-        jednokratniTermini = await fetchAll(db, query1, [date, terrainId, startTime, endTime]);
+        jednokratniTermini = await fetchAll(db, query1, [date, terrainId,StatusRezervacije.AKTIVNA, StatusRezervacije.PENDING,  startTime, endTime]);
     } catch (error) {
         console.log(error);
     }

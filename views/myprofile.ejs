@@ -84,8 +84,11 @@
                                                                 <li><strong>Kraj:</strong> <%= newr.vrijemeKraj %></li>
                                                                 <li><strong>Korisnik:</strong> <%= newr.username %></li>
                                                         </ul>
-
+                                                        <%if(date < newr.datumRez) {%>
                                                         <a href="/terrain/cancel/<%= newr.rezervacijaID %>">cancel rez</a>
+                                                        <%} else {%>
+                                                                <p>rezervacije se najkasnije mogu otkazati dan prije</p>
+                                                        <%}%>
                                                         </li>
                                                 <% }); %>
                                         </ul>

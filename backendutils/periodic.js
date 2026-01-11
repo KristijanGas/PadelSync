@@ -2,6 +2,7 @@ const axios = require('axios');
 const fetchAll = require('./fetchAll');
 const sqlite3 = require('sqlite3').verbose();
 const StatusPlacanja = require('../constants/statusPlacanja');
+const StatusRezervacije = require('../constants/statusRez');
 
 async function checkPayments() {
     const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
@@ -17,6 +18,28 @@ async function checkPayments() {
             resolve();
         });
     });
+    const query = `SELECT rezervacijaID, transakcijaID FROM REZERVACIJA NATURAL JOIN JEDNOKRATNA_REZ
+                    WHERE datumRez = ? AND statusRez = ?`;
+    const currentDateUTC = new Date().toISOString().split('T')[0];
+    let rows = await fetchAll(db, query, [currentDateUTC, StatusRezervacije.PENDING]);
+    const updQry1 = `UPDATE REZERVACIJA SET statusRez = ? WHERE rezervacijaID = ?`;
+    const updQry2 = `UPDATE TRANSAKCIJA SET statusPlac = ? WHERE transakcijaID = ?`; 
+    for(let row of rows) {
+        await new Promise((resolve, reject) => {
+            db.run(updQry1, [StatusRezervacije.ODBIJENA, row.rezervacijaID], function(err) {
+                if(err) reject(err);
+                resolve();
+            });
+        });
+
+        await new Promise((resolve, reject) => {
+            db.run(updQry2, [StatusPlacanja.OTKAZANO, row.transakcijaID], function(err) {
+                if(err) reject(err);
+                resolve();
+            })
+        });
+    }
+    db.close();
 }
 
 async function checkPonavljajuce() {
@@ -45,7 +68,7 @@ async function checkPonavljajuce() {
     const currDate = new Date().toISOString.split('T')[0];
     const query2 = `UPDATE PRETPLATA SET pretpAktivna = 0 WHERE pretPlacenaDo = ?`;
     await dbRun(db, query2, [currDate]);
-
+    db.close();
 }
 
 module.exports = {checkPayments, checkPonavljajuce};
