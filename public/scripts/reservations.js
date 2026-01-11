@@ -82,5 +82,18 @@ pretpForms.forEach(form => {
             body: JSON.stringify(payload)
         });
         //nastavit s plaćanjem
+        const data = await res.json();
+        if(data.checkoutUrl) {
+            const transakcijaID = data.transakcijaID;
+            const checkoutUrl = data.checkoutUrl;
+
+            const url = checkoutUrl.endsWith('/') 
+                ? `${checkoutUrl}${transakcijaID}` 
+                : `${checkoutUrl}/${transakcijaID}`;
+
+            window.location.href = url;
+        } else {
+            window.location.href = data.redirect;
+        }
     });
 });
