@@ -440,3 +440,101 @@ input[type="checkbox"]:focus, input[type="radio"]:focus {
     }
 
 }
+
+.TerrainResultsGrid {
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+
+    gap: 25px;
+
+    margin-top: 20px;
+
+}
+
+.TerrainCard {
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: space-between;
+
+    background: linear-gradient(145deg, #141414, #0d0d0d);
+
+    border-radius: 12px;
+
+    padding: 20px;
+
+    text-decoration: none;
+
+    color: rgba(240, 231, 231, 0.9);
+
+    border: 1px solid #222;
+
+    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+
+    transition: all 0.3s ease;
+
+    min-height: 130px;
+
+}
+
+.TerrainCard h3 {
+
+    font-size: 22px;
+
+    margin: 0 0 10px;
+
+    font-weight: 600;
+
+    color: #fff;
+
+}
+
+.terrain-owner {
+
+    font-size: 16px;
+
+    color: rgba(200, 200, 200, 0.85);
+
+}
+
+.terrain-id {
+
+    font-size: 14px;
+
+    color: rgba(160, 160, 160, 0.7);
+
+    align-self: flex-end;
+
+}
+
+.TerrainCard:hover {
+
+    transform: translateY(-6px);
+
+    border-color: #0ff;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.8),
+        0 0 12px rgba(0,255,255,0.3);
+
+}
+
+@media (max-width: 600px) {
+
+    .TerrainCard {
+
+        padding: 18px;
+
+    }
+
+    .TerrainCard h3 {
+
+        font-size: 20px;
+        
+    }
+
+}

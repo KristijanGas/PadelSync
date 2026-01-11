@@ -1,0 +1,107 @@
+body {
+
+    margin: 0;
+
+    padding: 0;
+
+    font-family: 'Segoe UI', sans-serif;
+
+    background-color: #0b0b0b;
+
+    color: rgba(240, 231, 231, 0.9);
+
+    min-height: 100vh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    padding-top: 120px;
+
+}
+
+.InboxContainer {
+
+    width: 80%;
+
+    max-width: 1000px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+
+    margin-bottom: 50px;
+
+}
+
+.MessageCard {
+
+    background: linear-gradient(145deg, #141414, #0d0d0d);
+
+    border-radius: 12px;
+
+    padding: 20px;
+
+    border: 1px solid #222;
+
+    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+
+    transition: all 0.3s ease;
+
+    cursor: pointer;
+
+}
+
+.MessageCard:hover {
+
+    transform: translateY(-4px);
+
+    border-color: #0ff;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.8),
+        0 0 12px rgba(0,255,255,0.3);
+
+}
+
+.MessageCard pre {
+
+    margin: 0;
+
+    font-size: 16px;
+
+    color: rgba(240, 231, 231, 0.9);
+
+    white-space: pre-wrap;
+
+    word-wrap: break-word;
+
+}
+
+@media (max-width: 768px) {
+
+    .InboxContainer {
+
+        width: 95%;
+
+        padding: 0 10px;
+
+    }
+
+    .MessageCard {
+
+        padding: 15px;
+
+    }
+
+    .MessageCard pre {
+
+        font-size: 14px;
+        
+    }
+
+}

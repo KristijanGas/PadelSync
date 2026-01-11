@@ -277,8 +277,6 @@ body {
 
     flex-direction: row;
 
-    /* flex-direction: column; */
-
     justify-content: center;
 
     align-items: center;
@@ -369,4 +367,48 @@ pre {
     .HomePageClubCard {
         width: 95vw;
     }
+}
+
+.notification {
+
+    position: fixed;
+
+    top: 20px;
+
+    right: 20px;
+
+    background: linear-gradient(135deg, #111, #222);
+
+    color: #fff;
+
+    padding: 14px 22px;
+
+    border-radius: 12px;
+
+    font-size: 16px;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+
+    opacity: 0;
+
+    transform: translateY(-20px);
+
+    transition: all 0.4s ease;
+
+    z-index: 9999;
+
+}
+
+.notification.show {
+
+    opacity: 1;
+
+    transform: translateY(0);
+
+}
+
+.notification.hidden {
+
+    pointer-events: none;
+
 }
