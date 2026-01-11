@@ -101,7 +101,8 @@ router.get("/payment/:transakcijaID", requiresAuth(), async (req, res) => {
     } else {
       //ponavljajuca
       const ponSQL = `SELECT imeKlub as username, stripeId
-                      FROM TRANSAKCIJA NATURAL JOIN PRETPLATA NATURAL JOIN TIP_PRETPLATE NATURAL JOIN KLUB
+                      FROM TRANSAKCIJA NATURAL JOIN PRETPLATA NATURAL JOIN TIP_PRETPLATE JOIN KLUB ON
+                      clubUsername = username
                       WHERE transakcijaID = ?`;
       row = dbGet(db, ponSQL, [transakcijaID]);
       if(!row || !row.stripeId){
@@ -203,7 +204,8 @@ router.get('/payment/checkout/:transakcijaID', requiresAuth(), async (req, res) 
       //ponavljajuca
       reservationType = "ponavljajuca";
       const ponSQL = `SELECT imeKlub as username, stripeId
-                      FROM TRANSAKCIJA NATURAL JOIN PRETPLATA NATURAL JOIN TIP_PRETPLATE NATURAL JOIN KLUB
+                      FROM TRANSAKCIJA NATURAL JOIN PRETPLATA NATURAL JOIN TIP_PRETPLATE JOIN KLUB ON
+                      clubUsername = username
                       WHERE transakcijaID = ?`;
       row = dbGet(db, ponSQL, [transakcijaID]);
       if(!row || !row.stripeId){

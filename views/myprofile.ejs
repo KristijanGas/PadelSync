@@ -93,7 +93,22 @@
                                 <% } else { %>
                                         <p>nema novi rez.</p>
                                 <% } %>
-
+                                <% if (userInfo.pretplate && userInfo.pretplate.length > 0) {%>
+                                        <ul class="pretplate">
+                                        <%userInfo.pretplate.forEach(function(pretplata) {%>
+                                                <li class="pretplateCard">
+                                                <ul>
+                                                        <li><strong>Naziv pretplate: </strong><%= pretplata.pretpNaziv%></li>
+                                                        <li><strong>Pretplata plaćena do: </strong><%=pretplata.pretpPlacenaDo%></li>
+                                                        <li><strong>Cijena pretplate:</strong><%=pretplata.pretpCijena%></li>
+                                                </ul>
+                                                </li>
+                                                <a href="/reservationHandle/cancelSub/<%=pretplata.pretpID%>">otkazi pretplatu</a>
+                                        <%})%>
+                                        </ul>
+                                <%} else {%>
+                                        <p>nemate aktivnih pretplata trenutno</p>
+                                <%}%>
 
                                 
 

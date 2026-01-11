@@ -5,6 +5,7 @@ const StatusRezervacije = Object.freeze({
   OTKAZANO: "canceled",
   VRACENO: "refunded",
   REFUND_U_TOKU: "refundInProgress",
+  NEPLACENO: "unpaid"
 });
 
 module.exports = StatusRezervacije;

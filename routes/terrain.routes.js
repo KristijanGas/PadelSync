@@ -119,9 +119,9 @@ router.get('/:id', async (req, res) => {
   const pretpQuery = `select rezervacijaID, terminID, tipPretpID, terenID, danTjedan,
                      vrijemePocetak, vrijemeKraj from rezervacija natural join PONAVLJAJUCA_REZ
                      natural join TERMIN_TJEDNI natural join TIP_PRETPLATE 
-                     WHERE username = ? and pretpDostupnost = 1
+                     WHERE clubUsername = ? and pretpDostupnost = 1
                      and tipPretpID not in (select tipPretpID from pretplata where pretpAktivna = 1)`;
-  const pretplateQuery = `select * from tip_pretplate where username = ?
+  const pretplateQuery = `select * from tip_pretplate where clubUsername = ?
                     and tipPretpID not in (select tipPretpID from pretplata where pretpAktivna = 1)`
   const tipoviPretplate = await fetchAll(db, pretpQuery, [clubUsername]);
   let pretplate = await fetchAll(db, pretplateQuery, [clubUsername]);
@@ -240,8 +240,8 @@ router.post('/:id', requiresAuth(), async (req, res) => {
     }
     let statusRez;
     if(tipPlacanja==="gotovina"){
-      statusRez = StatusRezervacije.AKTIVNA
-      statusPlac = StatusPlacanja.POTVRDJENO
+      statusRez = StatusRezervacije.PENDING
+      statusPlac = StatusPlacanja.NEPLACENO
     }else{
       statusRez = StatusRezervacije.PENDING
       statusPlac = StatusPlacanja.PENDING

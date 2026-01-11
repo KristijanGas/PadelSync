@@ -111,6 +111,15 @@ router.get('/', requiresAuth(), async (req, res) => {
                                                 });
                                                 row.oldRes = oldRes;
                                                 row.newRes = newRes;
+                                                const prtpQuery = `select * from pretplata p join TIP_PRETPLATE tp on p.tipPretpID = tp.tipPretpID
+                                                                 where p.pretpAktivna = 1 and p.username = ?`;
+                                                const pretplate = await new Promise((resolve, reject) => {
+                                                        db.all(prtpQuery, [req.oidc.user.nickname], (err, rows) => {
+                                                                if(err) return reject(err);
+                                                                resolve(rows);
+                                                        });
+                                                });
+                                                row.pretplate = pretplate;
                                         }
                                         db.close();
                                         res.render("myprofile", {
