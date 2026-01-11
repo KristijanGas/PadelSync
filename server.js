@@ -140,6 +140,7 @@ const stripeClubRouter = require('./routes/stripeClub.routes')
 const stripePaymentRouter = require('./routes/stripePayment.routes');
 const socketRouter = require('./routes/socket.routes');
 const reservationHandleRouter = require('./routes/reservationHandle.routes.js');
+const inboxRouter = require("./routes/inbox.routes.js")
 
 app.use('/home', homeRouter);
 app.use('/user_search', user_searchRouter);
@@ -149,6 +150,7 @@ app.use('/terrain', terrainRouter);
 app.use('/stripeClub', stripeClubRouter)
 app.use('/stripe', stripePaymentRouter.router)
 app.use('/socket', socketRouter);
+app.use('/myInbox', inboxRouter)
 app.use('/reservationHandle', reservationHandleRouter)
 
 app.get('/react', (req, res) => {

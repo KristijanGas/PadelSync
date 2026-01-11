@@ -18,6 +18,7 @@ let transporter = nodemailer.createTransport({
 
 const StatusRezervacije = require('../constants/statusRez');
 const StatusPlacanja = require('../constants/statusPlacanja');
+const { sendNotificationFromTemplate } = require('../socket');
 
 // podstranica za pretraživanje klubova, igrača
 const fetchAll = async (db, sql, params) => {
@@ -287,6 +288,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
 
     const currentUrl = `${req.protocol}://${req.get('host')}`;
     if(tipPlacanja==="gotovina"){
+      zahtjevZaRezervacijomKlub("obavijestORezervacijiKlub", teren.username, username, datum, termin.vrijemePocetak, termin.vrijemeKraj, teren.terenID, teren.imeTeren);
       res.json({redirect : `${currentUrl}/terrain/${teren.terenID}`});
     }else{
       const url = req.protocol + "://" + req.headers.host;
@@ -395,7 +397,10 @@ router.get("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
                                                           resolve(this);
                                                   });
                                           });
+      
       await runQuery(SQLQuery, [StatusRezervacije.OTKAZANA, rezervacijaID])
+      
+      
     }
     //treba provjeriti način plaćanja
   }catch(err){

@@ -10,7 +10,7 @@ const sqlite3 = require('sqlite3').verbose();
 
 router.post("/check",async (req, res) => {
     const {socketId } = req.body;
-    if(req.oidc){
+    if(req.oidc.user){
         const username = req.oidc.user.nickname;
         const type = await findUserType(req.oidc.user.nickname);
         if(type === "Player" || type === "Club"){
@@ -25,6 +25,8 @@ router.post("/check",async (req, res) => {
     res.json({ ok: true });
 })
 router.get("/notify", (req, res) => {
+    if(!req.oidc.user)  return res.status(500).send("Failed to send notification, unknown user");
+
     const room = `user:${req.oidc.user.nickname}`
     const message = "proba"
     
