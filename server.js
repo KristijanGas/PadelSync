@@ -20,13 +20,17 @@ const { initSocket } = require("./socket/index.js");
 
 
 let baseURL;
-let isProduction = (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "development") && !!process.env.NGROK_BASE;
+let isProduction = process.env.NODE_ENV === "production"
+let isDevelopment = process.env.NODE_ENV === "development" && !!process.env.NGROK_BASE;
 
-if (isProduction) {
+if (isDevelopment) {
   baseURL = process.env.NGROK_BASE;
-  app.set('trust proxy', 1); // potrebno za HTTPS + secure cookies iza proxy
 } else {
   baseURL = process.env.BASEURL || `http://localhost:${port}`;
+}
+
+if(isProduction || isDevelopment){
+  app.set('trust proxy', 1); // potrebno za HTTPS + secure cookies iza proxy
 }
 
 
@@ -45,7 +49,7 @@ const config = {
   },
   session: {
       cookie: {
-        secure: isProduction,
+        secure: isProduction || isDevelopment,
         sameSite: 'Lax'
       }
     }
