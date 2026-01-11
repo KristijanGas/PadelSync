@@ -10,11 +10,42 @@ function initSocket(io) {
   });
 }
 
+const { templates } = require("../constants/notificationTemplates");
 
-function sendNotification(username, message) {
+function sendNotificationFromTemplate(
+  templateName,
+  usernamePrimatelj,
+  poslanoZbogUsername,
+  datumRez,
+  vrijemePocetak,
+  vrijemeKraj,
+  terenID,
+  imeTeren
+) {
+  const templateFn = templates[templateName];
+
+  if (!templateFn) {
+    throw new Error(`Unknown template: ${templateName}`);
+  }
+
+  const message = templateFn(
+    usernamePrimatelj,
+    poslanoZbogUsername,
+    datumRez,
+    vrijemePocetak,
+    vrijemeKraj,
+    terenID,
+    imeTeren
+  );
+
+  sendNotification(usernamePrimatelj, message);
+}
+
+function sendNotification(usernamePrimatelj, message) {
   if (!ioInstance) throw new Error("Socket.io not initialized");
-  const room = `user:${username}`;
-  console.log("Sending notification to", room, message);
+
+  const room = `user:${usernamePrimatelj}`;
+
   ioInstance.to(room).emit("notification", { message });
 }
 
@@ -31,9 +62,8 @@ function addSocketToRoom(socketId, roomName) {
     console.warn("Socket not found:", socketId);
     return false;
   }
-
   socket.join(roomName);
   return true;
 }
 
-module.exports = { initSocket, sendNotification, getIO, addSocketToRoom };
+module.exports = { initSocket, sendNotification, getIO, addSocketToRoom, sendNotificationFromTemplate };
