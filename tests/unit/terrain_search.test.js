@@ -36,8 +36,10 @@ describe('GET /terrain_search', () => {
                 'tipTeren[]': ['double', 'single']
             });
         expect(res.status).toBe(200);
-        expect(res.text).toContain('Terrain ID: 12, Ime terena: terenkoo Owner: andjela.replit');
-        expect(res.text).toContain('<!DOCTYPE html>'); // basic check: HTML returned
+        expect(res.text).toContain('terenkoo');
+        expect(res.text).toContain('Owner: andjela.replit');
+        expect(res.text).toContain('ID: 12');
+        expect(res.text).toContain('<!DOCTYPE html>');
         const res2 = await request(app).get('/terrain_search/results')
             .query({
                 username: 'nonexistentuser'

@@ -56,15 +56,6 @@ const config = {
 app.use(auth(config));
 
 
-const sessionMiddleware = session({
-  secret: "verysecretyesyes",
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: false } // ili true ako je production i https
-});
-
-app.use(sessionMiddleware);
-
 const server = http.createServer(app);
 const io =  new Server(server, {
   cors: {
@@ -119,6 +110,13 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use(session({
+  secret: "verysecretyesyes",
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } // true u production + https
+}));
+
 
 app.get('/login/google', (req, res) => {
   res.redirect('/login?connection=google-oauth2');
@@ -128,6 +126,7 @@ app.get('/login/google', (req, res) => {
 app.get('/', (req, res) => {
     res.redirect('/home');
 });
+
 
 // routes
 
