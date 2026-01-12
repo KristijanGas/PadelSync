@@ -306,12 +306,17 @@ router.post('/:id', requiresAuth(), async (req, res) => {
     let futureDate = new Date();
     futureDate.setDate(futureDate.getDate()+30);
     let result = futureDate.toISOString().split('T')[0];
-    //treba popravit
+    
+    const availabilityQuery = `SELECT * FROM PRETPLATA WHERE pretpAktivna = 1 AND tipPretpID = ?`;
+    const row = await fetchAll(db, availabilityQuery, [req.params.id]);
+    if(row.length > 0)
+      res.status(500).send("Netko je prije vas rezervirao istu pretplatu");
+
     let pretpID;
-    const query = `INSERT INTO PRETPLATA(pretpPocetak, pretpKraj, pretpPlacenaDo, pretpAktivna, tipPretpID)
-                    VALUES(?, null, ?, ?, ?) RETURNING pretpID`;
+    const query = `INSERT INTO PRETPLATA(pretpPocetak, pretpKraj, pretpPlacenaDo, pretpAktivna, tipPretpID, username)
+                    VALUES(?, null, ?, ?, ?, ?) RETURNING pretpID`;
     await new Promise((resolve, reject) => {
-      db.get(query, [currentDateUTC, result, 0, req.params.id], function (err, row) {
+      db.get(query, [currentDateUTC, result, 0, req.params.id, req.oidc.user.nickname], function (err, row) {
         if(err) {
           return reject(err);
         }
