@@ -288,7 +288,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
 
     const currentUrl = `${req.protocol}://${req.get('host')}`;
     if(tipPlacanja==="gotovina"){
-      sendNotificationFromTemplate("zahtjevZaRezervacijom", teren.username, username, datum, termin.vrijemePocetak, termin.vrijemeKraj, teren.terenID, teren.imeTeren);
+      sendNotificationFromTemplate("zahtjevZaRezervacijomKlub", teren.username, username, datum, termin.vrijemePocetak, termin.vrijemeKraj, teren.terenID, teren.imeTeren);
       res.json({redirect : `${currentUrl}/terrain/${teren.terenID}`});
     }else{
       const url = req.protocol + "://" + req.headers.host;
