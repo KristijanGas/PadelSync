@@ -65,7 +65,7 @@ router.get("/payment/:transakcijaID", requiresAuth(), async (req, res) => {
 
   let cijena, clubUsername;
   try{
-    const SQLCijena = `SELECT iznos, FROM TRANSAKCIJA WHERE transakcijaID = ?`
+    const SQLCijena = `SELECT iznos FROM TRANSAKCIJA WHERE transakcijaID = ?`
     let row = await dbGet(db, SQLCijena, [transakcijaID]);
 
     if(!row || !row.iznos){
@@ -102,7 +102,7 @@ router.get("/payment/:transakcijaID", requiresAuth(), async (req, res) => {
       //ponavljajuca
       const ponSQL = `SELECT imeKlub as username, stripeId
                       FROM TRANSAKCIJA NATURAL JOIN PRETPLATA NATURAL JOIN TIP_PRETPLATE JOIN KLUB ON
-                      clubUsername = username
+                      clubUsername = KLUB.username
                       WHERE transakcijaID = ?`;
       row = dbGet(db, ponSQL, [transakcijaID]);
       if(!row || !row.stripeId){
@@ -205,7 +205,7 @@ router.get('/payment/checkout/:transakcijaID', requiresAuth(), async (req, res) 
       reservationType = "ponavljajuca";
       const ponSQL = `SELECT imeKlub as username, stripeId
                       FROM TRANSAKCIJA NATURAL JOIN PRETPLATA NATURAL JOIN TIP_PRETPLATE JOIN KLUB ON
-                      clubUsername = username
+                      clubUsername = KLUB.username
                       WHERE transakcijaID = ?`;
       row = dbGet(db, ponSQL, [transakcijaID]);
       if(!row || !row.stripeId){
@@ -489,10 +489,16 @@ const webhookHandler = async (req, res) => {
           );
           if (pretpID == null) {
             //jednokratna
-            await dbRun(
+            row = await dbGet(
+            db,
+            `SELECT rezervacijaID
+            FROM JEDNOKRATNA_REZ
+            WHERE transakcijaID = ?`,
+            [transakcijaID]
+            );
+            await dbRun(db,
             `UPDATE REZERVACIJA SET statusRez = ? WHERE rezervacijaID = ?`,
-            [StatusRezervacije.OTKAZANA, row.rezervacijaID]
-          );
+            [StatusRezervacije.OTKAZANA, row.rezervacijaID]);
           } else {
             //pon
             await dbRun(db, `UPDATE PRETPLATA SET pretpAktivna = 0 WHERE pretpID = ?`, [pretpID]);

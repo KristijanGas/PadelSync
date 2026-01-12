@@ -81,7 +81,7 @@ router.get('/confirmReservation/:rezervacijaID', requiresAuth(), async (req, res
     db.close();
 });
 
-router.get('/cancelReservation/:rezervacijaID', requiresAuth(), async (req, res) => {
+router.get('/rejectReservation/:rezervacijaID', requiresAuth(), async (req, res) => {
     const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
     try {
         const isVerified = await verifyProfile(req, res);
@@ -99,28 +99,6 @@ router.get('/cancelReservation/:rezervacijaID', requiresAuth(), async (req, res)
             const updQuery = `UPDATE REZERVACIJA SET statusRez = ? WHERE rezervacijaID = ?`;
             await new Promise((resolve, reject) => {
                 db.run(updQuery, [StatusRezervacije.ODBIJENA, req.params.rezervacijaID], function(err) {
-                    if(err) return reject(err);
-                    resolve(this);
-                });
-            });
-
-            const updQuery2 = `UPDATE TRANSAKCIJA SET statusPlac = ? WHERE transakcijaID = ?`;
-            await new Promise((resolve, reject) => {
-                db.run(updQuery2, [StatusPlacanja.OTKAZANO, transakcijaID], function(err) {
-                    if(err) return reject(err);
-                    resolve(this);
-                });
-            });
-        } else if (profileInDB === 'Player') {
-            const query = `select transakcijaID from JEDNOKRATNA_REZ j natural join REZERVACIJA natural join TERMIN_TJEDNI tt join TEREN t on tt.terenID = t.terenID
-                        where rezervacijaID = ? and j.username = ?`;
-            let row = await dbGet(db, query, [req.params.rezervacijaID, req.oidc.user.nickname]);
-            if(!row)
-                res.status(403).send("ne možeš otkazati tuđu rezervaciju");
-            const transakcijaID = row.transakcijaID;
-            const updQuery = `UPDATE REZERVACIJA SET statusRez = ? WHERE rezervacijaID = ?`;
-            await new Promise((resolve, reject) => {
-                db.run(updQuery, [StatusRezervacije.OTKAZANA, req.params.rezervacijaID], function(err) {
                     if(err) return reject(err);
                     resolve(this);
                 });
