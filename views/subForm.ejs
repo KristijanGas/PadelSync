@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dodavanje pretplate</title>
+    </head>
+    <body>
+        <form id="addSubForm" method="post" action="/editschedule/addSub">
+            <label for="nazivPretp">Naziv pretplate</label>
+            <input id="nazivPretp" type="text" name="pretpNaziv" required>
+            <label for="cijenaPretp">Cijena pretplate</label>
+            <input id="cijenaPretp" type="number" step="0.1" name="pretpCijena" required>
+            <label for="pretpLvl">Level pretplate</label>
+            <input id="pretpLvl" type="number" step="1" name="levelPretplate" required>
+            <p>Hoćete li nuditi podučavanje kao dio ove pretplate?</p>
+            <input id="da" type="radio" name="poducavanje" value="1" required>
+            <label for="da">Da</label>
+            <input id="ne" type="radio" name="poducavanje" value="0">
+            <label for="ne">Ne</label>
+            <button type="submit">Dodaj pretplatu?</button>
+        </form>
+    </body>
+</html>
