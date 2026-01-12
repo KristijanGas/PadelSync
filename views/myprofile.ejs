@@ -117,26 +117,6 @@
 
 
                         <%}else if(profileType === "Club"){%>
-                                <div>
-                                <h2>Your terrains:</h2>
-                                <% if( userInfo.terrains && userInfo.terrains.length > 0 ) { %>
-                                        <ul>
-                                        <% userInfo.terrains.forEach(function(teren) { %>
-                                                <li>
-                                                        <span><%= teren.imeTeren %></span>
-                                                        <p>ID: <%= teren.terenID %></p>
-                                                        <button onclick="location.href='/terrain/<%= teren.terenID %>'">Go to terrain page</button>
-                                                        <button onclick="location.href='/editterrain/<%=user.nickname%>/<%= teren.terenID %>'">Edit terrain</button>
-                                                        <button onclick="location.href='/editschedule/<%=user.nickname%>/<%= teren.terenID %>'">Edit schedule</button>
-                                                        <button onclick="location.href='/editterrain/<%=user.nickname%>/<%= teren.terenID %>/delete'">Delete terrain</button>
-                                                </li>
-                                        <% }); %>
-                                        </ul>
-                                <% } else { %>
-                                        <p>You have no terrains added yet.</p>
-                                <% } %>
-                                <button onclick="location.href='/editterrain/<%=user.nickname%>/newTerrain'">Add New Terrain</button>
-                                </div>
                                 <div class="userInfo">
 
                                         <div class="userInfoItemName">Korisničko ime</div>
@@ -185,6 +165,26 @@
 
                                 </div>
 
+                                <div>
+                                <h2>Your terrains:</h2>
+                                <% if( userInfo.terrains && userInfo.terrains.length > 0 ) { %>
+                                        <ul>
+                                        <% userInfo.terrains.forEach(function(teren) { %>
+                                                <li>
+                                                        <span><%= teren.imeTeren %></span>
+                                                        <p>ID: <%= teren.terenID %></p>
+                                                        <button onclick="location.href='/terrain/<%= teren.terenID %>'">Go to terrain page</button>
+                                                        <button onclick="location.href='/editterrain/<%=user.nickname%>/<%= teren.terenID %>'">Edit terrain</button>
+                                                        <button onclick="location.href='/editschedule/<%=user.nickname%>/<%= teren.terenID %>'">Edit schedule</button>
+                                                        <button onclick="location.href='/editterrain/<%=user.nickname%>/<%= teren.terenID %>/delete'">Delete terrain</button>
+                                                </li>
+                                        <% }); %>
+                                        </ul>
+                                <% } else { %>
+                                        <p>You have no terrains added yet.</p>
+                                <% } %>
+                                <button onclick="location.href='/editterrain/<%=user.nickname%>/newTerrain'">Add New Terrain</button>
+                                </div>
 
                                 <a href="/stripeClub">create/edit stripe acc</a>
 
