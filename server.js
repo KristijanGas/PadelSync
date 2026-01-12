@@ -166,6 +166,16 @@ app.get("/terrain/:id/react-calendar", (req, res) =>{
     terrainID: id
   });
 });
+
+
+app.get("/reauth", (req, res) => {
+  res.oidc.login({
+    authorizationParams: {
+      prompt: "login"  // forsira novi login i refresh claimova
+    },
+    returnTo: "/home"  // nakon uspješnog login-a
+  });
+});
 /* const registrationRouter = require('./routes/registration.routes');
 const loginRouter = require('./routes/login.routes');
 app.use('/login', loginRouter);
