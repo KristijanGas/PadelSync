@@ -92,8 +92,10 @@ router.get('/rejectReservation/:rezervacijaID', requiresAuth(), async (req, res)
             const query = `select transakcijaID from JEDNOKRATNA_REZ natural join REZERVACIJA natural join TERMIN_TJEDNI tt join TEREN t on tt.terenID = t.terenID
                         where rezervacijaID = ? and t.username = ?`;
             let row = await dbGet(db, query, [req.params.rezervacijaID, req.oidc.user.nickname]);
-            if(!row)
+            if(!row) {
                 res.status(403).send("ne možeš otkazati tuđu rezervaciju");
+                return;
+            }
 
             const transakcijaID = row.transakcijaID;
             const updQuery = `UPDATE REZERVACIJA SET statusRez = ? WHERE rezervacijaID = ?`;
@@ -113,6 +115,7 @@ router.get('/rejectReservation/:rezervacijaID', requiresAuth(), async (req, res)
             });
         } else {
             res.status(403).send("skuhan si");
+            return;
         }
     } catch (error) {
         res.status(500).send("oopsie :(");

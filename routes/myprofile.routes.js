@@ -3,7 +3,9 @@ const router = express.Router();
 const { verifyProfile, verifyDBProfile } = require("../backendutils/verifyProfile");
 
 const { requiresAuth } = require('express-openid-connect')
-const axios = require('axios')
+const axios = require('axios');
+const StatusRezervacije = require('../constants/statusRez');
+const StatusPlacanja = require('../constants/statusPlacanja');
 const sqlite3 = require('sqlite3').verbose();
 
 router.get('/', requiresAuth(), async (req, res) => {
@@ -148,6 +150,39 @@ router.get('/', requiresAuth(), async (req, res) => {
         } catch (err) {
                 res.status(500).send("internal server error");
         }
-})
+});
+
+router.get('/handleReservations', requiresAuth(), async (req, res) => {
+        const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+        try {
+                const isVerified = await verifyProfile(req, res);
+                if (!isVerified) return res.render("verifymail");
+
+                const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
+                if(profileInDB !== 'Club') {
+                        res.status(403).send("samo klubovi mogu vidjet njihove rezervacije koje cekaju");
+                        return;
+                } else {
+                        const query = `SELECT datumRez, JEDNOKRATNA_REZ.username as username, imeTeren, iznos, vrijemePocetak, vrijemeKraj, rezervacijaID, TEREN.terenID
+                                        FROM JEDNOKRATNA_REZ NATURAL JOIN REZERVACIJA
+                                        NATURAL JOIN TERMIN_TJEDNI JOIN TEREN ON TERMIN_TJEDNI.terenID = TEREN.terenID
+                                        NATURAL JOIN TRANSAKCIJA
+                                        WHERE TEREN.username =  ? AND statusRez = ? and statusPlac = ?`;
+                        const rows = await new Promise((resolve, reject) => {
+                                db.all(query, [req.oidc.user.nickname, StatusRezervacije.PENDING, StatusPlacanja.NEPLACENO], function(err, rows) {
+                                        if(err) reject(err);
+                                        resolve(rows);
+                                });
+                        });
+                        res.render('handleRes',{
+                                rezervacije: rows
+                        });
+                }
+        } catch (err) {
+                console.error(err);
+                res.status(500).send("oopsie :(");
+        }
+        db.close();
+});
 
 module.exports = router;
