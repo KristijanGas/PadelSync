@@ -135,4 +135,83 @@ router.post('/:clubId/:terrainId/add', requiresAuth(), async (req, res) => {
     }
 });
 
+router.get('/addSub', requiresAuth(), async (req, res) => {
+    const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+    try {
+        const isVerified = await verifyProfile(req, res);
+        if (!isVerified) return res.render("verifymail");
+
+        const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
+        if(profileInDB !== 'Club') {
+            res.status(403).send("nisi klub, nisi autoriziran dodavati modele pretplate");
+            return;
+        } else {
+            const query = `select stripeId from klub where username = ?`;
+            const row = await new Promise((resolve, reject) => {
+                db.get(query, [req.oidc.user.nickname], function(err, row) {
+                    if(err) reject(err);
+                    resolve(row);
+                });
+            });
+            if(!row || !row.stripeId) {
+                res.status(500).send("klub nema stripeId, ne može postavit pretplatu");
+                return;
+            }
+            res.render("subForm");
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("oopsie :(");
+    }
+    db.close();
+});
+
+router.post('/addSub', requiresAuth(), async (req, res) => {
+    const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+    try {
+        const isVerified = await verifyProfile(req, res);
+        if (!isVerified) return res.render("verifymail");
+
+        const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
+        if(profileInDB !== 'Club') {
+            res.status(403).send("nisi klub, nemas autorizaciju dodavati tip pretplate");
+            return;
+        } else {
+            const pretpNaziv = req.body?.pretpNaziv;
+            if(!pretpNaziv || pretpNaziv.length < 1) {
+                res.status(400).send("ne");
+                return;
+            }
+            const pretpCijena = parseFloat(req.body?.pretpCijena);
+            if(!pretpCijena || pretpCijena < 0) {
+                res.status(400).send("ne moze cijena bit manja od 0, ti bi ih placao da dolaze?");
+                return;
+            }
+            const levelPretplate = parseInt(req.body?.levelPretplate);
+            if(!levelPretplate || levelPretplate < 0) {
+                res.status(400).send("ne moze level pretplate bit manji od 0");
+                return;
+            }
+            const poducavanje = parseInt(req.body?.poducavanje);
+            if((poducavanje !== 1 || poducavanje !== 0)) {
+                res.status(400).send("nebre ni to");
+                return;
+            }
+            const query = `INSERT INTO TIP_PRETPLATE (pretpNaziv, pretpCijena, pretpDostupnost, levelPretplate, clubUsername, poducavanje)
+                            VALUES (?, ?, ?, ?, ?, ?)`
+            await new Promise((resolve, reject) => {
+                db.run(query, [pretpNaziv, pretpCijena, 1, levelPretplate, req.oidc.user.nickname, poducavanje], function(err) {
+                    if(err) reject(err);
+                    resolve();
+                });
+            });
+
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("oopsie :(");
+    }
+    db.close();
+});
+
 module.exports = router;
