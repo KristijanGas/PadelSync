@@ -8,6 +8,10 @@ const router = express.Router();
 
 router.get('/', (req, res) => {
     res.render('terrain_search', {
+        isAuthenticated: req.oidc.isAuthenticated(),
+        user: req.oidc.user,
+        session: req.session,
+        oidcWhole: req.oidc,
         show_search_results: false
     });
 });
@@ -211,6 +215,10 @@ router.get('/results', async (req, res) => {
 
 
     res.render('terrain_search', {
+        isAuthenticated: req.oidc.isAuthenticated(),
+        user: req.oidc.user,
+        session: req.session,
+        oidcWhole: req.oidc,
         show_search_results: true,
         results: filteredTerreni,
         searchParams: req.query
