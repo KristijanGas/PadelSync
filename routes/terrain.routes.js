@@ -313,8 +313,10 @@ router.post('/:id', requiresAuth(), async (req, res) => {
       return;
     }
 
-    const availabilityQuery2 = `SELECT pretpID FROM PRETPLATA WHERE username = ? AND pretpPocetak = ?`;
-    row = await dbGet(db, availabilityQuery2, [req.oidc.user.nickname, currentDateUTC]);
+    const availabilityQuery2 = `SELECT pretpID FROM PRETPLATA NATURAL JOIN TIP_PRETPLATE
+                                WHERE username = ? AND pretpPocetak = ?
+                                AND clubUsername = ?`;
+    row = await dbGet(db, availabilityQuery2, [req.oidc.user.nickname, currentDateUTC, req.body.pretplata.clubUsername]);
     if(row.pretpID) {
       res.status(500).send("danas ste već probali rezervirati i niste uspjeli");
     }
