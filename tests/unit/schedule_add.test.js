@@ -102,15 +102,26 @@ describe('editschedule POST route', () => {
 
 
     let SQLQueryFindterminID = `SELECT * FROM TERMIN_TJEDNI WHERE vrijemePocetak = ? AND vrijemeKraj = ? AND terenID = ?`;
-    const db = new sqlite3.Database("database.db");
+    const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
     const getRows = (sql, params) => new Promise((resolve, reject) => {
         db.all(sql, params, (err, rows) => {
             if (err) return reject(err);
             resolve(rows);
         });
     });
-    const terminData = await getRows(SQLQueryFindterminID, ["16:00", "17:01", "8"]);
-    console.log("terminID:", terminData);
+    const getOne = (sql, params) => new Promise((resolve, reject) => {
+        db.get(sql, params, (err, row) => {
+            if (err) return reject(err);
+            resolve(row);
+        });
+    });
+
+    const terminData = await getRows(SQLQueryFindterminID, ["16:00", "17:00", "8"]);
+    console.log("terminData:", terminData);
+    expect(terminData.length).toBeGreaterThan(0);
+    
+    const terminID = terminData[0].terminID;
+    
     let SQLQueryCheck =
         `SELECT * FROM PONAVLJAJUCA_REZ
     NATURAL JOIN TERMIN_TJEDNI
@@ -118,13 +129,11 @@ describe('editschedule POST route', () => {
     WHERE PONAVLJAJUCA_REZ.tipPretpID = 12 AND
     TERMIN_TJEDNI.terminID = ?`;
 
-    db.get(SQLQueryCheck, [terminID], (err, row) => {
-      if (err) {
-        console.error("Error checking for existing booking:", err);
-        return;
-      }
-      expect(row).toBeDefined();
-    });
+    const row = await getOne(SQLQueryCheck, [terminID]);
+    expect(row).toBeDefined();
+    
+    db.close();
+    
     const res2 = await request(app)
       .post('/editschedule/gaspar.kristijan/8/add');
     expect(res2.status).toBe(400);

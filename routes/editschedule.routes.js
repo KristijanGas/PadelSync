@@ -171,10 +171,12 @@ router.post('/:clubId/:terrainId/add', requiresAuth(), async (req, res) => {
             });
         });
         const pretplateRows = await getRows(pretplateQuery, [req.params.clubId]);
+        db.close();
         res.render("editschedule", {terrain: row, message: "Schedule added successfully!", pretplate: pretplateRows});
     }
     catch(err){
         console.log(err);
+        db.close();
         res.status(500).send("Internal Server Error");
     }
 });
