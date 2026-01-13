@@ -62,7 +62,17 @@ router.get('/:clubId/:terrainId', requiresAuth(), async (req, res) => {
     try{
         const row = await allowEntry(req, res);
         if(!row) return;
-        res.render("editschedule", {terrain: row, message: null});
+        let pretplateQuery = "SELECT * FROM TIP_PRETPLATE WHERE clubUsername = ?"
+        const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+        const getRows = (sql, params) => new Promise((resolve, reject) => {
+            db.all(sql, params, (err, rows) => {
+                if (err) return reject(err);
+                resolve(rows);
+            });
+        });
+        const pretplateRows = await getRows(pretplateQuery, [req.params.clubId]);
+        db.close();
+        res.render("editschedule", {terrain: row, message: null, pretplate: pretplateRows});
 
     }
     catch(err){
@@ -188,12 +198,16 @@ router.post('/addSub', requiresAuth(), async (req, res) => {
                 return;
             }
             const levelPretplate = parseInt(req.body?.levelPretplate);
-            if(!levelPretplate || levelPretplate < 0) {
+            console.log("levelPretplate:", levelPretplate);
+            console.log(levelPretplate < 0);
+            if(typeof levelPretplate !== "number" || levelPretplate < 0) {
                 res.status(400).send("ne moze level pretplate bit manji od 0");
                 return;
             }
+            
             const poducavanje = parseInt(req.body?.poducavanje);
-            if((poducavanje !== 1 || poducavanje !== 0)) {
+            console.log("poducavanje:", poducavanje);
+            if((poducavanje !== 1 && poducavanje !== 0)) {
                 res.status(400).send("nebre ni to");
                 return;
             }
@@ -205,6 +219,7 @@ router.post('/addSub', requiresAuth(), async (req, res) => {
                     resolve();
                 });
             });
+            res.redirect(`/editschedule/addSub`);
 
         }
     } catch (err) {

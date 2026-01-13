@@ -30,6 +30,13 @@
             <label for="endTime">End Time:</label>
             <input type="time" id="endTime" name="endTime"><br><br>
 
+            <select id="pretplateID" name="pretplateID">
+                <option value = "0"> Select subscription or leave empty</option>
+                <% pretplate.forEach(function(item) { %>
+                    <option value="<%= item.id %>"><%= item.pretpNaziv %></option>
+                <% }); %>
+            </select><br><br>
+
             <button type="submit">Dodaj termin</button>
         </form>
     </body>
