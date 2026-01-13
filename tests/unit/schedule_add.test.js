@@ -88,7 +88,7 @@ describe('editschedule POST route', () => {
     expect(res2.text).toContain("The specified time conflicts with an existing booking.");
 
   });
-  it('adds a schedule with a subscription', async () => {
+  it('adds a schedule with a subscription and links it correctly in database', async () => {
     bodyrequest = { day: 'tuesday', startTime: '16:00', endTime: '17:00', pretplateID: 12 };
     axios.get.mockResolvedValue({ data: { emailVerified: true, nickname: 'gaspar.kristijan', email: 'gaspar.kristijan@gmail.com' } });
     const app = createAppWithOidcStub();
@@ -117,7 +117,6 @@ describe('editschedule POST route', () => {
     });
 
     const terminData = await getRows(SQLQueryFindterminID, ["16:00", "17:00", "8"]);
-    console.log("terminData:", terminData);
     expect(terminData.length).toBeGreaterThan(0);
     
     const terminID = terminData[0].terminID;
