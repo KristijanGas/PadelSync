@@ -58,6 +58,7 @@ forms.forEach(form => {
             window.location.href = url;
         } else {
         window.location.href = data.redirect;
+        alert("Zahtjev za rezervacijom poslan!");
         location.reload();
         }
     })

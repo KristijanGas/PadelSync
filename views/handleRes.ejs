@@ -14,8 +14,8 @@
                     <p>Datum rezervacije: <%= rezervacija.datumRez %> u <%= rezervacija.vrijemePocetak %> do <%= rezervacija.vrijemeKraj %></p>
                     <p>Vaš teren nad kojim je rezervirao: ID <%= rezervacija.terenID%>, ime <%= rezervacija.imeTeren %></p>
                     <p>Iznos: <%= rezervacija.iznos %></p>
-                    <a href="/confirmReservation/<%= rezervacija.rezervacijaID %>" onclick="window.location.reload()">Potvrdi rezervaciju?</a>
-                    <a href="/rejectReservation/<%= rezervacija.rezervacijaID %>" onclick="window.location.reload()">Odbij rezervaciju?</a>
+                    <a href="/reservationHandle/confirmReservation/<%= rezervacija.rezervacijaID %>" onclick="window.location.reload()">Potvrdi rezervaciju?</a>
+                    <a href="/reservationHandle/rejectReservation/<%= rezervacija.rezervacijaID %>" onclick="window.location.reload()">Odbij rezervaciju?</a>
                 </div>
             <%})%>
         <%}%>
