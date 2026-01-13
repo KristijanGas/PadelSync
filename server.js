@@ -32,7 +32,6 @@ if(isProduction || isDevelopment){
 
 
 const { config } = require("./constants/authConfig.js")
-console.log(config);
 
 //place auth0 middleware here
 app.use(auth(config));
@@ -146,14 +145,6 @@ app.get("/terrain/:id/react-calendar", (req, res) =>{
 });
 
 
-app.get("/reauth", (req, res) => {
-  res.oidc.login({
-    authorizationParams: {
-      prompt: "login"  // forsira novi login i refresh claimova
-    },
-    returnTo: "/home"  // nakon uspješnog login-a
-  });
-});
 /* const registrationRouter = require('./routes/registration.routes');
 const loginRouter = require('./routes/login.routes');
 app.use('/login', loginRouter);

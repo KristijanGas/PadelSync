@@ -12,6 +12,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "dotenv": "^17.2.3",
     "express-oauth2-jwt-bearer": "^1.7.1"
   }
 }

@@ -1,3 +1,12 @@
+const sqlite3 = require('sqlite3').verbose();
+
+const dbRun = (db, sql, params = []) =>
+  new Promise((resolve, reject) => {
+    db.run(sql, params, function(err) {
+      if (err) reject(err);
+      else resolve(this);
+    });
+  });
 
 let ioInstance;
 
@@ -12,7 +21,7 @@ function initSocket(io) {
 
 const { templates } = require("../constants/notificationTemplates");
 
-function sendNotificationFromTemplate(
+async function sendNotificationFromTemplate(
   templateName,
   usernamePrimatelj,
   poslanoZbogUsername,
@@ -20,7 +29,8 @@ function sendNotificationFromTemplate(
   vrijemePocetak,
   vrijemeKraj,
   terenID,
-  imeTeren
+  imeTeren,
+  rezervacijaID,
 ) {
   const templateFn = templates[templateName];
 
@@ -37,6 +47,18 @@ function sendNotificationFromTemplate(
     terenID,
     imeTeren
   );
+
+  const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+  try{
+    const currentDateUTC = new Date().toISOString().split('T')[0];
+    const SQLQuery = `INSTER INTO OBAVIJEST(naslovObavijest, tekstObavijest, datumObavijest, obavOtvorena, usernamePrimatelj, poslanoZbogUsername, rezervacijaID)
+        VALUES(?, ?, ?, ?, ?, ?, ?)`;
+    await dbRun(db, SQLQuery, ["naslov", message, currentDateUTC, 0, usernamePrimatelj, poslanoZbogUsername, rezervacijaID]);
+  }catch(err){
+    console.log(err);
+  }finally{
+    db.close();
+  }
 
   sendNotification(usernamePrimatelj, message);
 }

@@ -372,13 +372,12 @@ const webhookHandler = async (req, res) => {
     const vPoc = session.metadata.vPoc;
     const vKr = session.metadata.vKr;
     const igracUsername = session.metadata.igracUsername;
-    let successOptionsClub = {
+    /* let successOptionsClub = {
       from: 'padelsynkovic@gmail.com',
       to : clubEmail,
       subject: 'Uspješno plaćen termin',
       text: `Korisnik ${igracUsername} je uspješno platio rezervaciju za termin na datum ${datum}, od ${vPoc} do ${vKr}`
-    }
-    
+    } */
     const rez = await updateRes(transakcijaID, stripePaymentId);
     
   }else if (event.type === "charge.refunded") {
@@ -393,7 +392,6 @@ const webhookHandler = async (req, res) => {
   
   const db = openDb();
   try {
-    console.log(transakcijaID);
     const SQLTest = `SELECT pretpID FROM TRANSAKCIJA WHERE transakcijaID = ?`;
     let row = await dbGet(db, SQLTest, [transakcijaID]);
     const pretpID = row?.pretpID;
