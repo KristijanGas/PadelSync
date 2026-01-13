@@ -6,11 +6,11 @@ const { auth } = require('express-oauth2-jwt-bearer');
 const axios = require('axios')
 
 
-/* const jwtCheck = auth({
+const jwtCheck = auth({
   audience: 'https://www.padelsync-api.com',
   issuerBaseURL: 'https://padelsync.eu.auth0.com/',
   algorithms: ['RS256']  // ← eksplicitno, ovo radi uvijek
-}); */
+});
 
 
 
@@ -49,7 +49,7 @@ app.get("/public", (req, res) => {
 })
 
 
-app.get("/private", /* jwtCheck,  */async (req, res) => {
+app.get("/private", jwtCheck, async (req, res) => {
   try {
     const user = await getAuth0User(req.auth.payload.sub);
     res.json({
