@@ -51,14 +51,7 @@ body {
 
 }
 
-
 .BackgroundTop {
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
 
     position: relative;
 
@@ -71,8 +64,6 @@ body {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-
-    animation: fadeInHeader 0.8s ease-in-out;
 
 }
 
@@ -251,4 +242,72 @@ button:hover, input[type="submit"]:hover {
         width: 100%;
     }
 
+}
+
+.TopHeaderContainer {
+
+    position: relative;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    height: 60px;
+
+}
+
+.TopHeaderContainer h1 {
+
+    margin: 0;
+
+    font-size: 36px;
+
+    font-weight: 700;
+
+    color: #f1f1f1;
+
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+
+    text-align: center;
+
+    flex: 1;
+
+}
+
+.backButton {
+
+    position: absolute;
+
+    left: 0;
+
+    padding: 10px 20px;
+
+    font-size: 16px;
+
+    text-decoration: none;
+
+    color: #f1f1f1;
+
+    background-color: #0e0e0e;
+
+    border: 2px solid #222;
+
+    border-radius: 8px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+
+    transition: all 0.3s ease;
+
+}
+
+.backButton:hover {
+
+    background-color: #1a1a1a;
+
+    border-color: #333;
+
+    transform: translateY(-2px);
+    
 }

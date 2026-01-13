@@ -12,9 +12,7 @@
         <script src="/scripts/socket.js" defer></script>
         <script src="/socket.io/socket.io.js"></script>
     </head>
-
-    <body>
-
+    <body> 
         <div class="BackgroundTop">
             <h1>Pretraživanje terena</h1>
         </div>
@@ -80,11 +78,14 @@
                 <% if (results.length > 0) { %>
                     <div class="TerrainResultsGrid">
                         <% results.forEach(function(terrain) { %>
-                            <a href="/terrain/<%= terrain.terenID %>" class="TerrainCard">
+                            <div class="TerrainCard">
                                 <h3><%= terrain.imeTeren %></h3>
-                                <p class="terrain-owner">Owner: <%= terrain.username %></p>
-                                <span class="terrain-id">ID: <%= terrain.terenID %></span>
-                            </a>
+                                <p>Owner: <%= terrain.username %></p>
+                                <p>ID: <%= terrain.terenID %></p>
+                                <a href="/terrain/<%= terrain.terenID %>">
+                                    <button>Pogledaj teren</button>
+                                </a>
+                            </div>
                         <% }); %>
                     </div>
                 <% } else { %>

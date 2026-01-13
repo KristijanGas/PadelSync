@@ -353,3 +353,51 @@ textarea {
     }
 
 }
+
+.BackButtonInline {
+
+    position: static;
+
+    margin: 20px auto 0;
+
+    display: block; 
+
+    background-color: #222;
+
+    border: 2px solid #555;
+
+    color: #f1f1f1;
+
+    border-radius: 8px;
+
+    font-weight: 600;
+
+    padding: 10px 25px;
+
+    cursor: pointer;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+    transition: all 0.3s ease;
+
+}
+
+.BackButtonInline:hover {
+
+    background-color: #333;
+
+    border-color: #777;
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6);
+
+}
+
+.BackButtonInline:active {
+
+    transform: translateY(0);
+
+    background-color: #444;
+    
+}

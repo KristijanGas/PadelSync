@@ -1,24 +1,22 @@
- <div class="HomePageHeader">
-            <%if(!isAuthenticated) {%>
-                <a href="/login">
-                <button class="loginButton">Login</button>
-                </a>
-                <!--Auth0 does not separate signin and signup, they deal with that in their pop up window-->
-                <a href="/signup">
-                    <button class="registerButton">Register</button>
-                </a>
-            <%}else{%>
-                <a href="/logout">
+<div class="HomePageHeader">
+    <% if (!isAuthenticated) { %>
+        <a href="/login">
+            <button class="loginButton">Login</button>
+        </a>
+        <a href="/signup">
+            <button class="registerButton">Register</button>
+        </a>
+    <% } else { %>
+        <a href="/myprofile">
+            <button class="myProfileButton">My Profile</button>
+        </a>
 
-                    <button class="logoutButton">Logout</button>
+        <a href="/myInbox">
+            <button class="myProfileButton">Inbox</button>
+        </a>
 
-                    <a href="/myprofile">
-                        <button class="myProfileButton">MyProfile</button>
-                    </a>
-
-                </a>
-                
-            <%}%>
-            
-            
+        <a href="/logout">
+            <button class="logoutButton">Logout</button>
+        </a>
+    <% } %>
 </div>
