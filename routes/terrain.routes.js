@@ -297,21 +297,27 @@ router.post('/:id', requiresAuth(), async (req, res) => {
 
   }else if(tipTermina == 'ponavljajuci') {
     //OVDJE SE REQ.PARAMS.ID INTERPRETIRA KAO tipPretpID, a ne TERMIN ID!!
-    console.log(req.params.id);
     tipPlacanja = "kartica"
     let statusPlac = StatusPlacanja.PENDING;
     const currentDateUTC = new Date().toISOString().split('T')[0];
-    const cijena = req.body.pretpCijena;
-
+    const cijena = req.body.pretplata.pretpCijena;
+    
     let futureDate = new Date();
     futureDate.setDate(futureDate.getDate()+30);
     let result = futureDate.toISOString().split('T')[0];
     
     const availabilityQuery = `SELECT * FROM PRETPLATA WHERE pretpAktivna = 1 AND tipPretpID = ?`;
-    const row = await fetchAll(db, availabilityQuery, [req.params.id]);
-    if(row.length > 0)
+    let row = await fetchAll(db, availabilityQuery, [req.params.id]);
+    if(row.length > 0) {
       res.status(500).send("Netko je prije vas rezervirao istu pretplatu");
+      return;
+    }
 
+    const availabilityQuery2 = `SELECT pretpID FROM PRETPLATA WHERE username = ? AND pretpPocetak = ?`;
+    row = await dbGet(db, availabilityQuery2, [req.oidc.user.nickname, currentDateUTC]);
+    if(row.pretpID) {
+      res.status(500).send("danas ste već probali rezervirati i niste uspjeli");
+    }
     let pretpID;
     const query = `INSERT INTO PRETPLATA(pretpPocetak, pretpKraj, pretpPlacenaDo, pretpAktivna, tipPretpID, username)
                     VALUES(?, null, ?, ?, ?, ?) RETURNING pretpID`;
@@ -324,6 +330,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
         pretpID = row.pretpID;
       });
     });
+
     const SQLTransaction = `INSERT INTO TRANSAKCIJA(iznos, statusPlac, nacinPlacanja, datumPlacanja, pretpID, stripePaymentId)
                             VALUES (?, ?, ?, ?, ?, null)`
     transakcijaID = await new Promise((resolve, reject) => {
@@ -377,7 +384,7 @@ router.get("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
     row = await dbGet(db, SQLQuery, [rezervacijaID])
     if(!row){
       return res.status(500).send("rezervacije se mogu otkazati samo dan unaprijed")
-    }else if(row.statusRez != StatusRezervacije.AKTIVNA){
+    }else if(row.statusRez != StatusRezervacije.AKTIVNA && row.statusRez != StatusRezervacije.PENDING){
       return res.status(500).send("ne možete otkazati neaktivnu rezervaciju")
     }
 
