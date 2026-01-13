@@ -11,7 +11,10 @@
         <p><%= message %></p>
         <p>edita se <%= terrain.imeTeren %></p>
         <p>username: <%= terrain.username %></p>
-            <p>terenID: <%= terrain.terenID %></p>
+        <p>terenID: <%= terrain.terenID %></p>
+        <% if(typeof message !== "undefined") { %>
+            <p><%= message %></p>
+        <% } %>
         <form id ="addScheduleForm" method="POST" action="/editschedule/<%= terrain.username %>/<%= terrain.terenID %>/add">
             <label for="day">Day:</label>
             <select id="day" name="day">
@@ -31,9 +34,9 @@
             <input type="time" id="endTime" name="endTime"><br><br>
 
             <select id="pretplateID" name="pretplateID">
-                <option value = "0"> Select subscription or leave empty</option>
+                <option value = "0"> No subscription</option>
                 <% pretplate.forEach(function(item) { %>
-                    <option value="<%= item.id %>"><%= item.pretpNaziv %></option>
+                    <option value="<%= item.tipPretpID %>"><%= item.pretpNaziv %></option>
                 <% }); %>
             </select><br><br>
 

@@ -95,6 +95,9 @@ router.post('/:clubId/:terrainId/add', requiresAuth(), async (req, res) => {
         const day = req.body.day;
         const startTime = req.body.startTime;
         const endTime = req.body.endTime;
+        const subscriptionID = req.body.pretplateID;
+        console.log(req.body.pretplateID);
+        console.log("Received data:", day, startTime, endTime, subscriptionID);
         let dayNum;
         if(day  == "monday") {dayNum = 1;}
         else if(day  == "tuesday") {dayNum = 2;}
@@ -121,14 +124,16 @@ router.post('/:clubId/:terrainId/add', requiresAuth(), async (req, res) => {
         if (!availability) {
             return res.status(400).send("The specified time conflicts with an existing booking.");
         }
-        let SQLQuery = `INSERT INTO TERMIN_TJEDNI (terenID, danTjedan, vrijemePocetak, vrijemeKraj, potrebnaPretplata) VALUES (?, ?, ?, ?, ?);`;
+
+        let tipTermina = subscriptionID > 0 ? "ponavljajuci" : "jednokratni";
+        let SQLQuery = `INSERT INTO TERMIN_TJEDNI (terenID, danTjedan, vrijemePocetak, vrijemeKraj, potrebnaPretplata, tipTermina) VALUES (?, ?, ?, ?, ?, ?);`;
 
         const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
 
         console.log("Inserting schedule:", row.terenID, dayNum, startTime, endTime, 0);
 
         await new Promise((resolve, reject) => {
-            db.run(SQLQuery, [row.terenID, dayNum, startTime, endTime, 0], function(err) {
+            db.run(SQLQuery, [row.terenID, dayNum, startTime, endTime, 0,tipTermina], function(err) {
                 if (err) {
                     console.error(err.message);
                     return reject(err);
@@ -136,8 +141,39 @@ router.post('/:clubId/:terrainId/add', requiresAuth(), async (req, res) => {
                 resolve();
             });
         });
-        db.close();
-        res.render("editschedule", {terrain: row, message: "Schedule added successfully!"});
+
+        if(tipTermina === "ponavljajuci") {
+            let SQLFindTerminID = "SELECT terminID FROM TERMIN_TJEDNI WHERE terenID = ? AND danTjedan = ? AND vrijemePocetak = ? AND vrijemeKraj = ?";
+            const terminRow = await new Promise((resolve, reject) => {
+                db.get(SQLFindTerminID, [row.terenID, dayNum, startTime, endTime], (err, row) => {
+                    if (err) {
+                        console.error(err.message);
+                        return reject(err);
+                    }
+                    resolve(row);
+                });
+            });
+            let SQLQueryPonavljajuca = 'INSERT INTO PONAVLJAJUCA_REZ (rezervacijaID,tipPretpID) VALUES (?, ?)';
+            await new Promise((resolve, reject) => {
+                db.run(SQLQueryPonavljajuca, [terminRow.terminID, subscriptionID], function(err) {
+                    if (err) {
+                        console.error(err.message);
+                        return reject(err);
+                    }
+                    resolve();
+                });
+            });
+        }
+
+        let pretplateQuery = "SELECT * FROM TIP_PRETPLATE WHERE clubUsername = ?"
+        const getRows = (sql, params) => new Promise((resolve, reject) => {
+            db.all(sql, params, (err, rows) => {
+                if (err) return reject(err);
+                resolve(rows);
+            });
+        });
+        const pretplateRows = await getRows(pretplateQuery, [req.params.clubId]);
+        res.render("editschedule", {terrain: row, message: "Schedule added successfully!", pretplate: pretplateRows});
     }
     catch(err){
         console.log(err);
@@ -171,7 +207,7 @@ router.get('/addSub', requiresAuth(), async (req, res) => {
         }
     } catch (err) {
         console.error(err);
-        res.status(500).send("oopsie :(");
+        res.status(500).send("Internal server error adding subscription");
     }
     db.close();
 });
