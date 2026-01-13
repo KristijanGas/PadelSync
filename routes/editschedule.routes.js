@@ -96,8 +96,6 @@ router.post('/:clubId/:terrainId/add', requiresAuth(), async (req, res) => {
         const startTime = req.body.startTime;
         const endTime = req.body.endTime;
         const subscriptionID = req.body.pretplateID;
-        console.log(req.body.pretplateID);
-        console.log("Received data:", day, startTime, endTime, subscriptionID);
         let dayNum;
         if(day  == "monday") {dayNum = 1;}
         else if(day  == "tuesday") {dayNum = 2;}
