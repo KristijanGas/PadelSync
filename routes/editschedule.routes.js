@@ -189,26 +189,23 @@ router.post('/addSub', requiresAuth(), async (req, res) => {
         } else {
             const pretpNaziv = req.body?.pretpNaziv;
             if(!pretpNaziv || pretpNaziv.length < 1) {
-                res.status(400).send("ne");
+                res.status(400).send("Naziv pretplate ne smije biti prazan");
                 return;
             }
             const pretpCijena = parseFloat(req.body?.pretpCijena);
             if(!pretpCijena || pretpCijena < 0) {
-                res.status(400).send("ne moze cijena bit manja od 0, ti bi ih placao da dolaze?");
+                res.status(400).send("Cijena pretplate ne smije biti manja od 0");
                 return;
             }
             const levelPretplate = parseInt(req.body?.levelPretplate);
-            console.log("levelPretplate:", levelPretplate);
-            console.log(levelPretplate < 0);
             if(typeof levelPretplate !== "number" || levelPretplate < 0) {
-                res.status(400).send("ne moze level pretplate bit manji od 0");
+                res.status(400).send("Level pretplate ne smije biti manji od 0");
                 return;
             }
             
             const poducavanje = parseInt(req.body?.poducavanje);
-            console.log("poducavanje:", poducavanje);
             if((poducavanje !== 1 && poducavanje !== 0)) {
-                res.status(400).send("nebre ni to");
+                res.status(400).send("Podučavanje mora biti 1 ili 0");
                 return;
             }
             const query = `INSERT INTO TIP_PRETPLATE (pretpNaziv, pretpCijena, pretpDostupnost, levelPretplate, clubUsername, poducavanje)
@@ -224,7 +221,7 @@ router.post('/addSub', requiresAuth(), async (req, res) => {
         }
     } catch (err) {
         console.error(err);
-        res.status(500).send("oopsie :(");
+        res.status(500).send("Internal server error");
     }
     db.close();
 });
