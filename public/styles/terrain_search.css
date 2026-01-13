@@ -538,3 +538,94 @@ input[type="checkbox"]:focus, input[type="radio"]:focus {
     }
 
 }
+
+.BackgroundTop {
+
+    position: relative;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    min-height: 15vh;
+
+    padding: 20px 50px;
+
+    background: linear-gradient(135deg, #141414 0%, #0d0d0d 60%, #050505 100%);
+
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+}
+
+.BackgroundTop h1 {
+
+    text-align: center;
+
+    z-index: 1;
+
+}
+
+.HeaderButtonsWrapper {
+
+    position: absolute;
+
+    top: 50%;
+
+    right: 50px;
+
+    transform: translateY(-50%);
+
+    display: flex;
+
+    gap: 15px;
+
+}
+
+.HomePageHeader button {
+
+    width: 120px;
+
+    height: 40px;
+
+    cursor: pointer;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    border: 2px solid #555;
+
+    transition: all 0.3s ease;
+
+}
+
+.HomePageHeader .loginButton,
+.HomePageHeader .registerButton,
+.HomePageHeader .logoutButton {
+
+    background-color: #fff;
+
+    color: #111;
+
+}
+
+.HomePageHeader .myProfileButton {
+
+    background-color: #222;
+
+    color: #f1f1f1;
+
+}
+
+.HomePageHeader button:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+    
+}
+

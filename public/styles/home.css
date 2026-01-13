@@ -1,17 +1,34 @@
-* {
-    font-size: 20px;
-    text-align: center;
+:root {
+
+    --accent: #3b82f6;
+
+    --dark: #0b0b0b;
+
+    --card: rgba(20, 20, 20, 0.88);
+
+    --text-muted: rgba(220, 220, 220, 0.7);
+
 }
 
-body {
+* {
 
     margin: 0;
 
     padding: 0;
 
-    background-color: rgba(0, 0, 0, 0.893);
+    box-sizing: border-box;
 
-    color: rgba(240, 231, 231, 0.902);
+    font-family: 'Inter', system-ui, sans-serif;
+
+    text-align: center;
+
+}
+
+body {
+
+    background-color: rgba(0, 0, 0, 0.93);
+
+    color: rgba(240, 231, 231, 0.92);
 
     overflow-x: hidden;
 
@@ -19,46 +36,25 @@ body {
 
 .header {
 
-    background-color: rgba(16, 16, 16, 0.884);
-
     width: 100%;
 
     height: 105px;
 
     background: linear-gradient(
         to bottom,
-        rgba(16, 16, 16, 0.884),
-        rgba(0, 0, 0, 0.893)
+        rgba(16, 16, 16, 0.9),
+        rgba(0, 0, 0, 0.95)
     );
 
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
 
     display: flex;
 
-    flex-direction: row;
-    
     align-items: center;
 
     justify-content: space-between;
 
     padding: 0 50px;
-
-    box-sizing: border-box;
-
-
-}
-
-.HomePageHeader {
-
-   display: flex;
-
-   align-items: center;
-
-   justify-content: center;
-
-   gap: 32px;
-
-   font-size: 1rem;
 
 }
 
@@ -66,6 +62,29 @@ body {
 
     font-size: 50px;
 
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+}
+
+.HomeHero {
+
+    position: relative;
+
+    height: 60vh;
+
+    min-height: 420px;
+
+    background:
+        linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.9)),
+        url("/images/padel1.avif") center / cover no-repeat;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
 
 }
 
@@ -75,11 +94,7 @@ body {
 
     flex-direction: column;
 
-    justify-content: center;
-
-    align-items: center;
-
-    margin-top: 30px;
+    gap: 12px;
 
     opacity: 0;
 
@@ -89,185 +104,19 @@ body {
 
 }
 
-@keyframes fadeInUp {
-    0% {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+.HomePageInformation h1 {
 
-.HomePageInformation > h1 {
+    font-size: 4.5rem;
 
-    font-size: 4rem;
+    letter-spacing: 1px;
 
 }
 
-.HomePageInformation > span {
+.HomePageInformation span {
 
-    font-size: 2rem;
+    font-size: 1.6rem;
 
-    color: rgba(202, 201, 201, 0.779);
-
-}
-
-.loginButton, .registerButton, .logoutButton, .myProfileButton{
-
-    width: 100px;
-
-    height: 40px;
-
-    cursor: pointer;
-
-    border-radius: 7px;
-
-    font-size: 15px;
-
-    background-color: #ffffff;
-
-    color: #111;
-
-    border: 2px solid #999;
-
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15),
-                0 4px 10px rgba(0, 0, 0, 0.4);
-
-    transition: all 0.3s ease;
-
-}
-
-.myProfileButton {
-
-    background-color: #222;
-
-    color: #f1f1f1;
-
-    border: 2px solid #555;
-
-}
-
-
-
-.loginButton:hover, .registerButton:hover, .logoutButton:hover, .myProfileButton:hover {
-
-    background-color: #f2f2f2;
-
-    border-color: #bbb;
-
-    transform: translateY(-3px);
-
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
-}
-
-.myProfileButton:hover {
-
-    background-color: #333;
-
-    border-color: #777;
-
-    transform: translateY(-3px);
-
-    box-shadow: 0 6px 14px rgba(0,0,0,0.6);
-
-}
-
-.HomePageClubs {
-
-    display: flex;
-
-    flex-direction: row;
-
-    margin-top: 100px;
-
-    margin-left: 35px;
-
-    margin-right: 35px;
-
-    justify-content: center;
-
-    align-items: center;
-
-    padding-bottom: 50px;
-
-    gap: 30px;
-
-    opacity: 0;
-
-    transform: translateY(30px);
-
-    animation: fadeInUp 1s ease-out forwards; 
-
-}
-
-.HomePageClubCard {
-
-    background-color: rgba(16, 16, 16, 0.957);
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    width: 300px;
-
-    height: min(330px, calc(100vh - 105px - 100px - 20px));
-
-    overflow: auto;
-
-    border-radius: 10px;
-
-    overflow: hidden;
-
-    padding-bottom: 50px;
-
-    transition: all 0.3s ease;
-
-}
-
-.HomePageClubCard:hover {
-
-    transform: translateY(-5px); 
-
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5); 
-
-    border-color: #fff; 
-
-    background-color: rgba(30, 30, 30, 0.95); 
-
-    cursor: pointer;
-
-}
-
-
-.homeImage {
-
-    width: 100%;
-
-    height: 70%;  
-
-    object-fit: cover; 
-
-    border-top-left-radius: 10px;
-
-    border-top-right-radius: 10px;
-
-}
-
-.HomePageClubCard span {
-
-    padding: 10px 0;
-
-    color: rgba(240, 231, 231, 0.902);
-
-    font-weight: bold;
-
-    font-size: 20px;
+    color: var(--text-muted);
 
 }
 
@@ -275,17 +124,15 @@ body {
 
     display: flex;
 
-    flex-direction: row;
-
     justify-content: center;
-
-    align-items: center;
 
     gap: 30px;
 
     margin-top: 40px;
 
     animation: fadeInUp 1s ease-out forwards;
+
+    animation-delay: 0.2s;
 
 }
 
@@ -299,7 +146,7 @@ body {
 
     font-weight: 600;
 
-    border-radius: 10px;
+    border-radius: 12px;
 
     border: 2px solid #222;
 
@@ -307,66 +154,185 @@ body {
 
     color: #f2f2f2;
 
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7),
-                0 4px 10px rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+
+    position: relative;
+
+    overflow: hidden;
+
+    transition: all 0.3s ease;
+
+    box-shadow: 0 6px 20px rgba(0,0,0,0.8);
+
+    margin-bottom: 30px;
+
+}
+
+
+.navButton:hover {
+
+    border-color: var(--accent);
+
+    color: var(--accent);
+
+    background-color: #141414;
+
+    transform: translateY(-4px);
+
+}
+
+.HomePageClubs {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 30px;
+
+    margin: 100px 35px 50px;
+
+    animation: fadeInUp 1s ease-out forwards;
+
+    animation-delay: 0.4s;
+
+}
+
+.HomePageClubCard {
+
+    position: relative;
+
+    width: 300px;
+
+    height: 330px;
+
+    background: var(--card);
+
+    backdrop-filter: blur(10px);
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    transition: all 0.35s ease;
 
     cursor: pointer;
+
+}
+
+.HomePageClubCard:hover {
+
+    transform: translateY(-8px);
+
+    box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+
+}
+
+.HomePageClubCard::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.75),
+        transparent 60%
+    );
+
+    opacity: 0;
+
+    transition: opacity 0.3s ease;
+
+}
+
+.HomePageClubCard:hover::after {
+
+    opacity: 1;
+
+}
+
+.homeImage {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+}
+
+.HomePageClubCard span {
+
+    position: absolute;
+
+    bottom: 18px;
+
+    left: 0;
+
+    right: 0;
+
+    z-index: 2;
+
+    font-size: 1.2rem;
+
+    font-weight: 600;
+
+    letter-spacing: 0.5px;
+
+}
+
+.loginButton,
+.registerButton,
+.logoutButton,
+.myProfileButton {
+
+    width: 110px;
+
+    height: 40px;
+
+    cursor: pointer;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    border: 2px solid #555;
 
     transition: all 0.3s ease;
 
 }
 
-.navButton:hover {
+.loginButton,
+.registerButton,
+.logoutButton {
 
-    background-color: #1a1a1a;
+    background-color: #fff;
 
-    border-color: #333;
+    color: #111;
+
+}
+
+.myProfileButton {
+
+    background-color: #222;
+
+    color: #f1f1f1;
+
+}
+
+.loginButton:hover,
+.registerButton:hover,
+.logoutButton:hover,
+.myProfileButton:hover {
 
     transform: translateY(-3px);
 
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.8),
-                0 6px 14px rgba(255, 255, 255, 0.08);
-                
-}
+    box-shadow: 0 6px 16px rgba(0,0,0,0.6);
 
-
-pre {
-
-    display: none;
-
-}
-
-@media screen and (max-width: 768px) {
-
-    .header {
-        flex-direction: column;
-        height: 160px;
-    }
-
-    .HomePageInformation > h1 {
-        font-size: 2rem;
-    }
-
-    .HomePageInformation > span {
-        font-size: 1rem;
-    }
-
-    .HomePageButtons {
-        flex-direction: column;
-    }
-
-    .navButton {
-        width: 90vw;
-        height: 85px;
-    }
-
-    .HomePageClubs {
-        flex-direction: column;
-    }
-
-    .HomePageClubCard {
-        width: 95vw;
-    }
 }
 
 .notification {
@@ -411,4 +377,88 @@ pre {
 
     pointer-events: none;
 
+}
+
+@keyframes fadeInUp {
+
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+pre {
+
+    display: none;
+
+}
+
+@media screen and (max-width: 768px) {
+
+    .header {
+        flex-direction: column;
+        height: 160px;
+        padding: 20px;
+    }
+
+    .HomeHero {
+        height: 50vh;
+    }
+
+    .HomePageInformation h1 {
+        font-size: 2.4rem;
+    }
+
+    .HomePageInformation span {
+        font-size: 1.1rem;
+    }
+
+    .HomePageButtons {
+        flex-direction: column;
+    }
+
+    .navButton {
+        width: 90vw;
+        height: 75px;
+    }
+
+    .HomePageClubs {
+        flex-direction: column;
+    }
+
+    .HomePageClubCard {
+        width: 95vw;
+        height: 300px;
+    }
+
+}
+
+button,
+.Content a button,
+.Content li button {
+
+    position: relative;
+
+    transition: all 0.25s ease;
+
+}
+
+button:hover,
+.Content a button:hover,
+.Content li button:hover {
+
+    box-shadow:
+        0 0 6px rgba(255,255,255,0.35),
+        0 0 14px rgba(255,255,255,0.25),
+        0 8px 18px rgba(0,0,0,0.6);
+
+    border-color: #fff;
+
+    transform: translateY(-2px);
+    
 }

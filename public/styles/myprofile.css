@@ -534,3 +534,332 @@ pre {
     padding: 2px 0;
     
 }
+
+.emptyState {
+
+    text-align: center;
+
+    background-color: #1a1a1a;
+
+    border: 1px solid #333;
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    margin: 20px 0;
+
+    box-shadow: 0 2px 8px rgba(255,255,255,0.1);
+
+}
+
+.emptyState h3 {
+
+    margin-bottom: 10px;
+
+    color: #f1f1f1;
+
+}
+
+.emptyState p {
+
+    margin-bottom: 15px;
+
+    color: rgba(240,240,240,0.8);
+
+}
+
+.emptyState button {
+
+    padding: 10px 22px;
+
+    border-radius: 8px;
+
+    border: 2px solid #555;
+
+    background-color: #222;
+
+    color: #f1f1f1;
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+
+}
+
+.emptyState button:hover {
+
+    background-color: #333;
+
+    border-color: #fff;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 4px 12px rgba(255,255,255,0.2);
+
+}
+
+.reservationCard {
+
+    position: relative;
+
+}
+
+.reservationCard::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+
+    top: 0;
+
+    bottom: 0;
+
+    width: 4px;
+
+    background: linear-gradient(to bottom, #fff, transparent);
+
+    opacity: 0.25;
+
+    border-radius: 12px 0 0 12px;
+
+}
+
+.terrainGrid {
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
+    gap: 20px;
+
+}
+
+.terrainCard {
+
+    background: linear-gradient(135deg, #141414, #1a1a1a);
+
+    border: 1px solid #333;
+
+    border-radius: 12px;
+
+    padding: 15px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+
+    transition: all 0.3s ease;
+
+}
+
+.terrainCard:hover {
+
+    background: linear-gradient(135deg, #1a1a1a, #222);
+
+    border-color: #fff;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 4px 12px rgba(255,255,255,0.2);
+
+}
+
+.terrainButtons {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+}
+
+.terrainButtons button {
+
+    flex: 1 1 48%;
+
+}
+
+.clubActions {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    margin-top: 20px;
+
+}
+
+.BackgroundTop {
+
+    background: linear-gradient(135deg, #141414 0%, #0d0d0d 60%, #050505 100%);
+
+    min-height: 15vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 20px 50px;
+
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+
+}
+
+.BackgroundTopInner {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    width: 100%;
+
+    max-width: 1200px;
+
+}
+
+.BackgroundTop h1 {
+
+    margin: 0 auto;
+
+    font-size: 38px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    background: linear-gradient(to right, #ffffff, #bcbcbc);
+
+    background-clip: text;
+
+    -webkit-background-clip: text;
+
+    color: transparent;
+
+    text-align: center;
+
+}
+
+.HeaderButtonsWrapper {
+
+    display: flex;
+
+    flex-direction: row;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+.HomePageHeader {
+
+    display: flex;
+
+    flex-direction: row;
+
+    gap: 10px;
+
+}
+
+.HeaderButtonsWrapper a {
+
+    text-decoration: none;
+
+}
+
+.HeaderButtonsWrapper button {
+
+    width: 120px;
+
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    border: 2px solid #555;
+
+    transition: all 0.3s ease;
+
+    text-align: center;
+
+}
+
+.HeaderButtonsWrapper .loginButton,
+.HeaderButtonsWrapper .registerButton,
+.HeaderButtonsWrapper .myProfileButton {
+
+    background-color: #222;
+
+    color: #f1f1f1;
+
+}
+
+.HeaderButtonsWrapper .logoutButton {
+
+    background-color: #fff !important; 
+
+    color: #111 !important;
+
+    border: 2px solid #ccc !important;
+
+}
+
+.HeaderButtonsWrapper button:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+
+}
+
+@media (max-width: 768px) {
+
+    .BackgroundTopInner {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .HeaderButtonsWrapper {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .HeaderButtonsWrapper button {
+        width: auto;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .BackgroundTop h1 {
+        font-size: 28px;
+    }
+
+}

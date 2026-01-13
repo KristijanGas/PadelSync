@@ -263,38 +263,46 @@ hr {
 
 }
 
-.loginButton, .registerButton, .logoutButton, .myProfileButton {
+.HomePageHeader button {
 
-    width: 100px;
+    width: 120px;
 
     height: 40px;
 
     cursor: pointer;
 
-    border-radius: 7px;
+    border-radius: 8px;
 
     font-size: 15px;
 
-    background-color: #222;
-
-    color: #f1f1f1;
-
     border: 2px solid #555;
-
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
 
     transition: all 0.3s ease;
 
 }
 
-.loginButton:hover, .registerButton:hover, .logoutButton:hover, .myProfileButton:hover {
+.HomePageHeader .loginButton,
+.HomePageHeader .registerButton,
+.HomePageHeader .logoutButton {
 
-    background-color: #333;
+    background-color: #fff;
 
-    border-color: #777;
+    color: #111;
+
+}
+
+.HomePageHeader .myProfileButton {
+
+    background-color: #222;
+
+    color: #f1f1f1;
+
+}
+
+.HomePageHeader button:hover {
 
     transform: translateY(-3px);
 
-    box-shadow: 0 6px 14px rgba(0,0,0,0.6);
-
+    box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+    
 }
