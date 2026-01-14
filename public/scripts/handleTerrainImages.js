@@ -61,6 +61,22 @@ form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         const formData = new FormData(form);
+
+        formData.delete("tipPodloge");
+
+        const tipPodloge = form.querySelector('input[name="tipPodloge"]:checked');
+        if (tipPodloge) {
+                formData.append("tipPodloge", tipPodloge.value);
+        }
+
+
+        formData.delete("vanjskiUnutarnji");
+
+        const vanjskiUnutarnji = form.querySelector('input[name="vanjskiUnutarnji"]:checked');
+        if (vanjskiUnutarnji) {
+                formData.append("vanjskiUnutarnji", vanjskiUnutarnji.value);
+        }
+
         selectedFiles.forEach((file) => formData.append("slike", file));
         formData.append('erasePhotos[]', '');
         eraseFiles.forEach(photoId => formData.append('erasePhotos[]', photoId));

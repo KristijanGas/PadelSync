@@ -181,7 +181,7 @@ router.post('/eraseType', requiresAuth(), async (req, res) => {
 
 function checkPlayerInfo(data){
         const errors = [];
-        if(data.razZnanjaPadel !== "pro" && data.razZnanjaPadel !== "beginner" && data.razZnanjaPadel !== "intermediate" && data.razZnanjaPadel){
+        if(data.razZnanjaPadel && data.razZnanjaPadel !== "pro" && data.razZnanjaPadel !== "beginner" && data.razZnanjaPadel !== "intermediate"){
                 errors.push("'razZnanjaPadel' must be beginner, intermediate, pro");
         }
 
@@ -265,8 +265,29 @@ router.post('/:username/insertPlayerInfo', requiresAuth(), upload.none(), async 
 });
 
 
+async function timeStringToFloat(time) {
+  var hoursMinutes = time.split(/[.:]/);
+  var hours = parseInt(hoursMinutes[0], 10);
+  var minutes = hoursMinutes[1] ? parseInt(hoursMinutes[1], 10) : 0;
+  return hours * 60 + minutes;
+}
+
+
 async function checkClubInfo(data) {
   const errors = [];
+
+        if (data.klubRadiDo) {
+                let klubRadiDo = await timeStringToFloat(data.klubRadiDo);
+                if(isNaN(klubRadiDo) || klubRadiDo > 1440){
+                        errors.push("'Neispravno radno vrijeme (kraj)'");
+                }
+        }
+        if(data.klubRadiOd){
+                let klubRadiOd = await timeStringToFloat(data.klubRadiDo);
+                if(isNaN(klubRadiOd) || klubRadiOd < 0){
+                        errors.push("'Neispravno radno vrijeme (početak)'");
+                } 
+        }
 
   if (data.svlacionice < 0 && data.svlacionice)
     errors.push("'svlacionice' is negative");
@@ -361,6 +382,13 @@ router.post('/:username/insertClubInfo', requiresAuth(), upload.array("slike"), 
                                                 });
                                         });
                                         try{
+                                                let radiOd, radiDo;
+                                                if(req.body.klubRadiDo){
+                                                        radiDo = await timeStringToFloat(req.body.klubRadiDo);
+                                                }
+                                                if(req.body.klubRadiOd){
+                                                        radiOd = await timeStringToFloat(req.body.klubRadiDo);
+                                                }
                                                 await runQuery(SQLQuery, [req.body.svlacionice, 
                                                                         req.body.imeKlub, 
                                                                         req.body.najamReketa,

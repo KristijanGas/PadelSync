@@ -98,8 +98,15 @@ router.get('/:clubId/:terrainId', requiresAuth(), async (req, res) => {
 async function checkTerrainInfo(data){
         const errors = [];
 
-        if (data.tipPodloge && !(await verifyInputText(data.tipPodloge))) {
-                errors.push("'tipPodloge' cannot contain special char.");
+        
+        if(!data.tipPodloge ||
+         (data.tipPodloge !== "beton" && 
+        data.tipPodloge !== "trava" && 
+        data.tipPodloge !== "tepih" && 
+        data.tipPodloge !== "akrilik" &&
+        data.tipPodloge !== "drvo" &&
+        data.tipPodloge !== "blato")){
+                errors.push("'tipPodloge' must be beton, trava, tepih, akrilik or drvo (i blato)");
         }
 
         if (data.velicinaTeren !== "single" && data.velicinaTeren !== "double" && data.velicinaTeren) {

@@ -15,7 +15,20 @@
         <div class="SettingsMenu">
             <form id="terrainInfo" method="POST" enctype="multipart/form-data">
                 <label for="tipPodloge">Tip podloge:</label>
-                <input type="text" id="tipPodloge" name="tipPodloge" min="0" value="<%=terrainInfo.tipPodloge%>"><br><br>
+                <div class="radioGroup">
+                    <input type="radio" id="beton" name="tipPodloge" value="beton" <%= terrainInfo.tipPodloge === "beton" ? "checked" : "" %>>
+                    <label for="beton">Beton</label><br><br>
+                    <input type="radio" id="trava" name="tipPodloge" value="trava" <%= terrainInfo.tipPodloge === "trava" ? "checked" : "" %>>
+                    <label for="trava">Trava</label><br><br>
+                    <input type="radio" id="tepih" name="tipPodloge" value="tepih" <%= terrainInfo.tipPodloge === "tepih" ? "checked" : "" %>>
+                    <label for="tepih">Tepih</label><br><br>
+                    <input type="radio" id="akrilik" name="tipPodloge" value="akrilik" <%= terrainInfo.tipPodloge === "akrilik" ? "checked" : "" %>>
+                    <label for="akrilik">Akrilik</label><br><br>
+                    <input type="radio" id="drvo" name="tipPodloge" value="drvo" <%= terrainInfo.tipPodloge === "drvo" ? "checked" : "" %>>
+                    <label for="drvo">Drvo</label><br><br>
+                    <input type="radio" id="blato" name="tipPodloge" value="blato" <%= terrainInfo.tipPodloge === "blato" ? "checked" : "" %>>
+                    <label for="blato">Blato</label><br><br>
+                </div>
                 <label for="velicinaTeren">Veličina terena:</label>
                 <input type="text" id="velicinaTeren" name="velicinaTeren" min="0" value="<%=terrainInfo.velicinaTeren%>"><br><br>
                 <label for="osvjetljenje">Osvjetljenje:</label>
