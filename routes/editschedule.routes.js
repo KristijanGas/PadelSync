@@ -140,17 +140,32 @@ router.post('/:clubId/:terrainId/add', requiresAuth(), async (req, res) => {
             });
         });
 
-        if(tipTermina === "ponavljajuci") {
-            let SQLFindTerminID = "SELECT terminID FROM TERMIN_TJEDNI WHERE terenID = ? AND danTjedan = ? AND vrijemePocetak = ? AND vrijemeKraj = ?";
-            const terminRow = await new Promise((resolve, reject) => {
-                db.get(SQLFindTerminID, [row.terenID, dayNum, startTime, endTime], (err, row) => {
-                    if (err) {
-                        console.error(err.message);
-                        return reject(err);
-                    }
-                    resolve(row);
-                });
+        
+
+        
+        let SQLFindTerminID = "SELECT terminID FROM TERMIN_TJEDNI WHERE terenID = ? AND danTjedan = ? AND vrijemePocetak = ? AND vrijemeKraj = ?";
+        const terminRow = await new Promise((resolve, reject) => {
+            db.get(SQLFindTerminID, [row.terenID, dayNum, startTime, endTime], (err, row) => {
+                if (err) {
+                    console.error(err.message);
+                    return reject(err);
+                }
+                resolve(row);
             });
+        });
+
+
+        let SQLRezervacija = `INSERT INTO REZERVACIJA (terminID,statusRez) VALUES (?, ?)`;
+        await new Promise((resolve, reject) => {
+            db.run(SQLRezervacija, [terminRow.terminID, "available"], function(err) {
+                if (err) {
+                    console.error(err.message);
+                    return reject(err);
+                }
+                resolve();
+            });
+        });
+        if(tipTermina === "ponavljajuci") {
             let SQLQueryPonavljajuca = 'INSERT INTO PONAVLJAJUCA_REZ (rezervacijaID,tipPretpID) VALUES (?, ?)';
             await new Promise((resolve, reject) => {
                 db.run(SQLQueryPonavljajuca, [terminRow.terminID, subscriptionID], function(err) {

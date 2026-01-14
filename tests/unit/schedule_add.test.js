@@ -20,11 +20,17 @@ function createAppWithOidcStub() {
   app.set('view engine', 'ejs');
   // Stub OIDC user + token
   app.use((req, res, next) => {
+    const nickname = req.header('x-test-user') ?? 'default.user';
+
     req.oidc = {
-      accessToken: { access_token: 'fake-token', token_type: 'Bearer', isExpired: () => false},
+      accessToken: {
+        access_token: 'fake-token',
+        token_type: 'Bearer',
+        isExpired: () => false,
+      },
       user: {
-        nickname: 'gaspar.kristijan',
-        email: 'gaspar.kristijan@gmail.com'
+        nickname,
+        email: `${nickname}@test.com`,
       },
       isAuthenticated: () => true,
     };
@@ -43,7 +49,8 @@ describe('editschedule GET route', () => {
     const app = createAppWithOidcStub();
 
     const res = await request(app)
-      .get('/editschedule/gaspar.kristijan/8');
+      .get('/editschedule/gaspar.kristijan/8')
+      .set('x-test-user', 'gaspar.kristijan');
 
     expect(res.status).toBe(200);
   });
@@ -52,7 +59,8 @@ describe('editschedule GET route', () => {
     const app = createAppWithOidcStub();
 
     const res = await request(app)
-      .get('/editschedule/gaspar.kristijan/1');
+      .get('/editschedule/gaspar.kristijan/1')
+      .set('x-test-user', 'gaspar.kristijan');
 
     expect(res.status).toBe(403);
   });
@@ -62,7 +70,8 @@ describe('editschedule GET route', () => {
     const app = createAppWithOidcStub();
 
     const res = await request(app)
-      .get('/editschedule/andjela.replit/8');
+      .get('/editschedule/andjela.replit/8')
+      .set('x-test-user', 'gaspar.kristijan');
     expect(res.status).toBe(403);
   });
 });
@@ -76,13 +85,15 @@ describe('editschedule POST route', () => {
     const app = createAppWithOidcStub();
     
     const res = await request(app)
-      .post('/editschedule/gaspar.kristijan/8/add');
+      .post('/editschedule/gaspar.kristijan/8/add')
+      .set('x-test-user', 'gaspar.kristijan');
 
     expect(res.status).toBe(200);
     
     expect(res.text).toContain("Schedule added successfully!");
     const res2 = await request(app)
-      .post('/editschedule/gaspar.kristijan/8/add');
+      .post('/editschedule/gaspar.kristijan/8/add')
+      .set('x-test-user', 'gaspar.kristijan');
 
     expect(res2.status).toBe(400);
     expect(res2.text).toContain("The specified time conflicts with an existing booking.");
@@ -94,7 +105,8 @@ describe('editschedule POST route', () => {
     const app = createAppWithOidcStub();
 
     const res = await request(app)
-      .post('/editschedule/gaspar.kristijan/8/add');
+      .post('/editschedule/gaspar.kristijan/8/add')
+      .set('x-test-user', 'gaspar.kristijan');
 
     expect(res.status).toBe(200);
 
@@ -134,7 +146,8 @@ describe('editschedule POST route', () => {
     db.close();
     
     const res2 = await request(app)
-      .post('/editschedule/gaspar.kristijan/8/add');
+      .post('/editschedule/gaspar.kristijan/8/add')
+      .set('x-test-user', 'gaspar.kristijan');
     expect(res2.status).toBe(400);
     expect(res2.text).toContain("The specified time conflicts with an existing booking.");
   });

@@ -19,11 +19,17 @@ function createAppWithOidcStub() {
   app.set('view engine', 'ejs');
   // Stub OIDC user + token
   app.use((req, res, next) => {
+    const nickname = req.header('x-test-user') ?? 'default.user';
+
     req.oidc = {
-      accessToken: { access_token: 'fake-token', token_type: 'Bearer', isExpired: () => false},
+      accessToken: {
+        access_token: 'fake-token',
+        token_type: 'Bearer',
+        isExpired: () => false,
+      },
       user: {
-        nickname: 'gaspar.kristijan',
-        email: 'kristijan.gaspar@unizg.fer.hr'
+        nickname,
+        email: `${nickname}@test.com`,
       },
       isAuthenticated: () => true,
     };
@@ -37,7 +43,7 @@ function createAppWithOidcStub() {
 
 describe('terrain GET route', () => {
     
-    it('displays your terrain and shows reservations', async () => {
+    it('displays terrain and shows reservations to anyone', async () => {
         axios.get.mockResolvedValue({ data: { emailVerified: true, nickname: 'gaspar.kristijan', email: 'gaspar.kristijan@gmail.com' } });
         const app = createAppWithOidcStub();
 
