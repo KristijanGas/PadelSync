@@ -100,7 +100,7 @@ describe('editschedule POST route', () => {
 
   });
   it('adds a schedule with a subscription and links it correctly in database', async () => {
-    bodyrequest = { day: 'tuesday', startTime: '16:00', endTime: '17:00', pretplateID: 12 };
+    bodyrequest = { day: 'tuesday', startTime: '16:00', endTime: '17:00', pretplateID: 8 };
     axios.get.mockResolvedValue({ data: { emailVerified: true, nickname: 'gaspar.kristijan', email: 'gaspar.kristijan@gmail.com' } });
     const app = createAppWithOidcStub();
 
@@ -137,7 +137,7 @@ describe('editschedule POST route', () => {
         `SELECT * FROM PONAVLJAJUCA_REZ
     NATURAL JOIN TERMIN_TJEDNI
     NATURAL JOIN TIP_PRETPLATE
-    WHERE PONAVLJAJUCA_REZ.tipPretpID = 12 AND
+    WHERE PONAVLJAJUCA_REZ.tipPretpID = 8 AND
     TERMIN_TJEDNI.terminID = ?`;
 
     const row = await getOne(SQLQueryCheck, [terminID]);
