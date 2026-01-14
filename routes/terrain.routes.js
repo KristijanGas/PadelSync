@@ -202,7 +202,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
 
     const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
     if(profileInDB !== "Player"){
-      return res.status(500).send("samo igrači mogu rezervirat termin")
+      return res.status(400).send("samo igrači mogu rezervirat termin")
     }
   }catch(err){
     console.error(err);
@@ -226,7 +226,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
     try{
       const res = await checkAvailability(teren.terenID, datum, termin.vrijemePocetak, termin.vrijemeKraj);
       if(!res){
-        return res.status(500).send("error, termin vec zauzet");
+        return res.status(400).send("error, termin vec zauzet");
       }
     }catch(err){
       db.close();
@@ -240,7 +240,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
     }else{
       const paymentsEnabled = await checkStripeAccount(teren.username)
       if(!paymentsEnabled){
-        return res.status(500).send("club doesnt support card payments")
+        return res.status(400).send("club doesnt support card payments")
       }
       statusRez = StatusRezervacije.PENDING
       statusPlac = StatusPlacanja.PENDING
@@ -289,7 +289,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
     //OVDJE SE REQ.PARAMS.ID INTERPRETIRA KAO tipPretpID, a ne TERMIN ID!!
     const paymentsEnabled = await checkStripeAccount(req.body.pretplata.clubUsername);
     if(!paymentsEnabled){
-      res.status(500).send("club doesnt support card payments");
+      res.status(400).send("club doesnt support card payments");
     }
     tipPlacanja = "kartica"
     let statusPlac = StatusPlacanja.PENDING;
@@ -303,7 +303,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
     const availabilityQuery = `SELECT * FROM PRETPLATA WHERE pretpAktivna = 1 AND tipPretpID = ?`;
     let row = await fetchAll(db, availabilityQuery, [req.params.id]);
     if(row.length > 0) {
-      res.status(500).send("Netko je prije vas rezervirao istu pretplatu");
+      res.status(400).send("Netko je prije vas rezervirao istu pretplatu");
       return;
     }
 
@@ -432,7 +432,7 @@ router.post("/:terenID/addComment", requiresAuth(), async (req, res) => {
     const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
    
     if(profileInDB !== "Player"){
-      return res.status(500).send("samo igrači mogu ostavljati komentare")
+      return res.status(400).json({errors: "samo igrači mogu ostavljati komentare"})
     }
   }catch(err){
     console.error(err);
