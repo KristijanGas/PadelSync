@@ -7,14 +7,6 @@ const { requiresAuth } = require('express-openid-connect')
 const axios = require('axios');
 const { checkAvailability } = require('../backendutils/checkAvailability');
 const { verifyInputText } = require("../backendutils/verifyInputText");
-const nodemailer = require('nodemailer');
-let transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'padelsynkovic@gmail.com',
-    pass: 'padelsync'
-  }
-});
 
 const StatusRezervacije = require('../constants/statusRez');
 const StatusPlacanja = require('../constants/statusPlacanja');
@@ -134,7 +126,7 @@ router.get('/:id', async (req, res) => {
       }
     }
   }
-  
+
   let row = await dbGet(db, "SELECT stripeId FROM klub WHERE username = ?", [clubUsername]);
   let stripeId = row?.stripeId;
 
@@ -189,13 +181,14 @@ router.get('/:id', async (req, res) => {
       }
   }
   db.close();
+  const helper = req.protocol + "://" + req.headers.host;
   res.render('terrain', {
           teren: tereni[0],
           jednokratniTermini: dostupniTermini,
           pretplate: pretplate,
           cardAllowed,
-          addComment: addComment
-
+          addComment: addComment,
+          url: helper
       });
 });
 
@@ -312,12 +305,15 @@ router.post('/:id', requiresAuth(), async (req, res) => {
       return;
     }
 
-    const availabilityQuery2 = `SELECT pretpID FROM PRETPLATA NATURAL JOIN TIP_PRETPLATE
+    const availabilityQuery2 = `SELECT pretpID, transakcijaID FROM PRETPLATA NATURAL JOIN TIP_PRETPLATE NATURAL JOIN TRANSAKCIJA
                                 WHERE username = ? AND pretpPocetak = ?
                                 AND clubUsername = ?`;
     row = await dbGet(db, availabilityQuery2, [req.oidc.user.nickname, currentDateUTC, req.body.pretplata.clubUsername]);
-    if(row.pretpID) {
-      res.status(500).send("danas ste već probali rezervirati i niste uspjeli");
+    if(row?.pretpID) {
+      const chkurl = req.protocol + "://" + req.headers.host;
+      let transakcijaID = row.transakcijaID;
+      res.json({checkoutUrl:`${chkurl}/stripe/payment/`, transakcijaID});
+      return;
     }
     let pretpID;
     const query = `INSERT INTO PRETPLATA(pretpPocetak, pretpKraj, pretpPlacenaDo, pretpAktivna, tipPretpID, username)
@@ -327,11 +323,11 @@ router.post('/:id', requiresAuth(), async (req, res) => {
         if(err) {
           return reject(err);
         }
-        resolve();
+        resolve(row);
         pretpID = row.pretpID;
       });
     });
-
+    console.log(pretpID);
     const SQLTransaction = `INSERT INTO TRANSAKCIJA(iznos, statusPlac, nacinPlacanja, datumPlacanja, pretpID, stripePaymentId)
                             VALUES (?, ?, ?, ?, ?, null)`
     transakcijaID = await new Promise((resolve, reject) => {

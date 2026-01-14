@@ -6,8 +6,8 @@
         <title>Rezervacije rezervirane gotovinom</title>
     </head>
     <body>
-        <p>Gotovinske rezervacije koje još nisu potvrđene za vaš klub:</p>
         <%if(typeof rezervacije !== 'undefined' && rezervacije.length > 0) {%>
+            <p>Gotovinske rezervacije koje još nisu potvrđene za vaš klub:</p>
             <%rezervacije.forEach(rezervacija => {%>
                 <div class="unpaidRes">
                     <p>Igrač koji je rezervirao: <%= rezervacija.username %></p>
@@ -18,6 +18,8 @@
                     <a href="/reservationHandle/rejectReservation/<%= rezervacija.rezervacijaID %>" onclick="window.location.reload()">Odbij rezervaciju?</a>
                 </div>
             <%})%>
+        <%} else {%>
+            <p>Vaš klub trenutno nema nikakvih zahjteva za gotovinski plaćenim rezervacijama</p>
         <%}%>
     </body>
 </html>

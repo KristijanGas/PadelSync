@@ -85,7 +85,6 @@ pretpForms.forEach(form => {
         });
         //nastavit s plaćanjem
         const data = await res.json();
-        console.log("tu sam");
         if(data.checkoutUrl) {
             const transakcijaID = data.transakcijaID;
             const checkoutUrl = data.checkoutUrl;

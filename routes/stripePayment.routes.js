@@ -80,7 +80,7 @@ router.get("/payment/:transakcijaID", requiresAuth(), async (req, res) => {
       return res.status(500).send("ne postoji transakcija s tim ID-om");
     else if (row.pretpID == null) {
       //jednokratna
-      const SQLStripeClubId = `SELECT k.imeKlub AS username, stripeId FROM
+      const SQLStripeClubId = `SELECT KLUB.username, stripeId FROM
           TRANSAKCIJA t JOIN JEDNOKRATNA_REZ jr
             ON t.transakcijaId = jr.transakcijaId
           JOIN REZERVACIJA r
@@ -100,11 +100,11 @@ router.get("/payment/:transakcijaID", requiresAuth(), async (req, res) => {
       }
     } else {
       //ponavljajuca
-      const ponSQL = `SELECT imeKlub as username, stripeId
+      const ponSQL = `SELECT KLUB.username, stripeId
                       FROM TRANSAKCIJA NATURAL JOIN PRETPLATA NATURAL JOIN TIP_PRETPLATE JOIN KLUB ON
                       clubUsername = KLUB.username
                       WHERE transakcijaID = ?`;
-      row = dbGet(db, ponSQL, [transakcijaID]);
+      row = await dbGet(db, ponSQL, [transakcijaID]);
       if(!row || !row.stripeId){
         return res.status(500).send("neki sjeb, nema stripe id")
       }else{
@@ -203,11 +203,11 @@ router.get('/payment/checkout/:transakcijaID', requiresAuth(), async (req, res) 
     } else {
       //ponavljajuca
       reservationType = "ponavljajuca";
-      const ponSQL = `SELECT imeKlub as username, stripeId
+      const ponSQL = `SELECT KLUB.username, stripeId
                       FROM TRANSAKCIJA NATURAL JOIN PRETPLATA NATURAL JOIN TIP_PRETPLATE JOIN KLUB ON
                       clubUsername = KLUB.username
                       WHERE transakcijaID = ?`;
-      row = dbGet(db, ponSQL, [transakcijaID]);
+      row = await dbGet(db, ponSQL, [transakcijaID]);
       if(!row || !row.stripeId){
         return res.status(500).send("neki sjeb, nema stripe id")
       }else{
@@ -218,7 +218,7 @@ router.get('/payment/checkout/:transakcijaID', requiresAuth(), async (req, res) 
                       TRANSAKCIJA natural join PRETPLATA natural join
                       PONAVLJAJUCA_REZ natural join REZERVACIJA natural join TERMIN_TJEDNI
                       where transakcijaID = ?`;
-      row = dbGet(db, ponQry, [transakcijaID]);
+      row = await dbGet(db, ponQry, [transakcijaID]);
       if(!row){
         return res.status(500).send("neki sjeb");
       } else {
@@ -230,6 +230,7 @@ router.get('/payment/checkout/:transakcijaID', requiresAuth(), async (req, res) 
     }
 
     const qry = `SELECT email FROM KORISNIK WHERE USERNAME = ?`;
+    console.log(clubUsername);
     row = await dbGet(db, qry, [clubUsername]);
     if(!row || !row.email) {
       return res.status(500).send("ne znam");

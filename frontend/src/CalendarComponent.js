@@ -27,13 +27,14 @@ export default function CalendarComponent() {
   
   const rootEl = document.getElementById('root');
   const terrainId = rootEl?.dataset?.terrainId;
+  const url = rootEl?.dataset?.url;
   useEffect(() => {
     if (!terrainId) {
       return;
     }
     async function fetchMatches() {
       try {
-        const res = await fetch(`http://localhost:3000/terrain/${terrainId}/matches`, {
+        const res = await fetch(`${url}/terrain/${terrainId}/matches`, {
           credentials: "include"
         });
         if (!res.ok) {

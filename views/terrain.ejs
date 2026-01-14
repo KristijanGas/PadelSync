@@ -90,7 +90,7 @@
                             <% } %>
                             <%if (typeof pretplata.termini !== 'undefined' && pretplata.termini.length > 0) { %>
                                 <%for(let termin of pretplata.termini){%>
-                                    <p>Danom <%=termin.danTjedan%> u <%=termin.vrijemePocetak%> do <%=termin.vrijemeKraj%></p>
+                                    <p>Danom <%=termin.danTjedan%> u <%=termin.vrijemePocetak%> do <%=termin.vrijemeKraj%> na terenu ID <%=termin.terenID%></p>
                                 <%}%>
                             <%}%>
                             </div>
@@ -115,7 +115,10 @@
                 </div>
             </div>
             <div class="CalendarContainer">
-                <i>Ovdje ide kalendar</i>
+                <div id="root" data-terrain-id="<%= teren.terenID %>"
+                    data-url="<%=url%>"></div>
+                <link rel="stylesheet" href="/calendar/static/css/main.10d0131d.css">
+                <script src="/calendar/static/js/main.71a86d1a.js"></script>
             </div>
         </div>
     </body>
