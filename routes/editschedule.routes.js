@@ -156,7 +156,7 @@ router.post('/:clubId/:terrainId/add', requiresAuth(), async (req, res) => {
 
 
         let SQLRezervacija = `INSERT INTO REZERVACIJA (terminID,statusRez) VALUES (?, ?)`;
-        await new Promise((resolve, reject) => {
+        let rezervacijaID = await new Promise((resolve, reject) => {
             db.run(SQLRezervacija, [terminRow.terminID, "available"], function(err) {
                 if (err) {
                     console.error(err.message);
@@ -168,7 +168,7 @@ router.post('/:clubId/:terrainId/add', requiresAuth(), async (req, res) => {
         if(tipTermina === "ponavljajuci") {
             let SQLQueryPonavljajuca = 'INSERT INTO PONAVLJAJUCA_REZ (rezervacijaID,tipPretpID) VALUES (?, ?)';
             await new Promise((resolve, reject) => {
-                db.run(SQLQueryPonavljajuca, [terminRow.terminID, subscriptionID], function(err) {
+                db.run(SQLQueryPonavljajuca, [rezervacijaID.rezervacijaID, subscriptionID], function(err) {
                     if (err) {
                         console.error(err.message);
                         return reject(err);
