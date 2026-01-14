@@ -241,17 +241,9 @@ router.post('/:id', requiresAuth(), async (req, res) => {
       statusPlac = StatusPlacanja.PENDING
     }
 
-    const SQLQuery1 = `INSERT INTO REZERVACIJA (statusRez, terminID) VALUES (?, ?) RETURNING *`
-    await new Promise((resolve, reject) => {
-      db.get(SQLQuery1, [statusRez, terminID], function(err, row) {
-        if (err) {
-          console.error(err.message);
-          return reject(err);
-        }
-        resolve();
-        ID = row.rezervacijaID;
-      });
-    });
+    const SQLQueryFindRezID = 'SELECT rezervacijaID FROM REZERVACIJA WHERE terminID = ?';
+    let row = await dbGet(db, SQLQueryFindRezID, [terminID]);
+    ID = row.rezervacijaID;
 
     const currentDateUTC = new Date().toISOString().split('T')[0];
     const cijena = teren.cijenaTeren;
