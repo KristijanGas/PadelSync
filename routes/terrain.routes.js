@@ -206,7 +206,6 @@ router.post('/:id', requiresAuth(), async (req, res) => {
     if (!isVerified) return res.render("verifymail");
 
     const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
-   
     if(profileInDB !== "Player"){
       return res.status(500).send("samo igrači mogu rezervirat termin")
     }

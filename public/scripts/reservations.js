@@ -45,8 +45,14 @@ forms.forEach(form => {
             body: JSON.stringify(payload)
         });
 
+        if (!res.ok) {
+            const text = await res.text();
+            alert(text); 
+            return;
+        }
         const data = await res.json();
 
+        
         if (data.checkoutUrl) {
             const transakcijaID = data.transakcijaID;
             const checkoutUrl = data.checkoutUrl;
@@ -83,9 +89,14 @@ pretpForms.forEach(form => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
+
+         if (!res.ok) {
+            const text = await res.text();
+            alert(text); 
+            return;
+        }
         //nastavit s plaćanjem
         const data = await res.json();
-        console.log("tu sam");
         if(data.checkoutUrl) {
             const transakcijaID = data.transakcijaID;
             const checkoutUrl = data.checkoutUrl;
