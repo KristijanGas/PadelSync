@@ -35,6 +35,7 @@ router.get('/cancelSub/:pretpID', requiresAuth(), async (req, res) => {
                 resolve(this);
             });
         });
+        res.status(200).redirect('/myprofile');
     } catch (error) {
         console.error(error);
         res.status(500).send("oopsie :(");
