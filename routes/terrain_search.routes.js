@@ -22,7 +22,8 @@ async function searchTerrains(criteria) {
     let SQLQuery = 'SELECT * FROM TEREN WHERE 1=1';
     //[ NEEDS WORK ]
     if (criteria.username) {
-        SQLQuery += ` AND lower(username) LIKE \"%${criteria.username.toLowerCase()}%\"`;
+        SQLQuery += ` AND (lower(username) LIKE \"%${criteria.username.toLowerCase()}%\"`;
+        SQLQuery += ` OR lower(teren.imeTeren) LIKE \"%${criteria.username.toLowerCase()}%\")`;
     }
     if (criteria.visinaStropa) {
         SQLQuery += ` AND (visinaStrop >= ${criteria.visinaStropa} OR visinaStrop IS NULL)`;
