@@ -6,6 +6,7 @@ You have a new reservation request for
 ${datumRez}, ${vrijemePocetak} - ${vrijemeKraj} on terrain ${imeTeren} (ID: ${terenID})
 coming from ${poslanoZbogUsername}.
 
+<a href="/home>Home</a>
 Click here to confirm, or here to deny the reservation.
 
 Thanks,

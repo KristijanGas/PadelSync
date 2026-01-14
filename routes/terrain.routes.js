@@ -276,6 +276,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
       });
     });
 
+    //sendNotificationFromTemplate("zahtjevZaRezervacijomKlub", req.oidc.user.nickname, teren.username, datum, termin.vrijemePocetak, termin.vrijemeKraj, teren.terenID, teren.imeTeren);
     const currentUrl = `${req.protocol}://${req.get('host')}`;
     if(tipPlacanja==="gotovina"){
        res.json({redirect : `${currentUrl}/terrain/${teren.terenID}`});
