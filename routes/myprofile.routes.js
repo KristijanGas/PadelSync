@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { verifyProfile, verifyDBProfile } = require("../backendutils/verifyProfile");
+const { checkStripeAccount } = require("../backendutils/paymentsPossible")
 
 const { requiresAuth } = require('express-openid-connect')
 const axios = require('axios');
@@ -56,6 +57,9 @@ router.get('/', requiresAuth(), async (req, res) => {
                                                         });
                                                 });
                                                 row.terrains = terrains;
+
+                                                const paymentsEnabled = await checkStripeAccount(req.oidc.user.nickname)
+                                                row.paymentsEnabled = paymentsEnabled;
                                         }else{
                                                 let SQLOldRes = `SELECT jr.datumRez, 
                                                         jr.rezervacijaID, 

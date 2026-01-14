@@ -2,6 +2,7 @@ const express = require('express');
 var sqlite3 = require('sqlite3').verbose();
 const router = express.Router();
 const { verifyProfile, verifyDBProfile, findUserType } = require("../backendutils/verifyProfile");
+const { checkStripeAccount } = require("../backendutils/paymentsPossible")
 
 const { requiresAuth } = require('express-openid-connect')
 const axios = require('axios');
@@ -130,7 +131,8 @@ router.get('/:id', async (req, res) => {
   let row = await dbGet(db, "SELECT stripeId FROM klub WHERE username = ?", [clubUsername]);
   let stripeId = row?.stripeId;
 
-  if (!stripeId) {
+  const paymentsEnabled = await checkStripeAccount(clubUsername);
+  if (!paymentsEnabled) {
     cardAllowed = false;
   }else{
     cardAllowed = true;
@@ -236,6 +238,10 @@ router.post('/:id', requiresAuth(), async (req, res) => {
       statusRez = StatusRezervacije.PENDING
       statusPlac = StatusPlacanja.NEPLACENO
     }else{
+      const paymentsEnabled = await checkStripeAccount(teren.username)
+      if(!paymentsEnabled){
+        return res.status(500).send("club doesnt support card payments")
+      }
       statusRez = StatusRezervacije.PENDING
       statusPlac = StatusPlacanja.PENDING
     }
@@ -280,6 +286,10 @@ router.post('/:id', requiresAuth(), async (req, res) => {
 
   }else if(tipTermina == 'ponavljajuci') {
     //OVDJE SE REQ.PARAMS.ID INTERPRETIRA KAO tipPretpID, a ne TERMIN ID!!
+    const paymentsEnabled = await checkStripeAccount(req.body.pretplata.clubUsername);
+    if(!paymentsEnabled){
+      res.status(500).send("club doesnt support card payments");
+    }
     tipPlacanja = "kartica"
     let statusPlac = StatusPlacanja.PENDING;
     const currentDateUTC = new Date().toISOString().split('T')[0];
