@@ -2,12 +2,19 @@ const express = require('express');
 var sqlite3 = require('sqlite3').verbose();
 const router = express.Router();
 const { verifyProfile, verifyDBProfile, findUserType } = require("../backendutils/verifyProfile");
-const { checkStripeAccount } = require("../backendutils/paymentsPossible")
 
 const { requiresAuth } = require('express-openid-connect')
 const axios = require('axios');
 const { checkAvailability } = require('../backendutils/checkAvailability');
 const { verifyInputText } = require("../backendutils/verifyInputText");
+const nodemailer = require('nodemailer');
+let transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'padelsynkovic@gmail.com',
+    pass: 'padelsync'
+  }
+});
 
 const StatusRezervacije = require('../constants/statusRez');
 const StatusPlacanja = require('../constants/statusPlacanja');
@@ -127,12 +134,11 @@ router.get('/:id', async (req, res) => {
       }
     }
   }
-
+  
   let row = await dbGet(db, "SELECT stripeId FROM klub WHERE username = ?", [clubUsername]);
   let stripeId = row?.stripeId;
 
-  const paymentsEnabled = await checkStripeAccount(clubUsername);
-  if (!paymentsEnabled) {
+  if (!stripeId) {
     cardAllowed = false;
   }else{
     cardAllowed = true;
@@ -183,14 +189,13 @@ router.get('/:id', async (req, res) => {
       }
   }
   db.close();
-  const helper = req.protocol + "://" + req.headers.host;
   res.render('terrain', {
           teren: tereni[0],
           jednokratniTermini: dostupniTermini,
           pretplate: pretplate,
           cardAllowed,
-          addComment: addComment,
-          url: helper
+          addComment: addComment
+
       });
 });
 
@@ -201,8 +206,9 @@ router.post('/:id', requiresAuth(), async (req, res) => {
     if (!isVerified) return res.render("verifymail");
 
     const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
+   
     if(profileInDB !== "Player"){
-      return res.status(400).send("samo igrači mogu rezervirat termin")
+      return res.status(500).send("samo igrači mogu rezervirat termin")
     }
   }catch(err){
     console.error(err);
@@ -226,7 +232,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
     try{
       const res = await checkAvailability(teren.terenID, datum, termin.vrijemePocetak, termin.vrijemeKraj);
       if(!res){
-        return res.status(400).send("error, termin vec zauzet");
+        return res.status(500).send("error, termin vec zauzet");
       }
     }catch(err){
       db.close();
@@ -238,17 +244,21 @@ router.post('/:id', requiresAuth(), async (req, res) => {
       statusRez = StatusRezervacije.PENDING
       statusPlac = StatusPlacanja.NEPLACENO
     }else{
-      const paymentsEnabled = await checkStripeAccount(teren.username)
-      if(!paymentsEnabled){
-        return res.status(400).send("club doesnt support card payments")
-      }
       statusRez = StatusRezervacije.PENDING
       statusPlac = StatusPlacanja.PENDING
     }
 
-    const SQLQueryFindRezID = 'SELECT rezervacijaID FROM REZERVACIJA WHERE terminID = ?';
-    let row = await dbGet(db, SQLQueryFindRezID, [terminID]);
-    ID = row.rezervacijaID;
+    const SQLQuery1 = `INSERT INTO REZERVACIJA (statusRez, terminID) VALUES (?, ?) RETURNING *`
+    await new Promise((resolve, reject) => {
+      db.get(SQLQuery1, [statusRez, terminID], function(err, row) {
+        if (err) {
+          console.error(err.message);
+          return reject(err);
+        }
+        resolve();
+        ID = row.rezervacijaID;
+      });
+    });
 
     const currentDateUTC = new Date().toISOString().split('T')[0];
     const cijena = teren.cijenaTeren;
@@ -276,10 +286,10 @@ router.post('/:id', requiresAuth(), async (req, res) => {
       });
     });
 
-    //sendNotificationFromTemplate("zahtjevZaRezervacijomKlub", req.oidc.user.nickname, teren.username, datum, termin.vrijemePocetak, termin.vrijemeKraj, teren.terenID, teren.imeTeren);
     const currentUrl = `${req.protocol}://${req.get('host')}`;
     if(tipPlacanja==="gotovina"){
-       res.json({redirect : `${currentUrl}/terrain/${teren.terenID}`});
+      sendNotificationFromTemplate("zahtjevZaRezervacijomKlub", teren.username, username, datum, termin.vrijemePocetak, termin.vrijemeKraj, teren.terenID, teren.imeTeren);
+      res.json({redirect : `${currentUrl}/terrain/${teren.terenID}`});
     }else{
       const url = req.protocol + "://" + req.headers.host;
       res.json({checkoutUrl : `${url}/stripe/payment`, transakcijaID});
@@ -287,36 +297,21 @@ router.post('/:id', requiresAuth(), async (req, res) => {
 
   }else if(tipTermina == 'ponavljajuci') {
     //OVDJE SE REQ.PARAMS.ID INTERPRETIRA KAO tipPretpID, a ne TERMIN ID!!
-    const paymentsEnabled = await checkStripeAccount(req.body.pretplata.clubUsername);
-    if(!paymentsEnabled){
-      res.status(400).send("club doesnt support card payments");
-    }
+    console.log(req.params.id);
     tipPlacanja = "kartica"
     let statusPlac = StatusPlacanja.PENDING;
     const currentDateUTC = new Date().toISOString().split('T')[0];
-    const cijena = req.body.pretplata.pretpCijena;
-    
+    const cijena = req.body.pretpCijena;
+
     let futureDate = new Date();
     futureDate.setDate(futureDate.getDate()+30);
     let result = futureDate.toISOString().split('T')[0];
     
     const availabilityQuery = `SELECT * FROM PRETPLATA WHERE pretpAktivna = 1 AND tipPretpID = ?`;
-    let row = await fetchAll(db, availabilityQuery, [req.params.id]);
-    if(row.length > 0) {
-      res.status(400).send("Netko je prije vas rezervirao istu pretplatu");
-      return;
-    }
+    const row = await fetchAll(db, availabilityQuery, [req.params.id]);
+    if(row.length > 0)
+      res.status(500).send("Netko je prije vas rezervirao istu pretplatu");
 
-    const availabilityQuery2 = `SELECT pretpID, transakcijaID FROM PRETPLATA NATURAL JOIN TIP_PRETPLATE NATURAL JOIN TRANSAKCIJA
-                                WHERE username = ? AND pretpPocetak = ?
-                                AND clubUsername = ?`;
-    row = await dbGet(db, availabilityQuery2, [req.oidc.user.nickname, currentDateUTC, req.body.pretplata.clubUsername]);
-    if(row?.pretpID) {
-      const chkurl = req.protocol + "://" + req.headers.host;
-      let transakcijaID = row.transakcijaID;
-      res.json({checkoutUrl:`${chkurl}/stripe/payment/`, transakcijaID});
-      return;
-    }
     let pretpID;
     const query = `INSERT INTO PRETPLATA(pretpPocetak, pretpKraj, pretpPlacenaDo, pretpAktivna, tipPretpID, username)
                     VALUES(?, null, ?, ?, ?, ?) RETURNING pretpID`;
@@ -325,11 +320,10 @@ router.post('/:id', requiresAuth(), async (req, res) => {
         if(err) {
           return reject(err);
         }
-        resolve(row);
+        resolve();
         pretpID = row.pretpID;
       });
     });
-    console.log(pretpID);
     const SQLTransaction = `INSERT INTO TRANSAKCIJA(iznos, statusPlac, nacinPlacanja, datumPlacanja, pretpID, stripePaymentId)
                             VALUES (?, ?, ?, ?, ?, null)`
     transakcijaID = await new Promise((resolve, reject) => {
@@ -383,7 +377,7 @@ router.get("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
     row = await dbGet(db, SQLQuery, [rezervacijaID])
     if(!row){
       return res.status(500).send("rezervacije se mogu otkazati samo dan unaprijed")
-    }else if(row.statusRez != StatusRezervacije.AKTIVNA && row.statusRez != StatusRezervacije.PENDING){
+    }else if(row.statusRez != StatusRezervacije.AKTIVNA){
       return res.status(500).send("ne možete otkazati neaktivnu rezervaciju")
     }
 
@@ -432,7 +426,7 @@ router.post("/:terenID/addComment", requiresAuth(), async (req, res) => {
     const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
    
     if(profileInDB !== "Player"){
-      return res.status(400).json({errors: "samo igrači mogu ostavljati komentare"})
+      return res.status(500).send("samo igrači mogu ostavljati komentare")
     }
   }catch(err){
     console.error(err);
