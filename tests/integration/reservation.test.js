@@ -130,11 +130,12 @@ async function reserveJednokratna(app){
   let row = await getOne(SQLFindNonsubscriptionRes, ['19:00', '20:12', '2']);
   expect(row).toBeDefined();
   expect(row.rezervacijaID).toBeDefined();
+  
 
   let date = currentDateOff(2+7);
   bodyrequest = {tipPlacanja: 'gotovina', termin: {datum: date, vrijemePocetak: '19:00', vrijemeKraj: '20:12', danTjedan: '2', teren: {terenID: 7}}};
   const res = await request(app).post('/terrain/7/'+row.rezervacijaID)
-  .set('x-test-user', 'gaspar.kristijan')
+  .set('x-test-user', 'kristijan.gaspar')
   .send(bodyrequest);
   let SQLQueryCheck = 'SELECT * FROM JEDNOKRATNA_REZ WHERE rezervacijaID = ? AND username = ?';
   let rowCheck = await getOne(SQLQueryCheck, [row.rezervacijaID, 'kristijan.gaspar']);
@@ -155,9 +156,9 @@ describe('Reservations setup', () => {
       .get('/terrain/7')
       .set('x-test-user', 'some.otheruser');
     expect(res.status).toBe(200);
-    expect(res.text).toContain("16:00 do 17:00");
-    expect(res.text).toContain("18:00 do 19:00");
-    expect(res.text).toContain("Pretplata testpretplata123, cijene 10€ tjedno.");
+    expect(res.text).toContain("16:00 to 17:00");
+    expect(res.text).toContain("18:00 to 19:00");
+    expect(res.text).toContain("Subscription testpretplata123, costs 10€ per week.");
   });
   it('allows a player to make a single reservation and it shows up on my profile', async () => {
     
