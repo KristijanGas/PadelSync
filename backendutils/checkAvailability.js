@@ -13,12 +13,13 @@ async function checkAvailability(terrainId, date, startTime, endTime) {
     });
     let jednokratniTermini;
     const query1 = `select * from REZERVACIJA join JEDNOKRATNA_REZ on REZERVACIJA.rezervacijaID = JEDNOKRATNA_REZ.rezervacijaID
-                    join TERMIN_TJEDNI on REZERVACIJA.terminID = TERMIN_TJEDNI.terminID
+                    join TERMIN_TJEDNI on REZERVACIJA.terminID = TERMIN_TJEDNI.terminID NATURAL JOIN TRANSAKCIJA
                     where JEDNOKRATNA_REZ.datumRez = ? and termin_tjedni.terenID = ?
-                    and (REZERVACIJA.statusRez = ? or REZERVACIJA.statusRez = ?)
-                    and NOT(TERMIN_TJEDNI.vrijemeKraj <= ? or TERMIN_TJEDNI.vrijemePocetak >= ?)`;
+                    and (REZERVACIJA.statusRez = ?)
+                    and NOT(TERMIN_TJEDNI.vrijemeKraj <= ? or TERMIN_TJEDNI.vrijemePocetak >= ?)
+                    and (statusPlac = ? or statusPlac = ? or statusPlac = ?)`;
     try {
-        jednokratniTermini = await fetchAll(db, query1, [date, terrainId,StatusRezervacije.AKTIVNA, StatusRezervacije.PENDING,  startTime, endTime]);
+        jednokratniTermini = await fetchAll(db, query1, [date, terrainId, "available",  startTime, endTime, "confirmed", "unpaid", "pendingPayment"]);
     } catch (error) {
         console.log(error);
     }
