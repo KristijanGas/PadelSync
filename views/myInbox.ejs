@@ -1,23 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="/styles/myInbox.css">
-    <script src="/scripts/inbox.js" defer></script>
-    <script src="/scripts/socket.js" defer></script>
-    <script src="/socket.io/socket.io.js"></script>
-</head>
-<body>
-    <div class="InboxContainer">
-        <% for(let message of messages) { %>
-            <div class="MessageCard">
-                <!-- <pre><%= JSON.stringify(message, null, 2) %></pre> -->
-                <button class="messageTitle" id="<%=message.obavijestID%>"><%=message.naslovObavijest%></button>
-                <!-- <%-message.tekstObavijest%> -->
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Inbox</title>
+        <link rel="stylesheet" href="/styles/myInbox.css">
+        <script src="/scripts/inbox.js" defer></script>
+        <script src="/scripts/socket.js" defer></script>
+        <script src="/socket.io/socket.io.js"></script>
+    </head>
+    <body>
+        <%- include("./partials/header") %>
+        <div class="InboxContainer">
+            <div class="backHomeWrapper">
+                <a href="/">
+                    <button class="navButton">Back to Home</button>
+                </a>
             </div>
-        <% } %>
-    </div>
-</body>
+            <% if(messages && messages.length > 0) { %>
+                <% for(let message of messages) { %>
+                    <div class="MessageCard">
+                        <button class="messageTitle" id="<%=message.obavijestID%>">
+                            <%=message.naslovObavijest%>
+                        </button>
+                        <div class="messageContent">
+                            <%- message.tekstObavijest %>
+                        </div>
+                    </div>
+                <% } %>
+            <% } else { %>
+                <p class="emptyInbox">No messages at the moment.</p>
+            <% } %>
+        </div>
+    </body>
 </html>

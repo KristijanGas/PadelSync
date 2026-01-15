@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/styles/subForm.css">
         <title>Add Subscription</title>
     </head>
     <body>
@@ -14,10 +15,14 @@
             <label for="pretpLvl">Subscription level</label>
             <input id="pretpLvl" type="number" step="1" name="levelPretplate" required>
             <p>Will you offer coaching as part of this subscription?</p>
-            <input id="da" type="radio" name="poducavanje" value="1" required>
-            <label for="da">Yes</label>
-            <input id="ne" type="radio" name="poducavanje" value="0">
-            <label for="ne">No</label>
+            <div class="boxForm">
+                <label for="da">Yes</label>
+                <input id="da" type="radio" name="poducavanje" value="1" required>
+            </div>
+            <div class="boxForm">
+                <label for="ne">No</label>
+                <input id="ne" type="radio" name="poducavanje" value="0">
+            </div>
             <button type="submit">Add subscription</button>
         </form>
     </body>

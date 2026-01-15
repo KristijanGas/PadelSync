@@ -401,3 +401,66 @@ textarea {
     background-color: #444;
     
 }
+
+#photosContainer {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 15px;  
+
+    justify-content: center; 
+
+    padding-top: 10px;
+
+}
+
+#photosContainer img {
+
+    width: 200px !important;
+
+    height: 150px !important;
+
+    object-fit: cover;
+
+    border-radius: 8px;   
+
+    border: 2px solid #444; 
+
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+}
+
+#photosContainer img:hover {
+
+    transform: scale(1.05);   
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+
+}
+
+#klubRadiDo::-webkit-datetime-edit-text,
+#klubRadiDo::-webkit-datetime-edit-hour-field,
+#klubRadiDo::-webkit-datetime-edit-minute-field,
+#klubRadiDo::-webkit-datetime-edit-meridiem-field,
+#klubRadiOd::-webkit-datetime-edit-text,
+#klubRadiOd::-webkit-datetime-edit-hour-field,
+#klubRadiOd::-webkit-datetime-edit-minute-field,
+#klubRadiOd::-webkit-datetime-edit-meridiem-field {
+
+    color: var(--accent);
+
+}
+
+#klubRadiDo::-webkit-calendar-picker-indicator,
+#klubRadiOd::-webkit-calendar-picker-indicator {
+
+    filter: invert(100%);
+
+    cursor: pointer;
+    
+}
+
