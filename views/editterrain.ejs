@@ -10,46 +10,46 @@
 
     <body>
         <div class="BackgroundTop">
-            <h1>Uređivanje informacija o terenu</h1>
+            <h1>Edit terrain information</h1>
         </div>
         <div class="SettingsMenu">
             <form id="terrainInfo" method="POST" enctype="multipart/form-data">
-                <label for="tipPodloge">Tip podloge:</label>
+                <label for="tipPodloge">Surface type:</label>
                 <div class="radioGroup">
                     <input type="radio" id="beton" name="tipPodloge" value="beton" <%= terrainInfo.tipPodloge === "beton" ? "checked" : "" %>>
-                    <label for="beton">Beton</label><br><br>
+                    <label for="beton">Concrete</label><br><br>
                     <input type="radio" id="trava" name="tipPodloge" value="trava" <%= terrainInfo.tipPodloge === "trava" ? "checked" : "" %>>
-                    <label for="trava">Trava</label><br><br>
+                    <label for="trava">Grass</label><br><br>
                     <input type="radio" id="tepih" name="tipPodloge" value="tepih" <%= terrainInfo.tipPodloge === "tepih" ? "checked" : "" %>>
-                    <label for="tepih">Tepih</label><br><br>
+                    <label for="tepih">Carpet</label><br><br>
                     <input type="radio" id="akrilik" name="tipPodloge" value="akrilik" <%= terrainInfo.tipPodloge === "akrilik" ? "checked" : "" %>>
-                    <label for="akrilik">Akrilik</label><br><br>
+                    <label for="akrilik">Acrylic</label><br><br>
                     <input type="radio" id="drvo" name="tipPodloge" value="drvo" <%= terrainInfo.tipPodloge === "drvo" ? "checked" : "" %>>
-                    <label for="drvo">Drvo</label><br><br>
+                    <label for="drvo">Wood</label><br><br>
                     <input type="radio" id="blato" name="tipPodloge" value="blato" <%= terrainInfo.tipPodloge === "blato" ? "checked" : "" %>>
-                    <label for="blato">Blato</label><br><br>
+                    <label for="blato">Mud</label><br><br>
                 </div>
-                <label for="velicinaTeren">Veličina terena:</label>
+                <label for="velicinaTeren">Terrain size:</label>
                 <input type="text" id="velicinaTeren" name="velicinaTeren" min="0" value="<%=terrainInfo.velicinaTeren%>"><br><br>
-                <label for="osvjetljenje">Osvjetljenje:</label>
+                <label for="osvjetljenje">Lighting:</label>
                 <input type="number" id="osvjetljenje" name="osvjetljenje" rows="12" cols="40" value=<%=terrainInfo.osvjetljenje%>></textarea><br><br>
-                <label for="vanjskiUnutarnji">Je li ternen vanjski ili unutarnji:</label>
+                <label for="vanjskiUnutarnji">Is the terrain outdoor or indoor:</label>
                 <div class="radioGroup">
                     <input type="radio" id="vanjski" name="vanjskiUnutarnji" value="vanjski" <%= terrainInfo.vanjskiUnutarnji === "vanjski" ? "checked" : "" %>>
-                    <label for="vanjski">Vanjski</label><br>
+                    <label for="vanjski">Outdoor</label><br>
                     <input type="radio" id="unutarnji" name="vanjskiUnutarnji" value="unutarnji" <%= terrainInfo.vanjskiUnutarnji === "unutarnji" ? "checked" : "" %>>
-                    <label for="unutarnji">Unutarnji</label><br>
+                    <label for="unutarnji">Indoor</label><br>
                 </div>
-                <label for="visinaStrop">Visina stropa:</label>
+                <label for="visinaStrop">Ceiling height:</label>
                 <input type="number" step="0.01" id="visinaStrop" name="visinaStrop" value=<%=terrainInfo.visinaStrop%>><br><br>
-                <label for="cijenaTeren">Cijena terena:</label>
+                <label for="cijenaTeren">Terrain price:</label>
                 <input type="number" step="0.01" id="cijenaTeren" min = "0" name="cijenaTeren" value=<%=terrainInfo.cijenaTeren%>><br><br>
-                <label for="imeTeren">Ime terena:</label>
+                <label for="imeTeren">Terrain name:</label>
                 <input type="text" id="imeTeren" name="imeTeren" value="<%=terrainInfo.imeTeren%>"><br><br>
-                <label for="slike">Slike:</label>
+                <label for="slike">Images:</label>
                 <input type="file" id="slike" name="slike" multiple accept="image/jbeg"><br><br>
                 <div id="photosContainer" data-terrain-photos='<%-JSON.stringify(terrainPhotos)%>'></div>
-                <button type="submit">Spremi postavke</button>
+                <button type="submit">Save settings</button>
             </form>
         </div>
         <div class="BottomSpace"></div>

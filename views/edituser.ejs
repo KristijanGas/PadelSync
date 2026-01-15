@@ -27,7 +27,7 @@
                     <label for="club">Club</label>
                 </div>
                 <div class="profileTypeConfirm">
-                    <button type="submit">Potvrdi odabir</button>
+                    <button type="submit">Confirm Selection</button>
                 </div>
             </form>
         <!-- Form now uses POST method; JS redirect removed -->
@@ -37,11 +37,11 @@
             <!-- actual form for editing info--> 
             <%if(profileTypeOfEditedUser === "Player"){%>
             <form id="playerInfo" method="POST" action="<%=usernameOfEditedUser%>/insertPlayerInfo">
-                <label for="brojMob">Broj mobitela:</label>
+                <label for="brojMob">Phone Number:</label>
                 <input type="text" id="brojMob" min="0" name="brojMob" value="<%=userInfo.brojMob%>"><br><br>
-                <label for="prefVrijeme">Preferirano vrijeme:</label>
+                <label for="prefVrijeme">Preffered Time:</label>
                 <input type="date" id="prefVrijeme" name="prefVrijeme" value=<%=userInfo.prefVrijeme%>><br><br>
-                <label for="razZnanjaPadel">Razina znanja padela:</label>
+                <label for="razZnanjaPadel">Padel Skill Level:</label>
                 <div class="radioGroup">
                     <input type="radio" id="pro" name="razZnanjaPadel" value="pro" <%= userInfo.razZnanjaPadel === "pro" ? "checked" : "" %>>
                     <label for="pro">Pro</label><br>
@@ -50,46 +50,46 @@
                     <input type="radio" id="beginner" name="razZnanjaPadel" value="beginner" <%= userInfo.razZnanjaPadel === "beginner" ? "checked" : "" %>>
                     <label for="beginner">Beginner</label><br>
                 </div>
-                <label for="prezimeIgrac">Prezime:</label>
+                <label for="prezimeIgrac">Last Name:</label>
                 <input type="text" id="prezimeIgrac" name="prezimeIgrac" value="<%=userInfo.prezimeIgrac%>"><br><br>
-                <label for="imeIgrac">Ime:</label>
+                <label for="imeIgrac">First Name:</label>
                 <input type="text" id="imeIgrac" name="imeIgrac" value="<%=userInfo.imeIgrac%>"><br><br>
-                <button type="submit">Spremi postavke</button>
+                <button type="submit">Save Settings</button>
             </form>
             <form id="eraseType" method="POST" action="/edituser/eraseType">
                     <button type="button" class="eraseProfileButton" onclick="if(confirm('Are you sure you want to erase your profile and choose your type again?')) 
-                    { document.getElementById('eraseType').submit(); }">Izbriši profil</button>
+                    { document.getElementById('eraseType').submit(); }">Erase Profile</button>
             </form>
             <button class="BackButtonInline" onclick="location.href='/myprofile'">
                 &#8592; Back to MyProfile
             </button>
             <%}else if(profileTypeOfEditedUser === "Club"){%>
                 <form id="clubInfo" method="POST" enctype="multipart/form-data">
-                    <label for="svlacionice">Broj svlacionica:</label>
+                    <label for="svlacionice">Number of Locker Rooms:</label>
                     <input type="number" id="svlacionice" name="svlacionice" min="0" value=<%=userInfo.svlacionice%>><br><br>
                     <label for="imeKlub">Ime kluba:</label>
                     <input type="text" id="imeKlub" name="imeKlub" value="<%=userInfo.imeKlub%>"><br><br>
                     <label for="najamReketa">Najam reketa:</label>
                     <input type="number" id="najamReketa" name="najamReketa" min="0" value=<%=userInfo.najamReketa%>><br><br>
-                    <label for="pravilaKlub">Pravila kluba:</label>
+                    <label for="pravilaKlub">Club Name:</label>
                     <textarea id="pravilaKlub" name="pravilaKlub" rows="12" cols="40"><%=userInfo.pravilaKlub%></textarea><br><br>
-                    <label for="klubRadiDo">Do kada klub radi:</label>
+                    <label for="klubRadiDo">Club Closing Time:</label>
                     <input type="time" id="klubRadiDo" name="klubRadiDo" value=<%=userInfo.klubRadiDo%>><br><br>
-                    <label for="klubRadiOd">Od kada klub radi:</label>
+                    <label for="klubRadiOd">Club Opening Time:</label>
                     <input type="time" id="klubRadiOd" name="klubRadiOd" value=<%=userInfo.klubRadiOd%>><br><br>
-                    <label for="tusevi">Koliko tuševa imate:</label>
+                    <label for="tusevi">Number of Showers:</label>
                     <input type="number" id="tusevi" min = "0" name="tusevi" value=<%=userInfo.tusevi%>><br><br>
-                    <label for="adresaKlub">Adresa kluba:</label>
+                    <label for="adresaKlub">Club Address:</label>
                     <input type="text" id="adresaKlub" name="adresaKlub" value="<%=userInfo.adresaKlub%>"><br><br>
                     <ul id="address-results" class="autocomplete"></ul>
-                    <label for="prostorZaOdmor">Prostor za odmor:</label>
+                    <label for="prostorZaOdmor">Rest Area:</label>
                     <input type="number" id="prostorZaOdmor" min="0" name="prostorZaOdmor" value=<%=userInfo.prostorZaOdmor%>><br><br>
-                    <label for="opisKluba">opis Kluba:</label>
+                    <label for="opisKluba">Club Description:</label>
                     <textarea id="opisKluba" name="opisKluba" rows="12" cols="40"><%=userInfo.opisKluba%></textarea><br><br>
-                    <label for="slike">Slike:</label>
+                    <label for="slike">Photos:</label>
                     <input type="file" id="slike" name="slike" multiple accept="image/jbeg"><br><br>
                     <div id="photosContainer" data-club-photos='<%-JSON.stringify(clubPhotos)%>'></div>
-                    <button type="submit">Spremi postavke</button>
+                    <button type="submit">Save Settings</button>
                 </form>
 
             <form id="eraseType" method="POST" action="/edituser/eraseType">

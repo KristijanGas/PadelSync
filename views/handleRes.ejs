@@ -3,23 +3,23 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Rezervacije rezervirane gotovinom</title>
+        <title>Cash reservations</title>
     </head>
     <body>
         <%if(typeof rezervacije !== 'undefined' && rezervacije.length > 0) {%>
-            <p>Gotovinske rezervacije koje još nisu potvrđene za vaš klub:</p>
+            <p>Cash reservations that have not yet been confirmed for your club:</p>
             <%rezervacije.forEach(rezervacija => {%>
                 <div class="unpaidRes">
-                    <p>Igrač koji je rezervirao: <%= rezervacija.username %></p>
-                    <p>Datum rezervacije: <%= rezervacija.datumRez %> u <%= rezervacija.vrijemePocetak %> do <%= rezervacija.vrijemeKraj %></p>
-                    <p>Vaš teren nad kojim je rezervirao: ID <%= rezervacija.terenID%>, ime <%= rezervacija.imeTeren %></p>
-                    <p>Iznos: <%= rezervacija.iznos %></p>
-                    <a href="/reservationHandle/confirmReservation/<%= rezervacija.rezervacijaID %>" onclick="window.location.reload()">Potvrdi rezervaciju?</a>
-                    <a href="/reservationHandle/rejectReservation/<%= rezervacija.rezervacijaID %>" onclick="window.location.reload()">Odbij rezervaciju?</a>
+                    <p>Player who made the reservation: <%= rezervacija.username %></p>
+                    <p>Reservation date: <%= rezervacija.datumRez %> from <%= rezervacija.vrijemePocetak %> to <%= rezervacija.vrijemeKraj %></p>
+                    <p>Your field that was reserved: ID <%= rezervacija.terenID%>, name <%= rezervacija.imeTeren %></p>
+                    <p>Amount: <%= rezervacija.iznos %></p>
+                    <a href="/reservationHandle/confirmReservation/<%= rezervacija.rezervacijaID %>" onclick="window.location.reload()">Confirm reservation</a>
+                    <a href="/reservationHandle/rejectReservation/<%= rezervacija.rezervacijaID %>" onclick="window.location.reload()">Reject reservation</a>
                 </div>
             <%})%>
         <%} else {%>
-            <p>Vaš klub trenutno nema nikakvih zahjteva za gotovinski plaćenim rezervacijama</p>
+            <p>Your club currently has no cash-paid reservation requests</p>
         <%}%>
     </body>
 </html>

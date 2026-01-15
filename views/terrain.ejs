@@ -12,8 +12,8 @@
     <body>
         <div class="BackgroundTop">
             <div class="TopHeaderContainer">
-                <a href="/terrain_search" class="backButton">← Povratak na pretragu</a>
-                <h1>Teren <%= teren.imeTeren %></h1>
+                <a href="/terrain_search" class="backButton">← Back to Search</a>
+                <h1>Terrain <%= teren.imeTeren %></h1>
             </div>
         </div>
 
@@ -21,21 +21,21 @@
             <div class="InfoAndMenuContainer">
                 <div class="TerrainInfoContainer">
 
-                    <h2>Informacije o terenu:</h2>
+                    <h2>Terrain Information:</h2>
 
-                    <div class="TerrainInfoItemName">Vlasnik terena:</div>
+                    <div class="TerrainInfoItemName">Owner:</div>
                     <div class="TerrainInfoItem"><%= teren.username %></div>
                     <br>
                     
-                    <div class="TerrainInfoItemName">Tip podloge:</div>
+                    <div class="TerrainInfoItemName">Surface Type:</div>
                     <div class="TerrainInfoItem"><%= teren.tipPodloge %></div>
                     <br>
 
-                    <div class="TerrainInfoItemName">Tip terena:</div>
+                    <div class="TerrainInfoItemName">Terrain Type:</div>
                     <div class="TerrainInfoItem"><%= teren.vanjskiUnutarnji %></div>
                     <br>
 
-                    <div class="TerrainInfoItemName">Cijena terena:</div>
+                    <div class="TerrainInfoItemName">Terrain Price:</div>
                     <div class="TerrainInfoItem"><%= teren.cijenaTeren %></div>
                     <br>
 
@@ -45,18 +45,18 @@
 
                     <%if (typeof jednokratniTermini !== 'undefined') {%>
                         <%if (jednokratniTermini.length > 0) {%>
-                            <p>Jednokratni termini za narednih 5 tjedana:</p>
+                            <p>One-time slots for the next 5 weeks:</p>
                             <% for(let termin of jednokratniTermini) {%>
                                 <form class="formaRezervacije" enctype="multipart/form-data" method="POST">
                                     <h2><%= termin.datum %> u <%= termin.vrijemePocetak %> do <%= termin.vrijemeKraj %> sati.</h2>
                                     <%if(cardAllowed){%>
-                                        <p>Odaberite način plaćanja</p>
+                                        <p>Select Payment Method</p>
                                         <input type="radio" id="gotovina" name="tipPlacanja" value="gotovina" required>
-                                        <label for="tipPlacanja">Gotovina</label>
+                                        <label for="tipPlacanja">Cash</label>
                                         <input type="radio" id="kartica" name="tipPlacanja" value="kartica">
-                                        <label for="tipPlacanja">Kartica</label>
+                                        <label for="tipPlacanja">Card</label>
                                     <%}else{%>
-                                        <p>Ovaj klub podržava samo plaćanje gotovinom</p>
+                                        <p>This club only supports cash payments</p>
                                     <%}%>
                                     <input type="hidden" name="terminID" value=<%= termin.terminID %>>
                                     <input type="hidden" name="datum" value=<%= termin.datum %>><br>
@@ -67,30 +67,30 @@
                                     data-teren='<%- JSON.stringify(teren) %>'
                                     data-tip-termina="jednokratni"
                                     ></div>
-                                    <button type="button">pokaži u kalendaru</button>
+                                    <button type="button">Show in Calendar</button>
                                     <input type="submit" value="Rerezviraj?">
                                 </form>
                             <% }%>
                         <%} else {%>
-                            <p>Nema dostupnih termina.</p>
+                            <p>No available slots.</p>
                         <%}%>
                     <%}%>
                     <%if(typeof pretplate !== 'undefined' && cardAllowed) {%>
-                        <p>Klub trenutno nudi iduće pretplate za ponavljajuće termine:</p>
+                        <p>The club currently offers the following subscription plans for recurring slots:</p>
                         <%for(let pretplata of pretplate) {%>
                             <form class="formaPretplata" enctype="multipart/form-data" method="post">
-                            <p>Pretplata <%=pretplata.pretpNaziv%>, cijene <%=pretplata.pretpCijena%>€ tjedno.</p>
+                            <p>Subscription <%=pretplata.pretpNaziv%>, costs <%=pretplata.pretpCijena%>€ per week.</p>
                             <%if(pretplata.poducavanje !== null){%>
-                                <p>Ova pretplata nudi podučavanja.</p>
+                                <p>This subscription includes coaching.</p>
                             <%}%>
-                            <p>Termini koji se vežu uz ovu pretplatu su: (0 = nedjelja za dan tjedna)</p>
+                            <p>Slots linked to this subscription are: (0 = Sunday)</p>
                             <div class="pretpTermini">
                             <%if (typeof pretplata.termini === 'undefined' || pretplata.termini.length === 0) { %>
-                                <p>Trenutno nema dostupnih termina za ovu pretplatu.</p>
+                                <p>No available slots for this subscription at the moment.</p>
                             <% } %>
                             <%if (typeof pretplata.termini !== 'undefined' && pretplata.termini.length > 0) { %>
                                 <%for(let termin of pretplata.termini){%>
-                                    <p>Danom <%=termin.danTjedan%> u <%=termin.vrijemePocetak%> do <%=termin.vrijemeKraj%> na terenu ID <%=termin.terenID%></p>
+                                    <p>On day <%=termin.danTjedan%> from <%=termin.vrijemePocetak%> to <%=termin.vrijemeKraj%> on terrain ID <%=termin.terenID%></p>
                                 <%}%>
                             <%}%>
                             </div>
@@ -101,21 +101,21 @@
                             </form>
                         <%}%>
                     <%} else { %>
-                        <p>Ovaj klub trenutno nema dostupnih pretplata za ponavljajuce rezervacije za ovaj teren.</p>
+                        <p>This club currently has no subscription plans available for recurring bookings for this terrain.</p>
                     <%}%>
                     <%if(addComment){%>
                         <form class="commentForm" action="/terrain/<%= teren.terenID %>/addComment" method="POST">
-                            <label for="komentar">Dodajte svoj komentar:</label>
+                            <label for="komentar">Add your comment:</label>
                             <textarea id="komentar" name="komentar" rows="12" cols="40" placeholder="Napišite komentar" required></textarea><br><br>
-                            <label for="ocjena">Ocjena</label>
+                            <label for="ocjena">Rating</label>
                             <input type="number" name="ocjena" id="ocjena" required><br><br>
-                            <button type="submit">Objavi komentar</button>
+                            <button type="submit">Post Comment</button>
                         </form>
                     <%}%>
                 </div>
             </div>
             <div class="CalendarContainer">
-                <p>ovdje ide kalendar</p>
+                <p>Calendar goes here</p>
             </div>
         </div>
     </body>

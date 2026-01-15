@@ -6,7 +6,7 @@
                 <link rel="stylesheet"  href="/styles/myprofile.css">
                 <script src="/scripts/socket.js" defer></script>
                 <script src="/socket.io/socket.io.js"></script>
-                <title>Moj profil</title>
+                <title>My profile</title>
         </head>
         <body>
 
@@ -31,27 +31,27 @@
                         <%if(profileType === "Player"){%>
                                 <div class="userInfo">
 
-                                        <div class="userInfoItemName">Korisničko ime</div>
+                                        <div class="userInfoItemName">Username</div>
                                         <div class="userInfoItem"><%= userInfo["username"] %></div>
                                         <br>
 
-                                        <div class="userInfoItemName">Ime</div>
+                                        <div class="userInfoItemName">First Name</div>
                                         <div class="userInfoItem"><%= userInfo["imeIgrac"] %></div>
                                         <br>
 
-                                        <div class="userInfoItemName">Prezime</div>
+                                        <div class="userInfoItemName">Last Name</div>
                                         <div class="userInfoItem"><%= userInfo["prezimeIgrac"] %></div>
                                         <br>
 
-                                        <div class="userInfoItemName">Broj mobitela</div>
+                                        <div class="userInfoItemName">Phone Number</div>
                                         <div class="userInfoItem"><%= userInfo["brojMob"] %></div>
                                         <br>
 
-                                        <div class="userInfoItemName">Razina znanja</div>
+                                        <div class="userInfoItemName">Skill Level</div>
                                         <div class="userInfoItem"><%= userInfo["razZnanjaPadel"] %></div>
                                         <br>
 
-                                        <div class="userInfoItemName">Preferirano vrijeme treniranja</div>
+                                        <div class="userInfoItemName">Preferred Training Time</div>
                                         <div class="userInfoItem"><%= userInfo["prefVrijeme"] %></div>
                                         <br>
 
@@ -63,11 +63,11 @@
                                                 <% userInfo.oldRes.forEach(function(old) { %>
                                                         <li class="reservationCard">
                                                         <ul>
-                                                                <li><strong>Datum:</strong> <%= old.datumRez %></li>
-                                                                <li><strong>Teren:</strong> <%= old.imeTeren %></li>
-                                                                <li><strong>Početak:</strong> <%= old.vrijemePocetak %></li>
-                                                                <li><strong>Kraj:</strong> <%= old.vrijemeKraj %></li>
-                                                                <li><strong>Korisnik:</strong> <%= old.username %></li>
+                                                                <li><strong>Date:</strong> <%= old.datumRez %></li>
+                                                                <li><strong>Terrain:</strong> <%= old.imeTeren %></li>
+                                                                <li><strong>Start:</strong> <%= old.vrijemePocetak %></li>
+                                                                <li><strong>End:</strong> <%= old.vrijemeKraj %></li>
+                                                                <li><strong>User:</strong> <%= old.username %></li>
                                                         </ul>
                                                         </li>
                                                 <% }); %>
@@ -75,8 +75,8 @@
 
                                 <% } else { %>
                                         <div class="emptyState">
-                                                <h3>Nema prošlih rezervacija</h3>
-                                                <p>Ovdje će se prikazivati sve tvoje odigrane rezervacije.</p>
+                                                <h3>No past reservations</h3>
+                                                <p>All your completed reservations will be displayed here.</p>
                                         </div>
                                 <% } %>
 
@@ -86,15 +86,15 @@
                                                 <% userInfo.newRes.forEach(function(newr) { %>
                                                         <li class="reservationCard">
                                                         <ul>
-                                                                <li><strong>Datum:</strong> <%= newr.datumRez %></li>
-                                                                <li><strong>Teren:</strong> <%= newr.imeTeren %></li>
-                                                                <li><strong>Vrijeme:</strong> <%= newr.vrijemePocetak %> – <%= newr.vrijemeKraj %></li>
-                                                                <li><strong>Klub:</strong> <%= newr.username %></li>
+                                                                <li><strong>Date:</strong> <%= newr.datumRez %></li>
+                                                                <li><strong>Terrain:</strong> <%= newr.imeTeren %></li>
+                                                                <li><strong>Time:</strong> <%= newr.vrijemePocetak %> – <%= newr.vrijemeKraj %></li>
+                                                                <li><strong>Club:</strong> <%= newr.username %></li>
                                                         </ul>
                                                         <%if(date < newr.datumRez) {%>
-                                                        <a href="/terrain/cancel/<%= newr.rezervacijaID %>">cancel rez</a>
+                                                        <a href="/terrain/cancel/<%= newr.rezervacijaID %>">Cancel reservation</a>
                                                         <%} else {%>
-                                                                <p>rezervacije se najkasnije mogu otkazati dan prije</p>
+                                                                <p>Reservations can only be canceled the day before</p>
                                                         <%}%>
                                                         </li>
                                                 <% }); %>
@@ -102,10 +102,10 @@
 
                                 <% } else { %>
                                         <div class="emptyState">
-                                                <h3>Nema aktivnih rezervacija</h3>
-                                                <p>Trenutno nemaš nijednu nadolazeću rezervaciju.</p>
+                                                <h3>No upcoming reservations</h3>
+                                                <p>You currently have no upcoming reservations.</p>
                                                 <button onclick="location.href='/terrain_search'">
-                                                        Rezerviraj teren
+                                                        Book a Terrain
                                                 </button>
                                         </div>
                                 <% } %>
@@ -114,18 +114,18 @@
                                         <%userInfo.pretplate.forEach(function(pretplata) {%>
                                                 <li class="pretplateCard">
                                                 <ul>
-                                                        <li><strong>Naziv pretplate: </strong><%= pretplata.pretpNaziv%></li>
-                                                        <li><strong>Pretplata plaćena do: </strong><%=pretplata.pretpPlacenaDo%></li>
-                                                        <li><strong>Cijena pretplate:</strong><%=pretplata.pretpCijena%></li>
+                                                        <li><strong>Subscription Name: </strong><%= pretplata.pretpNaziv%></li>
+                                                        <li><strong>Subscription Paid Until: </strong><%=pretplata.pretpPlacenaDo%></li>
+                                                        <li><strong>Subscription Price:</strong><%=pretplata.pretpCijena%></li>
                                                 </ul>
                                                 </li>
-                                                <a href="/reservationHandle/cancelSub/<%=pretplata.pretpID%>">otkazi pretplatu</a>
+                                                <a href="/reservationHandle/cancelSub/<%=pretplata.pretpID%>">Cancel Subscription</a>
                                         <%})%>
                                         </ul>
                                 <%} else {%>
                                         <div class="emptyState">
-                                                <h3>Nema aktivnih pretplata</h3>
-                                                <p>Pretplate omogućuju povoljnije i brže rezervacije.</p>
+                                                <h3>No Active Subscriptions</h3>
+                                                <p>Subscriptions allow faster and cheaper bookings.</p>
                                         </div>
                                 <%}%>
 
@@ -135,47 +135,47 @@
                         <%}else if(profileType === "Club"){%>
                                 <div class="userInfo">
 
-                                        <div class="userInfoItemName">Korisničko ime</div>
+                                        <div class="userInfoItemName">Username</div>
                                         <div class="userInfoItem"><%= userInfo["username"] %></div>
                                         <br>
 
-                                        <div class="userInfoItemName">Ime kluba</div>
+                                        <div class="userInfoItemName">Club Name</div>
                                         <div class="userInfoItem"><%= userInfo["imeKlub"] %></div>
                                         <br>
 
-                                        <div class="userInfoItemName">Adresa kluba</div>
+                                        <div class="userInfoItemName">Club Address</div>
                                         <div class="userInfoItem"><%= userInfo["adresaKlub"] %></div>
                                         <br>
 
-                                        <div class="userInfoItemName">Početak radnog vremena</div>
+                                        <div class="userInfoItemName">Opening Hours Start</div>
                                         <div class="userInfoItem"><%= userInfo["klubRadiOd"] %></div>
                                         <br>
 
-                                        <div class="userInfoItemName">Kraj radnog vremena</div>
+                                        <div class="userInfoItemName">Opening Hours End</div>
                                         <div class="userInfoItem"><%= userInfo["klubRadiDo"] %></div>
                                         <br>
 
-                                        <div class="userInfoItemName">Opis kluba</div>
+                                        <div class="userInfoItemName">Club Description</div>
                                         <div class="userInfoItem"><%= userInfo["opisKluba"] %></div>
                                         <br>
 
-                                        <div class="userInfoItemName">Pravila kluba</div>
+                                        <div class="userInfoItemName">Club Rules</div>
                                         <div class="userInfoItem"><%= userInfo["pravilaKlub"] %></div>
                                         <br>
 
-                                        <div class="userInfoItemName">Najam reketa</div>
+                                        <div class="userInfoItemName">Racket Rental</div>
                                         <div class="userInfoItem"><%= userInfo["najamReketa"] %></div>
                                         <br>
 
-                                        <div class="userInfoItemName">Broj svlačionica</div>
+                                        <div class="userInfoItemName">Number of Locker Rooms</div>
                                         <div class="userInfoItem"><%= userInfo["svlacionice"] %></div>
                                         <br>
 
-                                        <div class="userInfoItemName">Broj tuševa</div>
+                                        <div class="userInfoItemName">Number of Showers</div>
                                         <div class="userInfoItem"><%= userInfo["tusevi"] %></div>
                                         <br>
 
-                                        <div class="userInfoItemName">Broj prostora za odmor</div>
+                                        <div class="userInfoItemName">Number of Rest Areas</div>
                                         <div class="userInfoItem"><%= userInfo["prostorZaOdmor"] %></div>
                                         <br>
 
@@ -200,9 +200,9 @@
                                         </div>
                                 <% } else { %>
                                         <div class="emptyState">
-                                                <h3>Nema dodanih terena</h3>
-                                                <p>Ovdje će se prikazivati svi tereni koje vodiš u svom klubu.</p>
-                                                <button onclick="location.href='/editterrain/<%=user.nickname%>/newTerrain'">Dodaj novi teren</button>
+                                                <h3>No terrains added</h3>
+                                                <p>All the terrains managed by your club will be displayed here.</p>
+                                                <button onclick="location.href='/editterrain/<%=user.nickname%>/newTerrain'">Add New Terrain</button>
                                         </div>
                                 <% } %>
                                 <button onclick="location.href='/editterrain/<%=user.nickname%>/newTerrain'">Add New Terrain</button>
