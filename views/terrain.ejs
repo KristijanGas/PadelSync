@@ -13,7 +13,6 @@
         <div class="BackgroundTop">
             <div class="TopHeaderContainer">
                 <a href="/terrain_search" class="backButton">← Povratak na pretragu</a>
-                <h1>Teren <%= teren.imeTeren %></h1>
             </div>
         </div>
 
@@ -22,6 +21,10 @@
                 <div class="TerrainInfoContainer">
 
                     <h2>Informacije o terenu:</h2>
+
+                    <div class="TerrainInfoItemName">Ime terena:</div>
+                    <div class="TerrainInfoItem"><%= teren.imeTeren %></div>
+                    <br>
 
                     <div class="TerrainInfoItemName">Vlasnik terena:</div>
                     <div class="TerrainInfoItem"><%= teren.username %></div>
@@ -115,7 +118,7 @@
                 </div>
             </div>
             <div class="CalendarContainer">
-                <p>ovdje ide kalendar</p>
+                <!-- <CalendarComponent /> -->
             </div>
         </div>
     </body>

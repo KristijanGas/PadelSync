@@ -235,7 +235,7 @@ hr {
 
 .HomePageHeader {
 
-    position: fixed;
+    /* position: fixed; */
 
     top: 0;
 
@@ -305,4 +305,22 @@ hr {
 
     box-shadow: 0 6px 16px rgba(0,0,0,0.6);
     
+}
+
+@media screen and (max-width: 900px) {
+    .HomePageHeader {
+        justify-content: space-evenly;
+        height: auto;
+        padding-bottom: 20px;
+        padding-top: 20px;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .HomePageHeader {
+        flex-direction: column;
+    }
+    .HomePageHeader button {
+        width: 90vw;
+    }
 }

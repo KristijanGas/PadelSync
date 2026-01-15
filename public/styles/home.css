@@ -22,6 +22,8 @@
 
     text-align: center;
 
+    align-items: center;
+
 }
 
 body {
@@ -126,6 +128,8 @@ body {
 
     justify-content: center;
 
+    align-items: center;
+
     gap: 30px;
 
     margin-top: 40px;
@@ -186,6 +190,10 @@ body {
     display: flex;
 
     justify-content: center;
+
+    align-items: center;;
+
+    flex-direction: row;
 
     gap: 30px;
 
@@ -398,7 +406,7 @@ pre {
 
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 900px) {
 
     .header {
         flex-direction: column;
@@ -432,7 +440,7 @@ pre {
     }
 
     .HomePageClubCard {
-        width: 95vw;
+        width: 100%;
         height: 300px;
     }
 
