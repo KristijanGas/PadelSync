@@ -44,6 +44,7 @@ router.get("/", requiresAuth(), async (req, res) => {
 
     res.render("myInbox", {
         messages: messages,
+        isAuthenticated: req.oidc.isAuthenticated()
     })
 })
 

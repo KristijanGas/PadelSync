@@ -52,8 +52,6 @@ body {
 
     transition: all 0.3s ease;
 
-    cursor: pointer;
-
 }
 
 .MessageCard:hover {
@@ -68,40 +66,245 @@ body {
 
 }
 
-.MessageCard pre {
+.messageTitle {
 
-    margin: 0;
+    background: none;
 
-    font-size: 16px;
+    border: none;
 
-    color: rgba(240, 231, 231, 0.9);
+    color: #fff;
 
-    white-space: pre-wrap;
+    font-size: 1.2rem;
 
-    word-wrap: break-word;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    text-align: left;
+
+    width: 100%;
+
+    padding: 0;
+
+    margin-bottom: 10px;
+
+    transition: color 0.3s ease;
+
+}
+
+.messageTitle:hover {
+
+    color: #3b82f6;
+
+}
+
+.messageContent {
+
+    max-height: 0;
+
+    overflow: hidden;
+
+    opacity: 0;
+
+    transition: max-height 0.4s ease, opacity 0.4s ease, padding 0.3s ease;
+
+    padding-top: 0;
+
+    padding-bottom: 0;
+
+    margin-top: 0;
+
+    line-height: 1.5;
+
+}
+
+.messageContent a {
+
+    color: #3b82f6;
+
+    text-decoration: underline;
+
+}
+
+.messageContent a:hover {
+
+    color: #0ff;
+
+}
+
+.emptyInbox {
+
+    text-align: center;
+
+    color: rgba(200,200,200,0.7);
+
+    font-size: 1.1rem;
 
 }
 
 @media (max-width: 768px) {
 
     .InboxContainer {
-
         width: 95%;
-
         padding: 0 10px;
-
     }
 
     .MessageCard {
-
         padding: 15px;
-
     }
 
-    .MessageCard pre {
-
-        font-size: 14px;
-        
+    .messageTitle {
+        font-size: 1rem;
     }
+
+    .messageContent {
+        font-size: 0.95rem;
+    }
+    
+}
+
+.HomePageHeader {
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    background: linear-gradient(
+        to bottom,
+        rgba(16, 16, 16, 0.9),
+        rgba(0, 0, 0, 0.95)
+    );
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 0 20px;
+
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+
+    z-index: 1000;
+
+    height: 105px;
+
+    box-sizing: border-box;
 
 }
+
+.HomePageHeader button.loginButton,
+.HomePageHeader button.registerButton,
+.HomePageHeader button.logoutButton,
+.HomePageHeader button.myProfileButton {
+
+    width: 110px;
+
+    height: 40px;
+
+    cursor: pointer;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    border: 2px solid #555;
+
+    transition: all 0.3s ease;
+
+}
+
+.HomePageHeader button.loginButton,
+.HomePageHeader button.registerButton,
+.HomePageHeader button.logoutButton {
+
+    background-color: #fff;
+
+    color: #111;
+
+}
+
+.HomePageHeader button.myProfileButton {
+
+    background-color: #222;
+
+    color: #f1f1f1;
+
+}
+
+.HomePageHeader button:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+
+    border-color: #f1f1f1;
+
+    color: #f1f1f1;
+
+}
+
+.HomePageHeader button.logoutButton:hover {
+
+    color: #111;
+
+    border-color: var(--accent);
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+
+}
+
+.backHomeWrapper {
+
+    display: flex;
+
+    justify-content: flex-start;
+
+    margin-bottom: 20px;
+
+}
+
+.backHomeWrapper .navButton {
+
+    width: 150px;
+
+    height: 45px;
+
+    font-size: 16px;
+
+    border-radius: 12px;
+
+    border: 2px solid #222;
+
+    background-color: #0e0e0e;
+
+    color: #f2f2f2;
+
+    cursor: pointer;
+
+    box-shadow: 0 6px 20px rgba(0,0,0,0.8);
+
+    transition: all 0.3s ease;
+
+}
+
+.backHomeWrapper .navButton:hover {
+
+    border-color: #3b82f6;
+
+    color: #3b82f6;
+
+    background-color: #141414;
+
+    transform: translateY(-4px);
+    
+}
+

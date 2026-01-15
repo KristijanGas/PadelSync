@@ -216,9 +216,9 @@
                                         <%if(userInfo.stripeId){%>
                                                 <button onclick="location.href='/stripeClub'">Edit Stripe Account</button>
                                                 <%if(userInfo.paymentsEnabled){%>
-                                                        <p>plaćanje je omogućeno</p>
+                                                        <p>Payment is enabled</p>
                                                 <%}else{%>
-                                                        <p>plaćane nije mogomućeno. dopunite podatke na stripe računu</p>
+                                                        <p>Payment is not available. Please complete your Stripe account details</p>
                                                 <%}%>
                                                 <button class="deleteStripe">Delete Stripe Acc</button>
                                         <%}else{%>

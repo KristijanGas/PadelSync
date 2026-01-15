@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="styles/home.css">
+        <link rel="stylesheet" type="text/css" href="/styles/editschedule.css">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="/scripts/socket.js" defer></script>
         <script src="/socket.io/socket.io.js"></script>
@@ -10,7 +10,7 @@
     <body>
         <p><%= message %></p>
         <p>Editing <%= terrain.imeTeren %></p>
-        <p>username: <%= terrain.username %></p>
+        <p>Username: <%= terrain.username %></p>
         <p>Terrain ID: <%= terrain.terenID %></p>
         <% if(typeof message !== "undefined") { %>
             <p><%= message %></p>

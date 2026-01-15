@@ -1,0 +1,193 @@
+:root {
+
+    --accent: #f1f1f1;
+
+    --dark: #0b0b0b;
+
+    --card: rgba(20, 20, 20, 0.88);
+
+    --text-muted: rgba(220, 220, 220, 0.7);
+
+}
+
+* {
+
+    margin: 0;
+
+    padding: 0;
+
+    box-sizing: border-box;
+
+    font-family: 'Segoe UI', 'Inter', sans-serif;
+
+}
+
+body {
+
+    background-color: var(--dark);
+
+    color: #f1f1f1;
+
+    min-height: 100vh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    padding: 40px 20px;
+
+}
+
+p {
+
+    font-size: 1rem;
+
+    margin-bottom: 12px;
+
+}
+
+form#addScheduleForm {
+
+    background: var(--card);
+
+    padding: 30px 40px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 6px 20px rgba(0,0,0,0.7);
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+
+    width: 100%;
+
+    max-width: 500px;
+
+    animation: fadeInUp 0.6s ease-out forwards;
+
+}
+
+form#addScheduleForm label {
+
+    font-size: 1rem;
+
+    font-weight: 600;
+
+    text-align: left;
+
+    color: #f1f1f1;
+
+}
+
+form#addScheduleForm input[type="time"],
+form#addScheduleForm select {
+
+    padding: 10px 14px;
+
+    border-radius: 8px;
+
+    border: 1px solid #444;
+
+    background-color: #1a1a1a;
+
+    color: #f1f1f1;
+
+    font-size: 1rem;
+
+    transition: all 0.3s ease;
+
+}
+
+form#addScheduleForm input[type="time"]:focus,
+form#addScheduleForm select:focus {
+
+    border-color: var(--accent);
+
+    box-shadow: 0 0 8px var(--accent);
+
+    outline: none;
+
+}
+
+form#addScheduleForm input[type="time"]::-webkit-datetime-edit-text,
+form#addScheduleForm input[type="time"]::-webkit-datetime-edit-hour-field,
+form#addScheduleForm input[type="time"]::-webkit-datetime-edit-minute-field,
+form#addScheduleForm input[type="time"]::-webkit-datetime-edit-meridiem-field {
+
+    color: var(--accent);
+
+}
+
+form#addScheduleForm input[type="time"]::-webkit-calendar-picker-indicator {
+
+    filter: invert(100%);
+
+}
+
+form#addScheduleForm button[type="submit"] {
+
+    padding: 12px 28px;
+
+    border-radius: 8px;
+
+    border: 2px solid #555;
+
+    background-color: #222;
+
+    color: #f1f1f1;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+
+    margin-top: 10px;
+
+    align-self: center;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+
+}
+
+form#addScheduleForm button[type="submit"]:hover {
+
+    background-color: #333;
+
+    border-color: var(--accent);
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 6px 14px var(--accent);
+
+}
+
+@keyframes fadeInUp {
+
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+@media screen and (max-width: 500px) {
+
+    form#addScheduleForm {
+        padding: 20px;
+    }
+
+    form#addScheduleForm button[type="submit"] {
+        width: 100%;
+    }
+    
+}

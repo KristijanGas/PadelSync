@@ -58,14 +58,9 @@ body {
 
 @keyframes fadeInHeader {
 
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-20px); }
+
+    to { opacity: 1; transform: translateY(0); }
 
 }
 
@@ -225,13 +220,13 @@ button:active {
 
 #photosContainer {
 
-    display: flex;
+    display: grid;
 
-    flex-wrap: wrap;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 
-    gap: 15px;
+    gap: 20px;
 
-    justify-content: center;
+    justify-items: center;
 
     padding-top: 10px;
 
@@ -239,11 +234,11 @@ button:active {
 
 #photosContainer img {
 
-    width: 160px;
+    width: 100%;
 
-    height: 120px;
+    height: 180px !important; 
 
-    object-fit: cover;
+    object-fit: cover; 
 
     border-radius: 8px;
 
@@ -252,6 +247,8 @@ button:active {
     box-shadow: 0 2px 8px rgba(0,0,0,0.4);
 
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    display: block; 
 
 }
 
@@ -263,6 +260,8 @@ button:active {
 
 }
 
+
+
 .BottomSpace {
 
     height: 8vh;
@@ -271,62 +270,60 @@ button:active {
 
 .radioGroup {
 
-    display: flex;
+    display: grid;
 
-    align-items: center;
+    grid-template-columns: repeat(3, 1fr); 
 
-    gap: 25px;
-
-    margin-top: 8px;
-
-    margin-bottom: 50px;
-
-}
-
-#vanjski + #unutarnji + .radioGroup + br {
-
-    display: none;
-
-}
-
-.radioGroup + br {
-
-    display: none;
-
-}
-
-.radioGroup input[type="radio"] {
-
-    width: auto;
-
-    transform: scale(1.2);
-
-    accent-color: #888;
-
-    margin-right: 6px;
+    gap: 12px 20px; 
 
 }
 
 .radioGroup label {
 
-    font-size: 20px;
+    display: flex;
 
-    font-weight: 500;
+    flex-direction: row-reverse;
+
+    align-items: center; 
+
+    justify-content: flex-start;
+
+    cursor: pointer;
+
+    font-size: 18px;
 
     color: rgba(240, 231, 231, 0.9);
 
-    margin-right: 15px;
-    
+    gap: 8px;
+
+}
+
+.radioGroup input[type="radio"] {
+
+    width: 16px;
+
+    height: 16px;
+
+    accent-color: #888;
+
 }
 
 @media screen and (max-width: 900px) {
 
     .SettingsMenu {
-
         width: 95%;
-
         padding: 6vw;
-
     }
 
+    .radioGroup {
+        gap: 15px;
+    }
+
+    #photosContainer img {
+        width: 100%;
+        max-width: 250px;
+        height: auto;
+    }
+    
 }
+
