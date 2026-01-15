@@ -5,13 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="/styles/myInbox.css">
+    <script src="/scripts/inbox.js" defer></script>
+    <script src="/scripts/socket.js" defer></script>
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
     <div class="InboxContainer">
         <% for(let message of messages) { %>
             <div class="MessageCard">
-                <pre><%= JSON.stringify(message, null, 2) %></pre>
-                <%-message.tekstObavijest%>
+                <!-- <pre><%= JSON.stringify(message, null, 2) %></pre> -->
+                <button class="messageTitle" id="<%=message.obavijestID%>"><%=message.naslovObavijest%></button>
+                <!-- <%-message.tekstObavijest%> -->
             </div>
         <% } %>
     </div>
