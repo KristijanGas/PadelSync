@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const request = require('supertest');
 const path = require('path');
@@ -101,7 +102,6 @@ describe('Reservations setup', () => {
     const res = await request(app)
       .get('/terrain/7')
       .set('x-test-user', 'some.otheruser');
-
     expect(res.status).toBe(200);
     expect(res.text).toContain("16:00 do 17:00");
     expect(res.text).toContain("18:00 do 19:00");
