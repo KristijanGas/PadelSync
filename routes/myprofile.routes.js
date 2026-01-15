@@ -111,7 +111,7 @@ router.get('/', requiresAuth(), async (req, res) => {
                                                         AND jr.datumRez >= DATE('now')
                                                         AND (statusRez = ? OR statusRez = ?)`
                                                 const newRes = await new Promise((resolve, reject) => {
-                                                        db.all(SQLNewRes, [req.oidc.user.nickname, StatusRezervacije.AKTIVNA, StatusRezervacije.PENDING], (err, rows) => {
+                                                        db.all(SQLNewRes, [req.oidc.user.nickname, StatusRezervacije.AVAILABLE, StatusRezervacije.PENDING], (err, rows) => {
                                                         if (err) return reject(err);
                                                         resolve(rows);
                                                         });
