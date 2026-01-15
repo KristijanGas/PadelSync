@@ -68,7 +68,7 @@ body {
 
     color: #f1f1f1;
 
-    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    /* text-shadow: 0 2px 8px rgba(0,0,0,0.6); */
 
 }
 
@@ -707,7 +707,7 @@ pre {
 
     display: flex;
 
-    justify-content: center;
+    justify-content: space-evenly;
 
     align-items: center;
 
@@ -839,7 +839,7 @@ pre {
 
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
 
     .BackgroundTopInner {
         flex-direction: column;

@@ -5,7 +5,7 @@ const currentUrl = window.location.href;
 forms.forEach(form => {
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
-        const infoEl = document.getElementById("terminInfo");
+        const infoEl = event.target.children.terminInfo;
         const tipTermina = infoEl.dataset.tipTermina;
 
         let tipPlacanja;
@@ -45,8 +45,14 @@ forms.forEach(form => {
             body: JSON.stringify(payload)
         });
 
+        if (!res.ok) {
+            const text = await res.text();
+            alert(text); 
+            return;
+        }
         const data = await res.json();
 
+        
         if (data.checkoutUrl) {
             const transakcijaID = data.transakcijaID;
             const checkoutUrl = data.checkoutUrl;
@@ -68,7 +74,7 @@ const pretpForms = document.querySelectorAll(".formaPretplata");
 pretpForms.forEach(form => {
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
-        const infoEl = document.getElementById("pretpInfo");
+        const infoEl = event.target.children.pretpInfo;
         const pretp = JSON.parse(infoEl.dataset.pretp);
         const tipTermina = infoEl.dataset.tipTermina;
 
@@ -83,6 +89,12 @@ pretpForms.forEach(form => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
+
+         if (!res.ok) {
+            const text = await res.text();
+            alert(text); 
+            return;
+        }
         //nastavit s plaćanjem
         const data = await res.json();
         if(data.checkoutUrl) {

@@ -205,11 +205,19 @@
                                                 <button onclick="location.href='/editterrain/<%=user.nickname%>/newTerrain'">Add New Terrain</button>
                                         </div>
                                 <% } %>
-                                <button onclick="location.href='/editterrain/<%=user.nickname%>/newTerrain'">Add New Terrain</button>
                                 </div>
 
                                 <div class="clubActions">
-                                        <button onclick="location.href='/stripeClub'">Create / Edit Stripe Account</button>
+                                        <%if(userInfo.stripeId){%>
+                                                <button onclick="location.href='/stripeClub'">Edit Stripe Account</button>
+                                                <%if(userInfo.paymentsEnabled){%>
+                                                        <p>plaćanje je omogućeno</p>
+                                                <%}else{%>
+                                                        <p>plaćane nije mogomućeno. dopunite podatke na stripe računu</p>
+                                                <%}%>
+                                        <%}else{%>
+                                                <button onclick="location.href='/stripeClub'">Create Stripe Account</button>
+                                        <%}%>
                                         <button onclick="location.href='/editschedule/addSub'">Add a Subscription Model</button>
                                         <button onclick="location.href='/myprofile/handleReservations'">Manage your incoming cash reservation requests</button>
                                 </div>

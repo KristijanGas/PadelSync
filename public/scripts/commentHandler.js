@@ -10,6 +10,7 @@ if (form) {
       body: JSON.stringify(data)
     });
 
+    
     const result = await res.json();
     if (res.ok && result.redirect) {
       window.location.href = result.redirect;

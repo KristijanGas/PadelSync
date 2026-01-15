@@ -20,6 +20,7 @@ function initSocket(io) {
 }
 
 const { templates } = require("../constants/notificationTemplates");
+const { titles } = require("../constants/notificationTitles");
 
 async function sendNotificationFromTemplate(
   templateName,
@@ -38,6 +39,12 @@ async function sendNotificationFromTemplate(
     throw new Error(`Unknown template: ${templateName}`);
   }
 
+  const title = titles[templateName];
+
+  if (!title) {
+    throw new Error(`Unknown title: ${templateName}`);
+  }
+
   const message = templateFn(
     usernamePrimatelj,
     poslanoZbogUsername,
@@ -51,9 +58,10 @@ async function sendNotificationFromTemplate(
   const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
   try{
     const currentDateUTC = new Date().toISOString().split('T')[0];
-    const SQLQuery = `INSTER INTO OBAVIJEST(naslovObavijest, tekstObavijest, datumObavijest, obavOtvorena, usernamePrimatelj, poslanoZbogUsername, rezervacijaID)
+    const SQLQuery = `INSERT INTO OBAVIJEST(naslovObavijest, tekstObavijest, datumObavijest, obavOtvorena, usernamePrimatelj, poslanoZbogUsername, rezervacijaID)
         VALUES(?, ?, ?, ?, ?, ?, ?)`;
-    await dbRun(db, SQLQuery, ["naslov", message, currentDateUTC, 0, usernamePrimatelj, poslanoZbogUsername, rezervacijaID]);
+    
+    await dbRun(db, SQLQuery, [title, message, currentDateUTC, 0, usernamePrimatelj, poslanoZbogUsername, rezervacijaID]);
   }catch(err){
     console.log(err);
   }finally{

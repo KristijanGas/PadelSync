@@ -6,7 +6,10 @@ if(process.env.NODE_ENV === "test"){
 }else{
   stripeSecretKey = process.env.STRIPE_SECRET_KEY
 }
-const stripe = new Stripe(stripeSecretKey);
+let stripe = null;
+if (stripeSecretKey) {
+  try { stripe = new Stripe(stripeSecretKey); } catch (e) { console.error('Stripe init failed:', e.message); stripe = null; }
+} else { stripe = null; }
 const router = express.Router();
 const sqlite3 = require('sqlite3').verbose();
 const { verifyProfile, verifyDBProfile } = require("../backendutils/verifyProfile");
@@ -59,12 +62,12 @@ router.get("/", requiresAuth(), async (req, res) => {
 
     }
 
-    const currentUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+    const currentUrl = `${req.protocol}://${req.get('host')}`;
     // Generate accountLink for onboarding
     const accountLink = await stripe.accountLinks.create({
       account: stripeId,
-      refresh_url: process.env.REFRESH_URL || `${currentUrl}/fail`,
-      return_url: process.env.RETURN_URL || `${currentUrl}/complete`,
+      refresh_url: process.env.REFRESH_URL || `${currentUrl}/myprofile`,
+      return_url: process.env.RETURN_URL || `${currentUrl}/myprofile`,
       type: "account_onboarding"
     });
 
@@ -77,38 +80,6 @@ router.get("/", requiresAuth(), async (req, res) => {
   }
 });
 
-// Completion callback route
-router.get("/complete", requiresAuth(), async (req, res) => {
-   const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
 
-  try {
-    // Attempt to get user info if session exists
-    const username = req.oidc.user.nickname; //
-    if (!username) {
-      return res.send("Stripe returned, but session was lost. You may need to log in again.");
-    }
-
-    const row = await dbGet(db, "SELECT stripeId FROM klub WHERE username = ?", [username]);
-    if (!row?.stripeId) return res.status(404).send("Stripe account not found");
-
-    const account = await stripe.accounts.retrieve(row.stripeId);
-
-    if (account.charges_enabled && account.payouts_enabled) {
-      return res.redirect("/myprofile");
-    } else {
-      return res.send("Onboarding started, but not fully complete yet. Please finish the steps in Stripe.");
-    }
-  } catch (err) {
-    console.error(err);
-    return res.status(500).send("Internal server error");
-  } finally {
-    db.close();
-  }
-});
-
-// Failure callback route
-router.get("/fail", (req, res) => {
-  res.send("Stripe onboarding was interrupted. Please try again.");
-});
 
 module.exports = router;
