@@ -47,4 +47,32 @@ router.get("/", requiresAuth(), async (req, res) => {
     })
 })
 
+router.get("/read/:obavijestID", requiresAuth(), async (req, res) => {
+    try{
+        // Verify user
+        const isVerified = await verifyProfile(req, res);
+        if (!isVerified) return res.render("verifymail");
+
+        const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
+    
+        if(profileInDB !== "Player" && profileInDB !== "Club"){
+        return res.status(500).send("only clubs and player can read notifications")
+        }
+    }catch(err){
+        res.status(500).send("error verifying profile")
+    }
+
+    const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+    try{
+        const SQLQuery = `UPDATE OBAVIJEST SET obavOtvorena = 1 WHERE obavijestID = ? 
+                                                            AND usernamePrimatelj = ?
+                                                            AND obavOtvorena = 0`;
+        await dbRun(db, SQLQuery, [req.params.obavijestID, req.oidc.user.nickname])
+        db.close();
+    }catch(err){
+        db.close();
+        res.send(500).status("error marking message as read")
+    }
+})
+
 module.exports = router;

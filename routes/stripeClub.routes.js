@@ -81,5 +81,44 @@ router.get("/", requiresAuth(), async (req, res) => {
 });
 
 
+router.get("/deleteAccount", requiresAuth(), async (req, res) => {
+  try {
+    // Verify user
+    const isVerified = await verifyProfile(req, res);
+    if (!isVerified) return res.status(400).send("Please verify your email before proceding");
+
+    const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
+    if (profileInDB !== "Club") return res.status(403).send("Only clubs can have and delete Stripe accounts");
+
+    const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+    let row = await dbGet(db, "SELECT stripeId FROM klub WHERE username = ?", [req.oidc.user.nickname]);
+    let stripeId = row?.stripeId;
+
+    if (!stripeId) {
+      db.close();
+      return res.status(403).send("You dont have a Stripe account");
+    }
+
+    const account = await stripe.accounts.retrieve(row.stripeId);
+    if(!account){
+      //taj račun je već izbrisan?
+      const SQLQuery = `UPDATE KLUB SET stripeID = NULL WHERE username = ?`
+      await dbRun(db, SQLQuery, [req.oidc.user.nickname]);
+      db.close()
+      return res.status(200).send("Account deleted. Try refreshing site")
+    }
+    const deleted = await stripe.accounts.del(stripeId);
+
+    db.close();
+    return res.status(400).send("Account will be deleted shortly. Try refreshing site")
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send("Internal server error");
+  } finally {
+    db.close();
+  }
+});
+
 
 module.exports = router;

@@ -51,32 +51,6 @@ router.post("/check",async (req, res) => {
     res.json({ ok: true });
 })
 
-router.get("/read/:obavijestID", requiresAuth(), async (req, res) => {
-    try{
-        // Verify user
-        const isVerified = await verifyProfile(req, res);
-        if (!isVerified) return res.render("verifymail");
-
-        const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
-    
-        if(profileInDB !== "Player" && profileInDB !== "Club"){
-        return res.status(500).send("only clubs and player can read notifications")
-        }
-    }catch(err){
-        res.status(500).send("error verifying profile")
-    }
-
-    const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
-    try{
-        const SQLQuery = `UPDATE OBAVIJEST SET obavOtvorena = 1 WHERE obavijestID = ?`;
-        await dbRun(db, SQLQuery, [req.params.obavijestID])
-        db.close();
-    }catch(err){
-        db.close();
-        res.send(500).status("error marking message as read")
-    }
-})
-
 
 router.get("/notify", (req, res) => {
     if(!req.oidc.user)  return res.status(500).send("Failed to send notification, unknown user");

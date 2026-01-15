@@ -513,10 +513,32 @@ const webhookHandler = async (req, res) => {
       } finally {
         db.close();
       }
+  }else if (event.type === "account.application.deauthorized") {
 
+    let db;
+
+    try {
+      const stripeId = event.account;
+
+      db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+
+      const dbRun = (sql, params = []) =>
+        new Promise((resolve, reject) => {
+          db.run(sql, params, function (err) {
+            if (err) reject(err);
+            else resolve(this);
+          });
+        });
+
+      const SQLQuery = `UPDATE KLUB SET stripeID = NULL WHERE stripeID = ?`;
+      await dbRun(SQLQuery, [stripeId]);
+
+    } catch (err) {
+      console.error("Webhook error:", err);
+    } finally {
+      if (db) db.close();
+    }
   }
-
-
   res.json({ received: true });
 };
 
