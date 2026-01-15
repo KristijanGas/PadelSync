@@ -44,8 +44,9 @@ router.get('/cancelSub/:pretpID', requiresAuth(), async (req, res) => {
 });
 
 //odobravanje jednokratnih koje se placaju gotovinom
-router.get('/confirmReservation/:rezervacijaID', requiresAuth(), async (req, res) => {
+router.post('/confirmReservation/:rezervacijaID', requiresAuth(), async (req, res) => {
     const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+    const datum = req.body.datum;
     try {
         const isVerified = await verifyProfile(req, res);
         if (!isVerified) return res.render("verifymail");
@@ -60,9 +61,9 @@ router.get('/confirmReservation/:rezervacijaID', requiresAuth(), async (req, res
             if(!row)
                 res.status(403).send("ne možeš potvrditi tuđu rezervaciju");
             let transakcijaID = row.transakcijaID;
-            const updQuery = `UPDATE REZERVACIJA SET statusRez = ? WHERE rezervacijaID = ?`;
+            const updQuery = `UPDATE JEDNOKRATNA_REZ SET statusJednokratna = ? WHERE rezervacijaID = ? AND datumRez = ?`;
             await new Promise((resolve, reject) => {
-                db.run(updQuery, [StatusRezervacije.AKTIVNA, req.params.rezervacijaID], function(err) {
+                db.run(updQuery, [StatusRezervacije.AKTIVNA, req.params.rezervacijaID, datum], function(err) {
                     if(err) return reject(err);
                     resolve(this);
                 });
@@ -75,6 +76,7 @@ router.get('/confirmReservation/:rezervacijaID', requiresAuth(), async (req, res
                 });
             });
         }
+        res.status(200).send("successfully confirmed reservation");
     } catch (error) {
         console.error(error);
         res.status(500).send("oopsie :(");
@@ -82,8 +84,9 @@ router.get('/confirmReservation/:rezervacijaID', requiresAuth(), async (req, res
     db.close();
 });
 
-router.get('/rejectReservation/:rezervacijaID', requiresAuth(), async (req, res) => {
+router.post('/rejectReservation/:rezervacijaID', requiresAuth(), async (req, res) => {
     const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+    const datum = req.body.datum;
     try {
         const isVerified = await verifyProfile(req, res);
         if (!isVerified) return res.render("verifymail");
@@ -99,9 +102,9 @@ router.get('/rejectReservation/:rezervacijaID', requiresAuth(), async (req, res)
             }
 
             const transakcijaID = row.transakcijaID;
-            const updQuery = `UPDATE REZERVACIJA SET statusRez = ? WHERE rezervacijaID = ?`;
+            const updQuery = `UPDATE JEDNOKRATNA_REZ SET statusRez = ? WHERE rezervacijaID = ? AND datumRez`;
             await new Promise((resolve, reject) => {
-                db.run(updQuery, [StatusRezervacije.ODBIJENA, req.params.rezervacijaID], function(err) {
+                db.run(updQuery, [StatusRezervacije.ODBIJENA, req.params.rezervacijaID, datum], function(err) {
                     if(err) return reject(err);
                     resolve(this);
                 });
@@ -118,6 +121,7 @@ router.get('/rejectReservation/:rezervacijaID', requiresAuth(), async (req, res)
             res.status(403).send("skuhan si");
             return;
         }
+        res.status(200).send("successfully rejected reservation");
     } catch (error) {
         res.status(500).send("oopsie :(");
     }

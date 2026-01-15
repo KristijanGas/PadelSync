@@ -7,6 +7,7 @@
                 <script src="/scripts/socket.js" defer></script>
                 <script src="/socket.io/socket.io.js"></script>
                 <script src="/scripts/myprofile.js" defer></script>
+                <script src="/scripts/cancelScript.js" defer></script>
                 <title>My profile</title>
         </head>
         <body>
@@ -86,6 +87,9 @@
                                         <ul class="reservations">
                                                 <% userInfo.newRes.forEach(function(newr) { %>
                                                         <li class="reservationCard">
+                                                        <div id="infoDiv"
+                                                        data-datum="<%= newr.datumRez %>"
+                                                        data-id="<%= newr.rezervacijaID %>"></div>
                                                         <ul>
                                                                 <li><strong>Date:</strong> <%= newr.datumRez %></li>
                                                                 <li><strong>Terrain:</strong> <%= newr.imeTeren %></li>
@@ -93,7 +97,7 @@
                                                                 <li><strong>Club:</strong> <%= newr.username %></li>
                                                         </ul>
                                                         <%if(date < newr.datumRez) {%>
-                                                        <a href="/terrain/cancel/<%= newr.rezervacijaID %>">Cancel reservation</a>
+                                                        <button class="cancelButton">Cancel reservation</button>
                                                         <%} else {%>
                                                                 <p>Reservations can only be canceled the day before</p>
                                                         <%}%>

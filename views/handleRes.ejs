@@ -4,18 +4,22 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Cash reservations</title>
+        <script src="/scripts/handleResScript.js" defer></script>
     </head>
     <body>
         <%if(typeof rezervacije !== 'undefined' && rezervacije.length > 0) {%>
             <p>Cash reservations that have not yet been confirmed for your club:</p>
             <%rezervacije.forEach(rezervacija => {%>
                 <div class="unpaidRes">
+                    <div id="info"
+                    data-datum="<%=rezervacija.datumRez%>"
+                    data-id="<%= rezervacija.rezervacijaID%>"></div>
                     <p>Player who made the reservation: <%= rezervacija.username %></p>
                     <p>Reservation date: <%= rezervacija.datumRez %> from <%= rezervacija.vrijemePocetak %> to <%= rezervacija.vrijemeKraj %></p>
                     <p>Your field that was reserved: ID <%= rezervacija.terenID%>, name <%= rezervacija.imeTeren %></p>
                     <p>Amount: <%= rezervacija.iznos %></p>
-                    <a href="/reservationHandle/confirmReservation/<%= rezervacija.rezervacijaID %>" onclick="window.location.reload()">Confirm reservation</a>
-                    <a href="/reservationHandle/rejectReservation/<%= rezervacija.rezervacijaID %>" onclick="window.location.reload()">Reject reservation</a>
+                    <button class="confirmRes">Confirm reservation</button>
+                    <button class="rejectRes">Reject reservation</button>
                 </div>
             <%})%>
         <%} else {%>

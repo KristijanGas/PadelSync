@@ -316,7 +316,7 @@ async function updateRes(transakcijaID, stripePaymentId) {
       //jednokratna
       row = await dbGet(
       db,
-      `SELECT rezervacijaID FROM JEDNOKRATNA_REZ WHERE transakcijaID = ?`,
+      `SELECT rezervacijaID, datumRez FROM JEDNOKRATNA_REZ WHERE transakcijaID = ?`,
       [transakcijaID]
       );
 
@@ -324,10 +324,11 @@ async function updateRes(transakcijaID, stripePaymentId) {
 
       await dbRun(
         db,
-        `UPDATE REZERVACIJA
-        SET statusRez = ?
-        WHERE rezervacijaID = ?`,
-        [StatusRezervacije.AKTIVNA, row.rezervacijaID]
+        `UPDATE JEDNOKRATNA_REZ
+        SET statusJednokratna = ?
+        WHERE rezervacijaID = ?
+        AND datumRez = ?`,
+        [StatusRezervacije.AKTIVNA, row.rezervacijaID, row.datumRez]
       );
     } else {
       //ponavljajuca
@@ -410,7 +411,7 @@ const webhookHandler = async (req, res) => {
       //jednokratna
       row = await dbGet(
         db,
-        `SELECT rezervacijaID
+        `SELECT rezervacijaID, datumRez
         FROM JEDNOKRATNA_REZ
         WHERE transakcijaID = ?`,
         [transakcijaID]
@@ -420,10 +421,11 @@ const webhookHandler = async (req, res) => {
       if (row) {
         await dbRun(
           db,
-          `UPDATE REZERVACIJA
+          `UPDATE JEDNOKRATNA_REZ
           SET statusRez = ?
-          WHERE rezervacijaID = ?`,
-          [StatusRezervacije.OTKAZANA, row.rezervacijaID]
+          WHERE rezervacijaID = ?
+          AND datumRez = ?`,
+          [StatusRezervacije.OTKAZANA, row.rezervacijaID, row.datumRez]
         );
       }
     } else {
@@ -493,14 +495,14 @@ const webhookHandler = async (req, res) => {
             //jednokratna
             row = await dbGet(
             db,
-            `SELECT rezervacijaID
+            `SELECT rezervacijaID, datumRez
             FROM JEDNOKRATNA_REZ
             WHERE transakcijaID = ?`,
             [transakcijaID]
             );
             await dbRun(db,
-            `UPDATE REZERVACIJA SET statusRez = ? WHERE rezervacijaID = ?`,
-            [StatusRezervacije.OTKAZANA, row.rezervacijaID]);
+            `UPDATE JEDNOKRATNA_REZ SET statusRez = ? WHERE rezervacijaID = ? AND datumRez = ?`,
+            [StatusRezervacije.OTKAZANA, row.rezervacijaID, row.datumRez]);
           } else {
             //pon
             await dbRun(db, `UPDATE PRETPLATA SET pretpAktivna = 0 WHERE pretpID = ?`, [pretpID]);

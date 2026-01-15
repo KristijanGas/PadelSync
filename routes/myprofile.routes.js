@@ -109,9 +109,9 @@ router.get('/', requiresAuth(), async (req, res) => {
                                                                 ON k.username = t.username
                                                         WHERE jr.username = ?
                                                         AND jr.datumRez >= DATE('now')
-                                                        AND (statusRez = ? OR statusRez = ?)`
+                                                        AND (statusJednokratna = ? or statusJednokratna = ?)`
                                                 const newRes = await new Promise((resolve, reject) => {
-                                                        db.all(SQLNewRes, [req.oidc.user.nickname, StatusRezervacije.AVAILABLE, StatusRezervacije.PENDING], (err, rows) => {
+                                                        db.all(SQLNewRes, [req.oidc.user.nickname, StatusRezervacije.AKTIVNA, StatusRezervacije.PENDING], (err, rows) => {
                                                         if (err) return reject(err);
                                                         resolve(rows);
                                                         });
@@ -172,7 +172,7 @@ router.get('/handleReservations', requiresAuth(), async (req, res) => {
                                         FROM JEDNOKRATNA_REZ NATURAL JOIN REZERVACIJA
                                         NATURAL JOIN TERMIN_TJEDNI JOIN TEREN ON TERMIN_TJEDNI.terenID = TEREN.terenID
                                         NATURAL JOIN TRANSAKCIJA
-                                        WHERE TEREN.username =  ? AND statusRez = ? and statusPlac = ?`;
+                                        WHERE TEREN.username =  ? AND statusJednokratna = ? and statusPlac = ?`;
                         const rows = await new Promise((resolve, reject) => {
                                 db.all(query, [req.oidc.user.nickname, StatusRezervacije.PENDING, StatusPlacanja.NEPLACENO], function(err, rows) {
                                         if(err) reject(err);

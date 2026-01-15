@@ -189,11 +189,13 @@ router.get('/:id', async (req, res) => {
       }
   }
   db.close();
+  const helper = req.protocol + "://" + req.headers.host;
   res.render('terrain', {
           teren: tereni[0],
           jednokratniTermini: dostupniTermini,
           pretplate: pretplate,
           cardAllowed,
+          url: helper,
           addComment: addComment
 
       });
@@ -208,7 +210,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
     const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
    
     if(profileInDB !== "Player"){
-      return res.status(500).send("samo igrači mogu rezervirat termin")
+      return res.status(400).send("samo igrači mogu rezervirat termin")
     }
   }catch(err){
     console.error(err);
@@ -248,17 +250,9 @@ router.post('/:id', requiresAuth(), async (req, res) => {
       statusPlac = StatusPlacanja.PENDING
     }
 
-    const SQLQuery1 = `INSERT INTO REZERVACIJA (statusRez, terminID) VALUES (?, ?) RETURNING *`
-    await new Promise((resolve, reject) => {
-      db.get(SQLQuery1, [statusRez, terminID], function(err, row) {
-        if (err) {
-          console.error(err.message);
-          return reject(err);
-        }
-        resolve();
-        ID = row.rezervacijaID;
-      });
-    });
+    const SQLQueryFindRezID = 'SELECT rezervacijaID FROM REZERVACIJA WHERE terminID = ?';
+    let row = await dbGet(db, SQLQueryFindRezID, [terminID]);
+    ID = row.rezervacijaID;
 
     const currentDateUTC = new Date().toISOString().split('T')[0];
     const cijena = teren.cijenaTeren;
@@ -274,10 +268,10 @@ router.post('/:id', requiresAuth(), async (req, res) => {
       resolve(this.lastID);
         });
     });
-
-    const SQLQuery2 = `INSERT INTO JEDNOKRATNA_REZ (datumRez, rezervacijaID, username, transakcijaID) VALUES (?, ?, ?, ?)`;
+    const statusJednokratna = StatusRezervacije.PENDING;
+    const SQLQuery2 = `INSERT INTO JEDNOKRATNA_REZ (datumRez, rezervacijaID, username, transakcijaID, statusJednokratna) VALUES (?, ?, ?, ?, ?)`;
     await new Promise((resolve, reject) => {
-    db.run(SQLQuery2, [datum, ID, username, transakcijaID], function(err) {
+    db.run(SQLQuery2, [datum, ID, username, transakcijaID, statusJednokratna], function(err) {
       if (err) {
         console.error(err.message);
         return reject(err);
@@ -288,7 +282,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
 
     const currentUrl = `${req.protocol}://${req.get('host')}`;
     if(tipPlacanja==="gotovina"){
-      sendNotificationFromTemplate("zahtjevZaRezervacijomKlub", teren.username, username, datum, termin.vrijemePocetak, termin.vrijemeKraj, teren.terenID, teren.imeTeren);
+      //sendNotificationFromTemplate("zahtjevZaRezervacijomKlub", teren.username, username, datum, termin.vrijemePocetak, termin.vrijemeKraj, teren.terenID, teren.imeTeren);
       res.json({redirect : `${currentUrl}/terrain/${teren.terenID}`});
     }else{
       const url = req.protocol + "://" + req.headers.host;
@@ -297,21 +291,30 @@ router.post('/:id', requiresAuth(), async (req, res) => {
 
   }else if(tipTermina == 'ponavljajuci') {
     //OVDJE SE REQ.PARAMS.ID INTERPRETIRA KAO tipPretpID, a ne TERMIN ID!!
-    console.log(req.params.id);
     tipPlacanja = "kartica"
     let statusPlac = StatusPlacanja.PENDING;
     const currentDateUTC = new Date().toISOString().split('T')[0];
-    const cijena = req.body.pretpCijena;
+    const cijena = req.body.pretplata.pretpCijena;
 
     let futureDate = new Date();
-    futureDate.setDate(futureDate.getDate()+30);
+    futureDate.setDate(futureDate.getDate()+8);
     let result = futureDate.toISOString().split('T')[0];
     
     const availabilityQuery = `SELECT * FROM PRETPLATA WHERE pretpAktivna = 1 AND tipPretpID = ?`;
-    const row = await fetchAll(db, availabilityQuery, [req.params.id]);
+    let row = await fetchAll(db, availabilityQuery, [req.params.id]);
     if(row.length > 0)
-      res.status(500).send("Netko je prije vas rezervirao istu pretplatu");
+      return res.status(500).send("Netko je prije vas rezervirao istu pretplatu");
 
+    const availabilityQuery2 = `SELECT pretpID, transakcijaID FROM PRETPLATA NATURAL JOIN TIP_PRETPLATE NATURAL JOIN TRANSAKCIJA
+                            WHERE username = ? AND pretpPocetak = ?
+                            AND clubUsername = ?`;
+    row = await dbGet(db, availabilityQuery2, [req.oidc.user.nickname, currentDateUTC, req.body.pretplata.clubUsername]);
+    if(row?.pretpID) {
+      const chkurl = req.protocol + "://" + req.headers.host;
+      let transakcijaID = row.transakcijaID;
+      res.json({checkoutUrl:`${chkurl}/stripe/payment/`, transakcijaID});
+      return;
+    }
     let pretpID;
     const query = `INSERT INTO PRETPLATA(pretpPocetak, pretpKraj, pretpPlacenaDo, pretpAktivna, tipPretpID, username)
                     VALUES(?, null, ?, ?, ?, ?) RETURNING pretpID`;
@@ -320,7 +323,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
         if(err) {
           return reject(err);
         }
-        resolve();
+        resolve(row);
         pretpID = row.pretpID;
       });
     });
@@ -344,8 +347,10 @@ router.post('/:id', requiresAuth(), async (req, res) => {
   
 });
 
-router.get("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
+router.post("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
   const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+  const datum = req.body.datum;
+  const id = req.body.id;
   try {
     // Verify user
     const isVerified = await verifyProfile(req, res);
@@ -362,29 +367,26 @@ router.get("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
     return res.status(500).send(err);
   }
 
-  const { rezervacijaID } = req.params;
   try{
-    let SQLQuery = `SELECT * FROM JEDNOKRATNA_REZ jr WHERE jr.username = ? AND jr.rezervacijaID = ?`;
-    let row = await dbGet(db, SQLQuery, [req.oidc.user.nickname, rezervacijaID])
+    let SQLQuery = `SELECT * FROM JEDNOKRATNA_REZ jr WHERE jr.username = ? AND jr.rezervacijaID = ? AND jr.datumRez = ?`;
+    let row = await dbGet(db, SQLQuery, [req.oidc.user.nickname, id, datum])
     if(!row){
       return res.status(500).send("ne možete otkazati tuđu rezervaciju")
     }
 
-    SQLQuery = `SELECT statusRez FROM JEDNOKRATNA_REZ jr JOIN REZERVACIJA r ON 
-                jr.rezervacijaID = r.rezervacijaID
-                WHERE r.rezervacijaID = ?
-                AND jr.datumRez > date('now', '+1 day');`
-    row = await dbGet(db, SQLQuery, [rezervacijaID])
-    if(!row){
+    let temp = new Date();
+    temp.setDate(temp.getDate()+1);
+    const tomorrow = temp.toISOString().split('T')[0];
+    if(tomorrow >= datum){
       return res.status(500).send("rezervacije se mogu otkazati samo dan unaprijed")
-    }else if(row.statusRez != StatusRezervacije.AKTIVNA){
+    }else if(row.statusJednokratna != StatusRezervacije.AKTIVNA && row.statusJednokratna != StatusRezervacije.PENDING){
       return res.status(500).send("ne možete otkazati neaktivnu rezervaciju")
     }
 
     SQLQuery = `SELECT * FROM JEDNOKRATNA_REZ jr JOIN TRANSAKCIJA t
                 ON jr.transakcijaID = t.transakcijaID
                 WHERE jr.rezervacijaID = ?`;
-    const row2 = await dbGet(db, SQLQuery, [rezervacijaID]);
+    const row2 = await dbGet(db, SQLQuery, [id]);
     if(!row2 || !row2.transakcijaID){
       return res.status(500).send("nema te transakcije!")
     }
@@ -395,7 +397,7 @@ router.get("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
     }
 
     if(row2.nacinPlacanja === "gotovina"){
-       SQLQuery = `UPDATE rezervacija SET statusRez = ? WHERE rezervacijaID = ?`
+       SQLQuery = `UPDATE JEDNOKRATNA_REZ SET statusJednokratna = ? WHERE rezervacijaID = ? and datumRez = ?`
       const runQuery = (sql, params) => new Promise((resolve, reject) => {
                                                   db.run(sql, params, function(err) {
                                                           if (err) return reject(err);
@@ -403,7 +405,7 @@ router.get("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
                                                   });
                                           });
       
-      await runQuery(SQLQuery, [StatusRezervacije.OTKAZANA, rezervacijaID])
+      await runQuery(SQLQuery, [StatusRezervacije.OTKAZANA, id, datum])
       
       
     }
