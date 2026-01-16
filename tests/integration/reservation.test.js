@@ -116,7 +116,7 @@ function currentDateOff(offset) {
   return year + '-' + month + '-' + day;
 }
 
-async function reserveJednokratna(app){
+async function reserveJednokratna(app,paymentMethod='gotovina'){
   let SQLFindNonsubscriptionRes = 
   `SELECT rezervacijaID,terminID FROM TERMIN_TJEDNI 
   NATURAL JOIN REZERVACIJA
@@ -134,7 +134,7 @@ async function reserveJednokratna(app){
 
   let date = currentDateOff(2+7);
   bodyrequest = 
-  {tipTermina: 'jednokratni', tipPlacanja: 'gotovina', 
+  {tipTermina: 'jednokratni', tipPlacanja: paymentMethod, 
   termin: {datum: date, vrijemePocetak: '19:00', vrijemeKraj: '20:12', danTjedan: '2'}, 
   teren: {terenID: 7,cijenaTeren: 15}};
   const res = await request(app).post('/terrain/'+row.terminID)
@@ -251,6 +251,19 @@ async function approveJednokratna(app, jednokratnaID){
   expect(res.status).toBe(200); // Assuming a successful response after approval
 }
 
+async function denyJednokratna(app, jednokratnaID){
+  bodyrequest = {id: jednokratnaID};
+  const res = await request(app)
+    .post('/reservationHandle/rejectReservation/' + jednokratnaID)
+    .set('x-test-user', 'gaspar.kristijan')
+    .send(bodyrequest);
+  expect(res.status).toBe(200); // Assuming a successful response after denial
+}
+
+async function reserveJednokratnaCard(app){
+}
+
+
 describe('Player-Club cash interactions', () => {
   it('allows a player to make a single reservation with cash payment and a club can approve it', async () => {
     const app = createAppWithOidcStub();
@@ -267,9 +280,48 @@ describe('Player-Club cash interactions', () => {
       new Promise((resolve, reject) => {
         db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
       });
-    let rowCheck = await getOne(SQLQueryCheck, [jednokratnaID, 'confirmed']); // 1 for approved status
+    let rowCheck = await getOne(SQLQueryCheck, [jednokratnaID, 'confirmed']);
     expect(rowCheck).toBeDefined();
-    expect(rowCheck.statusJednokratna).toBe('confirmed'); // Assuming 1 represents approved status
+    expect(rowCheck.statusJednokratna).toBe('confirmed');
     db.close();
+  });
+  it('allows a player to make a single reservation with cash payment and a club can deny it', async () => {
+    const app = createAppWithOidcStub();
+    let subscriptionId = await setupSubscription(app);
+    expect(subscriptionId).toBeDefined();
+    await setupReservation(app,subscriptionId);
+    let jednokratnaID = await reserveJednokratna(app);
+    expect(jednokratnaID).toBeDefined();
+
+    await denyJednokratna(app, jednokratnaID);
+    let SQLQueryCheck = 'SELECT * FROM JEDNOKRATNA_REZ WHERE jednokratnaID = ? and statusJednokratna = ?';
+    const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+    const getOne = (sql, params = []) =>
+      new Promise((resolve, reject) => {
+        db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
+      });
+    let rowCheck = await getOne(SQLQueryCheck, [jednokratnaID, 'rejected']);
+    expect(rowCheck).toBeDefined();
+    expect(rowCheck.statusJednokratna).toBe('rejected');
+    db.close();
+  });
+  it('allows a player to make a single reservation with card payment', async () => {
+    const app = createAppWithOidcStub();
+    let subscriptionId = await setupSubscription(app);
+    expect(subscriptionId).toBeDefined();
+    await setupReservation(app,subscriptionId);
+    let jednokratnaID = await reserveJednokratna(app,'kartica');
+    expect(jednokratnaID).toBeDefined();
+    let SQLQueryCheck = 'SELECT * FROM JEDNOKRATNA_REZ WHERE jednokratnaID = ?  and username = ?';
+    const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+    const getOne = (sql, params = []) =>
+      new Promise((resolve, reject) => {
+        db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
+      });
+    let rowCheck = await getOne(SQLQueryCheck, [jednokratnaID, 'kristijan.gaspar']);
+    expect(rowCheck).toBeDefined();
+    expect(rowCheck.statusJednokratna).toBe('pendingPayment');
+    db.close();
+
   });
 });
