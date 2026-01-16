@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="/scripts/reservations.js" defer></script>
         <script src="/scripts/commentHandler.js" defer></script>
@@ -115,7 +116,9 @@
                 </div>
             </div>
             <div class="CalendarContainer">
-                <p>Calendar goes here</p>
+                <div id="root" data-terrain-id="<%= teren.terenID %>" data-url="<%=url%>"></div>
+                <link rel="stylesheet" href="/build/static/css/main.10d0131d.css">
+                <script src="/build/static/js/main.84919fa2.js"></script>
             </div>
         </div>
     </body>
