@@ -44,7 +44,7 @@ async function checkStripeAccount(username){
       }else{
         const account = await stripe.accounts.retrieve(row.stripeId);
 
-        if (account.charges_enabled && account.payouts_enabled) {
+        if (account && account.charges_enabled && account.payouts_enabled) {
           hasCapabilities = true;
         } 
       }

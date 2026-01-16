@@ -420,7 +420,11 @@ router.post('/:username/insertClubInfo', requiresAuth(), upload.array("slike"), 
                                         }
                                         
                                         let SQLRemovePhotos = `DELETE FROM foto_klub WHERE fotoKlubId = ?`;
-                                        for(const photo of req.body.erasePhotos){
+                                        const erasePhotos = Array.isArray(req.body.erasePhotos)
+                                        ? req.body.erasePhotos
+                                        : [];
+
+                                        for(const photo of erasePhotos){
                                                 try{
                                                         await runQuery(SQLRemovePhotos, [photo]);
                                                 }catch(err){
