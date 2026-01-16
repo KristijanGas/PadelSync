@@ -56,14 +56,14 @@ router.post('/confirmReservation/:rezervacijaID', requiresAuth(), async (req, re
             res.status(403).send("kud si pošo nisi ti klub da odobravaš rezervaciju");
         } else {
             const query = `select transakcijaID from JEDNOKRATNA_REZ natural join REZERVACIJA natural join TERMIN_TJEDNI tt join TEREN t on tt.terenID = t.terenID
-                        where rezervacijaID = ? and t.username = ?`;
-            let row = await dbGet(db, query, [req.params.rezervacijaID, req.oidc.user.nickname]);
+                        where jednokratnaID = ? and t.username = ?`;
+            let row = await dbGet(db, query, [req.body.id, req.oidc.user.nickname]);
             if(!row)
                 res.status(403).send("ne možeš potvrditi tuđu rezervaciju");
             let transakcijaID = row.transakcijaID;
-            const updQuery = `UPDATE JEDNOKRATNA_REZ SET statusJednokratna = ? WHERE rezervacijaID = ? AND datumRez = ?`;
+            const updQuery = `UPDATE JEDNOKRATNA_REZ SET statusJednokratna = ? WHERE jednokratnaID = ?`;
             await new Promise((resolve, reject) => {
-                db.run(updQuery, [StatusRezervacije.AKTIVNA, req.params.rezervacijaID, datum], function(err) {
+                db.run(updQuery, [StatusRezervacije.AKTIVNA, req.body.id], function(err) {
                     if(err) return reject(err);
                     resolve(this);
                 });
@@ -94,17 +94,17 @@ router.post('/rejectReservation/:rezervacijaID', requiresAuth(), async (req, res
         const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
         if(profileInDB === 'Club') {
             const query = `select transakcijaID from JEDNOKRATNA_REZ natural join REZERVACIJA natural join TERMIN_TJEDNI tt join TEREN t on tt.terenID = t.terenID
-                        where rezervacijaID = ? and t.username = ?`;
-            let row = await dbGet(db, query, [req.params.rezervacijaID, req.oidc.user.nickname]);
+                        where jednokratnaID = ? and t.username = ?`;
+            let row = await dbGet(db, query, [req.body.id, req.oidc.user.nickname]);
             if(!row) {
                 res.status(403).send("ne možeš otkazati tuđu rezervaciju");
                 return;
             }
 
             const transakcijaID = row.transakcijaID;
-            const updQuery = `UPDATE JEDNOKRATNA_REZ SET statusRez = ? WHERE rezervacijaID = ? AND datumRez`;
+            const updQuery = `UPDATE JEDNOKRATNA_REZ SET statusJednokratna = ? WHERE jednokratnaID = ?`;
             await new Promise((resolve, reject) => {
-                db.run(updQuery, [StatusRezervacije.ODBIJENA, req.params.rezervacijaID, datum], function(err) {
+                db.run(updQuery, [StatusRezervacije.ODBIJENA, req.body.id], function(err) {
                     if(err) return reject(err);
                     resolve(this);
                 });

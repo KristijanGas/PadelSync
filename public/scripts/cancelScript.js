@@ -7,10 +7,12 @@ buttons.forEach(button => {
         let infoDiv = event.target.parentElement.children['infoDiv'].dataset;
         let datum = infoDiv.datum;
         let id = infoDiv.id;
+        let rezervacijaID = infoDiv.rezID;
         
         const payload = {
             datum: datum,
-            id: id
+            id: id,
+            rezervacijaID: rezervacijaID
         };
         console.log(payload);
         const url = `/terrain/cancel/${id}`

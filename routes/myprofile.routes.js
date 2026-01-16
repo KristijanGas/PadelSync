@@ -97,6 +97,7 @@ router.get('/', requiresAuth(), async (req, res) => {
                                                         tt.vrijemePocetak,
                                                         tt.vrijemeKraj,
                                                         t.imeTeren,
+                                                        jr.jednokratnaID,
                                                         k.username
                                                         FROM JEDNOKRATNA_REZ jr
                                                         JOIN REZERVACIJA r
@@ -168,7 +169,7 @@ router.get('/handleReservations', requiresAuth(), async (req, res) => {
                         res.status(403).send("samo klubovi mogu vidjet njihove rezervacije koje cekaju");
                         return;
                 } else {
-                        const query = `SELECT datumRez, JEDNOKRATNA_REZ.username as username, imeTeren, iznos, vrijemePocetak, vrijemeKraj, rezervacijaID, TEREN.terenID
+                        const query = `SELECT datumRez, JEDNOKRATNA_REZ.username as username, imeTeren, iznos, vrijemePocetak, vrijemeKraj, rezervacijaID, TEREN.terenID, jednokratnaID
                                         FROM JEDNOKRATNA_REZ NATURAL JOIN REZERVACIJA
                                         NATURAL JOIN TERMIN_TJEDNI JOIN TEREN ON TERMIN_TJEDNI.terenID = TEREN.terenID
                                         NATURAL JOIN TRANSAKCIJA

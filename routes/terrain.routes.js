@@ -350,7 +350,8 @@ router.post('/:id', requiresAuth(), async (req, res) => {
 router.post("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
   const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
   const datum = req.body.datum;
-  const id = req.body.id;
+  const rezid = req.body.rezervacijaID;
+  const jednokratnaID = req.body.id;
   try {
     // Verify user
     const isVerified = await verifyProfile(req, res);
@@ -368,8 +369,8 @@ router.post("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
   }
 
   try{
-    let SQLQuery = `SELECT * FROM JEDNOKRATNA_REZ jr WHERE jr.username = ? AND jr.rezervacijaID = ? AND jr.datumRez = ?`;
-    let row = await dbGet(db, SQLQuery, [req.oidc.user.nickname, id, datum])
+    let SQLQuery = `SELECT * FROM JEDNOKRATNA_REZ jr WHERE jr.username = ? AND jednokratnaID = ?`;
+    let row = await fetchAll(db, SQLQuery, [req.oidc.user.nickname, jednokratnaID])
     if(!row){
       return res.status(500).send("ne možete otkazati tuđu rezervaciju")
     }
@@ -379,14 +380,18 @@ router.post("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
     const tomorrow = temp.toISOString().split('T')[0];
     if(tomorrow >= datum){
       return res.status(500).send("rezervacije se mogu otkazati samo dan unaprijed")
-    }else if(row.statusJednokratna != StatusRezervacije.AKTIVNA && row.statusJednokratna != StatusRezervacije.PENDING){
-      return res.status(500).send("ne možete otkazati neaktivnu rezervaciju")
     }
+    let condition = true;
+    for(let entry of row) {
+      if(entry.statusJednokratna == StatusRezervacije.AKTIVNA || entry.statusJednokratna == StatusRezervacije.PENDING) condition = false;
+    }
+    if(condition)
+      return res.status(500).send("ne možete otkazati neaktivnu rezervaciju");
 
     SQLQuery = `SELECT * FROM JEDNOKRATNA_REZ jr JOIN TRANSAKCIJA t
                 ON jr.transakcijaID = t.transakcijaID
-                WHERE jr.rezervacijaID = ?`;
-    const row2 = await dbGet(db, SQLQuery, [id]);
+                WHERE jr.jednokratnaID = ?`;
+    const row2 = await dbGet(db, SQLQuery, [jednokratnaID]);
     if(!row2 || !row2.transakcijaID){
       return res.status(500).send("nema te transakcije!")
     }
@@ -397,7 +402,7 @@ router.post("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
     }
 
     if(row2.nacinPlacanja === "gotovina"){
-       SQLQuery = `UPDATE JEDNOKRATNA_REZ SET statusJednokratna = ? WHERE rezervacijaID = ? and datumRez = ?`
+       SQLQuery = `UPDATE JEDNOKRATNA_REZ SET statusJednokratna = ? WHERE jednokratnaID = ?`
       const runQuery = (sql, params) => new Promise((resolve, reject) => {
                                                   db.run(sql, params, function(err) {
                                                           if (err) return reject(err);
@@ -405,7 +410,7 @@ router.post("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
                                                   });
                                           });
       
-      await runQuery(SQLQuery, [StatusRezervacije.OTKAZANA, id, datum])
+      await runQuery(SQLQuery, [StatusRezervacije.OTKAZANA, jednokratnaID])
       
       
     }
@@ -415,7 +420,7 @@ router.post("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
     return res.status(500).send("error canceling reservation")
   }
   db.close();
-  res.redirect("/myprofile");
+  res.status(200).send("otkazana rezervacija");
 })
 
 router.post("/:terenID/addComment", requiresAuth(), async (req, res) => {
