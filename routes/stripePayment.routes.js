@@ -218,19 +218,6 @@ router.get('/payment/checkout/:transakcijaID', requiresAuth(), async (req, res) 
         clubUsername = row.username;
         clubStripeId = row.stripeId;
       }
-      const ponQry = `select terenID from 
-                      TRANSAKCIJA natural join PRETPLATA natural join
-                      PONAVLJAJUCA_REZ natural join REZERVACIJA natural join TERMIN_TJEDNI
-                      where transakcijaID = ?`;
-      row = await dbGet(db, ponQry, [transakcijaID]);
-      if(!row){
-        return res.status(500).send("neki sjeb");
-      } else {
-        terenID = row.terenID;
-        datum = null;
-        vPoc = null;
-        vKr = null;
-      }
     }
 
     const qry = `SELECT email FROM KORISNIK WHERE USERNAME = ?`;
