@@ -55,6 +55,9 @@
                                 <a href="/user/<%= user.username %>">
                                     <%= user.imeIgrac %> <%= user.prezimeIgrac %> (Username: <%= user.username %>)
                                 </a>
+                                <%if(isAdmin){%>
+                                    <br><a href="/edituser/<%=user.username%>">Edit this user</a>
+                                <%}%>
                             </li>
                         <% }); %>
                     </ul>
@@ -71,6 +74,9 @@
                                 <a href="/user/<%= user.username %>">
                                     <%= user.imeKlub %> (Username: <%= user.username %> rating: <%= user.klubRating %>)
                                 </a>
+                                <%if(isAdmin){%>
+                                    <br><a href="/edituser/<%=user.username%>">Edit this user</a>
+                                <%}%>
                             </li>
                         <% }); %>
                     </ul>

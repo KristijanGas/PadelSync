@@ -1,6 +1,7 @@
 const express = require('express');
 var sqlite3 = require('sqlite3').verbose();
 const router = express.Router()
+const { findUserType } = require("../backendutils/verifyProfile")
 
 // podstranica za pretraživanje klubova, igrača
 
@@ -12,7 +13,18 @@ router.get('/', (req, res) => {
 });
 
 //search by is player or club by  username
-router.get('/klub/:username', (req, res) => {
+router.get('/klub/:username', async (req, res) => {
+    let isAdmin = false;
+    if(req.oidc && req.oidc.user && req.oidc.user.nickname){
+        try{
+            const userType = await findUserType(req.oidc.user.nickname);
+            if(userType === "Admin"){
+                isAdmin = true;
+            }
+        }catch(err){
+            console.error(err);
+        }
+    }
     let SQLQuery = 'SELECT * FROM KLUB_RATING'
     + ' WHERE (lower(usernameKlub) LIKE \"%' + req.params.username + '%\")'
     + ' OR (lower(imeKlub) LIKE \"%' + req.params.username + '%\")';
@@ -34,13 +46,25 @@ router.get('/klub/:username', (req, res) => {
             }
             klubovi.push({'username':rows[i].usernameKlub, 'imeKlub':rows[i].klub, 'klubRating':rows[i].rating});
         }
-        res.render('user_search', {klubovi: klubovi, session: req.session, isAuthenticated: req.oidc.isAuthenticated(), show_search_results: true});
+        const userType = 
+        res.render('user_search', {klubovi: klubovi, session: req.session, isAuthenticated: req.oidc.isAuthenticated(), show_search_results: true, isAdmin: isAdmin});
     });
     db.close();
     
 });
 
-router.get('/igrac/:username', (req, res) => {
+router.get('/igrac/:username', async (req, res) => {
+    let isAdmin = false;
+    if(req.oidc && req.oidc.user && req.oidc.user.nickname){
+        try{
+            const userType = await findUserType(req.oidc.user.nickname);
+            if(userType === "Admin"){
+                isAdmin = true;
+            }
+        }catch(err){
+            console.error(err);
+        }
+    }
     let SQLQuery = 'SELECT * FROM IGRAC'
     + ' WHERE (lower(username) LIKE \"%' + req.params.username + '%\")'
     + ' OR (lower(prezimeIgrac) LIKE \"%' + req.params.username + '%\")'
@@ -60,7 +84,7 @@ router.get('/igrac/:username', (req, res) => {
         for(let i=0; i<rows.length; i++){
             igraci.push({'username':rows[i].username, 'imeIgrac':rows[i].imeIgrac, 'prezimeIgrac':rows[i].prezimeIgrac});
         }
-        res.render('user_search', {igraci: igraci, session: req.session, isAuthenticated: req.oidc.isAuthenticated(), show_search_results: true});
+        res.render('user_search', {igraci: igraci, session: req.session, isAuthenticated: req.oidc.isAuthenticated(), show_search_results: true, isAdmin: isAdmin});
     });
     db.close();
     
