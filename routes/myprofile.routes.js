@@ -7,6 +7,7 @@ const { requiresAuth } = require('express-openid-connect')
 const axios = require('axios');
 const StatusRezervacije = require('../constants/statusRez');
 const StatusPlacanja = require('../constants/statusPlacanja');
+const fetchAll = require('../backendutils/fetchAll');
 const sqlite3 = require('sqlite3').verbose();
 
 router.get('/', requiresAuth(), async (req, res) => {
@@ -189,6 +190,28 @@ router.get('/handleReservations', requiresAuth(), async (req, res) => {
                 res.status(500).send("oopsie :(");
         }
         db.close();
+});
+
+router.get('/unpaidSub', requiresAuth(), async (req, res) => {
+        const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+        try {
+                const isVerified = await verifyProfile(req, res);
+                if (!isVerified) return res.render("verifymail");
+
+                const profileInDB = await verifyDBProfile(req.oidc.user.nickname, req.oidc.user.email, res);
+                if(profileInDB !== 'Player') {
+                        res.status(403).send("samo igrači mogu vidjet njihove pretplate koje nisu plaćene za ovaj tjedan");
+                        return;
+                }
+                const query = `SELECT * FROM PRETPLATA NATURAL JOIN TRANSAKCIJA NATURAL JOIN TIP_PRETPLATE
+                                WHERE pretpAktivna = 1 AND username = ? AND statusPlac = ? and nacinPlacanja = ?`
+                const rows = await fetchAll(db, query, [req.oidc.user.nickname, StatusPlacanja.PENDING, "kartica"]);
+                res.render('subPayment', {
+                        subs: rows
+                });
+        } catch (err) {
+                
+        }
 });
 
 module.exports = router;

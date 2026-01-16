@@ -331,7 +331,15 @@ async function updateRes(transakcijaID, stripePaymentId) {
       );
     } else {
       //ponavljajuca
-      await dbRun(db, `UPDATE PRETPLATA SET pretpAktivna = 1 WHERE pretpID = ?`, [pretpID]);
+      const qry = `SELECT pretpAktivna, date(pretpPlacenaDo, '+7 days') as future 
+                  FROM PRETPLATA WHERE pretpID = ?`
+      const result = await dbGet(db, qry, [pretpID]);
+      if(result?.pretpAktivna == 1) {
+        const upd = `UPDATE PRETPLATA SET pretpPlacenaDo = ? WHERE pretpID = ?`
+        await dbRun(db, upd, [result.future, pretpID]);
+      } else {
+        await dbRun(db, `UPDATE PRETPLATA SET pretpAktivna = 1 WHERE pretpID = ?`, [pretpID]);
+      }
     }
 
     return 200;

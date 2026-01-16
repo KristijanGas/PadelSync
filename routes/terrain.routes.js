@@ -295,7 +295,7 @@ router.post('/:id', requiresAuth(), async (req, res) => {
     let statusPlac = StatusPlacanja.PENDING;
     const currentDateUTC = new Date().toISOString().split('T')[0];
     const cijena = req.body.pretplata.pretpCijena;
-
+    console.log(cijena);
     let futureDate = new Date();
     futureDate.setDate(futureDate.getDate()+8);
     let result = futureDate.toISOString().split('T')[0];
@@ -307,8 +307,8 @@ router.post('/:id', requiresAuth(), async (req, res) => {
 
     const availabilityQuery2 = `SELECT pretpID, transakcijaID FROM PRETPLATA NATURAL JOIN TIP_PRETPLATE NATURAL JOIN TRANSAKCIJA
                             WHERE username = ? AND pretpPocetak = ?
-                            AND clubUsername = ?`;
-    row = await dbGet(db, availabilityQuery2, [req.oidc.user.nickname, currentDateUTC, req.body.pretplata.clubUsername]);
+                            AND clubUsername = ? AND tipPretpID = ?`;
+    row = await dbGet(db, availabilityQuery2, [req.oidc.user.nickname, currentDateUTC, req.body.pretplata.clubUsername, req.params.id]);
     if(row?.pretpID) {
       const chkurl = req.protocol + "://" + req.headers.host;
       let transakcijaID = row.transakcijaID;
@@ -400,7 +400,7 @@ router.post("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
       db.close();
       return res.redirect(`/stripe/refund/${row2.transakcijaID}`);
     }
-    
+
     if(row2.nacinPlacanja === "kartica" && row2.statusPlac === StatusPlacanja.PENDING) {
       const updateQueryRez = `UPDATE JEDNOKRATNA_REZ SET statusJednokratna = ? WHERE jednokratnaID = ?`;
       await new Promise((resolve, reject) => {

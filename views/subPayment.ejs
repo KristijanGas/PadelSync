@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Subscription payment</title>
+    </head>
+    <body>
+        <%if(typeof subs !== 'undefined' && subs.length > 0) {%>
+            <%subs.forEach(sub => {%>
+                <div>
+                    <p>Pretplata <%= sub.pretpNaziv %>, aktivna do <%= sub.pretpPlacenaDo %></p>
+                    <p>Cijena: <%= sub.pretpCijena %>€</p>
+                    <button onclick="location.href='/stripe/payment/<%= sub.transakcijaID %>'">Pay for this week</button>
+                </div>
+            <%})%>
+        <%} else {%>
+            <p>You don't have any subscriptions which are due this week.</p>
+        <%}%>
+    </body>
+</html>

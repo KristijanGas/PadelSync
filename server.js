@@ -184,5 +184,6 @@ server.listen(port, () => {
 });
 setInterval(checkPayments, 1000 * 60 * 60 * 24);
 setInterval(checkPonavljajuce, 1000 * 60 * 60 * 24);
+checkPonavljajuce();
 
 module.exports = app;
