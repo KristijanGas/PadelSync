@@ -118,7 +118,7 @@ function currentDateOff(offset) {
 
 async function reserveJednokratna(app){
   let SQLFindNonsubscriptionRes = 
-  `SELECT rezervacijaID FROM TERMIN_TJEDNI 
+  `SELECT rezervacijaID,terminID FROM TERMIN_TJEDNI 
   NATURAL JOIN REZERVACIJA
   WHERE vrijemePocetak = ? AND vrijemeKraj = ? AND danTjedan = ?
   `;
@@ -133,15 +133,19 @@ async function reserveJednokratna(app){
   
 
   let date = currentDateOff(2+7);
-  bodyrequest = {tipPlacanja: 'gotovina', termin: {datum: date, vrijemePocetak: '19:00', vrijemeKraj: '20:12', danTjedan: '2', teren: {terenID: 7}}};
-  const res = await request(app).post('/terrain/7/'+row.rezervacijaID)
+  bodyrequest = 
+  {tipTermina: 'jednokratni', tipPlacanja: 'gotovina', 
+  termin: {datum: date, vrijemePocetak: '19:00', vrijemeKraj: '20:12', danTjedan: '2'}, 
+  teren: {terenID: 7,cijenaTeren: 15}};
+  const res = await request(app).post('/terrain/'+row.terminID)
   .set('x-test-user', 'kristijan.gaspar')
   .send(bodyrequest);
+  expect(res.status).toBe(200);
   let SQLQueryCheck = 'SELECT * FROM JEDNOKRATNA_REZ WHERE rezervacijaID = ? AND username = ?';
   let rowCheck = await getOne(SQLQueryCheck, [row.rezervacijaID, 'kristijan.gaspar']);
   expect(rowCheck).toBeDefined();
   db.close();
-  return row.rezervacijaID;
+  return rowCheck.jednokratnaID;
 }
 
 describe('Reservations setup', () => {
@@ -166,10 +170,11 @@ describe('Reservations setup', () => {
     let subscriptionId = await setupSubscription(app);
     expect(subscriptionId).toBeDefined();
     await setupReservation(app,subscriptionId);
-    let rezervacijaID = await reserveJednokratna(app);
+    let jednokratnaID = await reserveJednokratna(app);
+    expect(jednokratnaID).toBeDefined();
     const res = await request(app)
       .get('/myprofile')
-      .set('x-test-user', 'gaspar.kristijan');
+      .set('x-test-user', 'kristijan.gaspar');
     expect(res.status).toBe(200);
     expect(res.text).toContain("20:12");
   });

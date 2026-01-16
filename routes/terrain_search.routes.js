@@ -161,7 +161,7 @@ router.get('/results', async (req, res) => {
     if(udaljenost){
         const userLat = parseFloat(req.query.userLat);
         const userLong = parseFloat(req.query.userLong);
-        const db = new sqlite3.Database("database.db");
+        const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
         const getRow = (sql, params) => new Promise((resolve, reject) => {
                                             db.get(sql, params, (err, row) => {
                                             if (err) return reject(err);

@@ -38,7 +38,7 @@ router.get('/', requiresAuth(), async (req, res) => {
                                         table = "klub";
                                 }
                                 let SQLQuery = `SELECT * FROM ${table} WHERE username = ?;`;
-                                const db = new sqlite3.Database("database.db");
+                                const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
 
                                 const getRow = (sql, params) => new Promise((resolve, reject) => {
                                         db.get(sql, params, (err, row) => {
