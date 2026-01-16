@@ -83,7 +83,7 @@ router.get("/payment/:transakcijaID", requiresAuth(), async (req, res) => {
       return res.status(500).send("ne postoji transakcija s tim ID-om");
     else if (row.pretpID == null) {
       //jednokratna
-      const SQLStripeClubId = `SELECT KLUB.username, stripeId FROM
+      const SQLStripeClubId = `SELECT k.username, stripeId FROM
           TRANSAKCIJA t JOIN JEDNOKRATNA_REZ jr
             ON t.transakcijaId = jr.transakcijaId
           JOIN REZERVACIJA r
