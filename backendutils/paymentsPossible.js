@@ -1,3 +1,4 @@
+require('dotenv').config();
 const Stripe = require("stripe");
 let stripeSecretKey;
 if(process.env.NODE_ENV === "test"){
