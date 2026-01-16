@@ -36,7 +36,7 @@ body {
 
     display: flex;
 
-    justify-content: center;
+    justify-content: space-around;
 
     align-items: center;
 
@@ -296,7 +296,7 @@ input[type="checkbox"]:focus, input[type="radio"]:focus {
 
 }
 
-.searchButton, .backButton {
+.searchButton, .backButton, .TerrainCard button {
 
     padding: 12px 28px;
 
@@ -321,7 +321,7 @@ input[type="checkbox"]:focus, input[type="radio"]:focus {
 
 }
 
-.searchButton:hover, .backButton:hover {
+.searchButton:hover, .backButton:hover, .TerrainCard button:hover {
 
     background-color: #1a1a1a;
 
@@ -333,7 +333,7 @@ input[type="checkbox"]:focus, input[type="radio"]:focus {
 
 }
 
-.searchButton:active, .backButton:active {
+.searchButton:active, .backButton:active, .TerrainCard button:active {
 
     transform: translateY(0);
 
@@ -523,68 +523,6 @@ input[type="checkbox"]:focus, input[type="radio"]:focus {
 
 }
 
-@media (max-width: 600px) {
-
-    .TerrainCard {
-
-        padding: 18px;
-
-    }
-
-    .TerrainCard h3 {
-
-        font-size: 20px;
-        
-    }
-
-}
-
-.BackgroundTop {
-
-    position: relative;
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    min-height: 15vh;
-
-    padding: 20px 50px;
-
-    background: linear-gradient(135deg, #141414 0%, #0d0d0d 60%, #050505 100%);
-
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
-
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-
-}
-
-.BackgroundTop h1 {
-
-    text-align: center;
-
-    z-index: 1;
-
-}
-
-.HeaderButtonsWrapper {
-
-    position: absolute;
-
-    top: 50%;
-
-    right: 50px;
-
-    transform: translateY(-50%);
-
-    display: flex;
-
-    gap: 15px;
-
-}
-
 .HomePageHeader button {
 
     width: 120px;
@@ -627,5 +565,25 @@ input[type="checkbox"]:focus, input[type="radio"]:focus {
 
     box-shadow: 0 6px 16px rgba(0,0,0,0.6);
     
+}
+
+@media (max-width: 900px) {
+
+    .TerrainCard {
+
+        padding: 18px;
+
+    }
+
+    .TerrainCard h3 {
+
+        font-size: 20px;
+        
+    }
+
+    .BackgroundTop {
+        flex-direction: column;
+    }
+
 }
 
