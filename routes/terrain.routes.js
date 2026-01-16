@@ -400,7 +400,23 @@ router.post("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
       db.close();
       return res.redirect(`/stripe/refund/${row2.transakcijaID}`);
     }
-
+    
+    if(row2.nacinPlacanja === "kartica" && row2.statusPlac === StatusPlacanja.PENDING) {
+      const updateQueryRez = `UPDATE JEDNOKRATNA_REZ SET statusJednokratna = ? WHERE jednokratnaID = ?`;
+      await new Promise((resolve, reject) => {
+        db.run(updateQueryRez, [StatusRezervacije.OTKAZANA, row2.jednokratnaID], function(err) {
+          if(err) reject(err);
+          resolve();
+        });
+      });
+      const updateQueryTransakcija = `UPDATE TRANSAKCIJA SET statusPlac = ? WHERE transakcijaID = ?`;
+      await new Promise((resolve, reject) => {
+        db.run(updateQueryTransakcija, [StatusRezervacije.OTKAZANA, row2.transakcijaID], function(err) {
+          if(err) reject(err);
+          resolve();
+        });
+      });
+    }
     if(row2.nacinPlacanja === "gotovina"){
        SQLQuery = `UPDATE JEDNOKRATNA_REZ SET statusJednokratna = ? WHERE jednokratnaID = ?`
       const runQuery = (sql, params) => new Promise((resolve, reject) => {
