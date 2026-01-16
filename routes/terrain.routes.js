@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 var sqlite3 = require('sqlite3').verbose();
 const router = express.Router();
