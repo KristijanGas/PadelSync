@@ -128,7 +128,7 @@ router.post('/:clubId/:terrainId/add', requiresAuth(), async (req, res) => {
 
         const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
 
-        console.log("Inserting schedule:", row.terenID, dayNum, startTime, endTime, 0);
+        //console.log("Inserting schedule:", row.terenID, dayNum, startTime, endTime, 0);
 
         await new Promise((resolve, reject) => {
             db.run(SQLQuery, [row.terenID, dayNum, startTime, endTime, 0,tipTermina], function(err) {

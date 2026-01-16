@@ -46,7 +46,6 @@ router.get('/cancelSub/:pretpID', requiresAuth(), async (req, res) => {
 //odobravanje jednokratnih koje se placaju gotovinom
 router.post('/confirmReservation/:rezervacijaID', requiresAuth(), async (req, res) => {
     const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
-    const datum = req.body.datum;
     try {
         const isVerified = await verifyProfile(req, res);
         if (!isVerified) return res.render("verifymail");

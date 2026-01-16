@@ -141,11 +141,20 @@ async function reserveJednokratna(app){
   .set('x-test-user', 'kristijan.gaspar')
   .send(bodyrequest);
   expect(res.status).toBe(200);
-  let SQLQueryCheck = 'SELECT * FROM JEDNOKRATNA_REZ WHERE rezervacijaID = ? AND username = ?';
+  let SQLQueryCheck = 'SELECT * FROM JEDNOKRATNA_REZ WHERE rezervacijaID = ? AND username = ? ORDER BY jednokratnaID DESC LIMIT 1';
   let rowCheck = await getOne(SQLQueryCheck, [row.rezervacijaID, 'kristijan.gaspar']);
   expect(rowCheck).toBeDefined();
   db.close();
   return rowCheck.jednokratnaID;
+}
+
+async function cancelJednokratna(app, jednokratnaID){
+  bodyrequest = {id: jednokratnaID, datum: currentDateOff(2+7)};
+  const res = await request(app)
+    .post('/terrain/cancel/' + jednokratnaID)
+    .set('x-test-user', 'kristijan.gaspar')
+    .send(bodyrequest);
+  expect(res.status).toBe(200);
 }
 
 describe('Reservations setup', () => {
@@ -179,4 +188,88 @@ describe('Reservations setup', () => {
     expect(res.text).toContain("20:12");
   });
   
+  it('allows a player to cancel a single reservation from their profile', async () => {
+    
+    const app = createAppWithOidcStub();
+    let subscriptionId = await setupSubscription(app);
+    expect(subscriptionId).toBeDefined();
+    await setupReservation(app,subscriptionId);
+    let jednokratnaID = await reserveJednokratna(app);
+    expect(jednokratnaID).toBeDefined();
+    await cancelJednokratna(app, jednokratnaID);
+    const res = await request(app)
+      .get('/myprofile')
+      .set('x-test-user', 'kristijan.gaspar');
+    expect(res.status).toBe(200);
+    expect(res.text).not.toContain("20:12");
+  });
+  it('allows a player to reserve, cancel, reserve and cancel multiple times', async () => {
+    
+    const app = createAppWithOidcStub();
+    let subscriptionId = await setupSubscription(app);
+    expect(subscriptionId).toBeDefined();
+    await setupReservation(app,subscriptionId);
+    let jednokratnaID = await reserveJednokratna(app);
+    expect(jednokratnaID).toBeDefined();
+    const res1 = await request(app)
+      .get('/myprofile')
+      .set('x-test-user', 'kristijan.gaspar');
+    expect(res1.status).toBe(200);
+    expect(res1.text).toContain("20:12");
+
+    await cancelJednokratna(app, jednokratnaID);
+    const res2 = await request(app)
+      .get('/myprofile')
+      .set('x-test-user', 'kristijan.gaspar');
+    expect(res2.status).toBe(200);
+    expect(res2.text).not.toContain("20:12");
+
+    let jednokratnaID2 = await reserveJednokratna(app);
+    expect(jednokratnaID2).toBeDefined();
+    const res3 = await request(app)
+      .get('/myprofile')
+      .set('x-test-user', 'kristijan.gaspar');
+    expect(res3.status).toBe(200);
+    expect(res3.text).toContain("20:12");
+    
+    await cancelJednokratna(app, jednokratnaID2);
+    const res4 = await request(app)
+      .get('/myprofile')
+      .set('x-test-user', 'kristijan.gaspar');
+    expect(res4.status).toBe(200);
+    expect(res4.text).not.toContain("20:12");
+  });
+});
+
+
+async function approveJednokratna(app, jednokratnaID){
+  bodyrequest = {id: jednokratnaID};
+  const res = await request(app)
+    .post('/reservationHandle/confirmReservation/' + jednokratnaID)
+    .set('x-test-user', 'gaspar.kristijan')
+    .send(bodyrequest);
+  expect(res.status).toBe(200); // Assuming a successful response after approval
+}
+
+describe('Player-Club cash interactions', () => {
+  it('allows a player to make a single reservation with cash payment and a club can approve it', async () => {
+    const app = createAppWithOidcStub();
+    let subscriptionId = await setupSubscription(app);
+    expect(subscriptionId).toBeDefined();
+    await setupReservation(app,subscriptionId);
+    let jednokratnaID = await reserveJednokratna(app);
+    expect(jednokratnaID).toBeDefined();
+
+    await approveJednokratna(app, jednokratnaID);
+    let SQLQueryCheck = 'SELECT * FROM JEDNOKRATNA_REZ WHERE jednokratnaID = ? and statusJednokratna = ?';
+    const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+    const getOne = (sql, params = []) =>
+      new Promise((resolve, reject) => {
+        db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
+      });
+    let rowCheck = await getOne(SQLQueryCheck, [jednokratnaID, 'confirmed']); // 1 for approved status
+    expect(rowCheck).toBeDefined();
+    expect(rowCheck.statusJednokratna).toBe('confirmed'); // Assuming 1 represents approved status
+    db.close();
+  });
 });
