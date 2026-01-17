@@ -351,7 +351,6 @@ router.post('/:id', requiresAuth(), async (req, res) => {
 router.post("/cancel/:rezervacijaID", requiresAuth(), async (req, res) => {
   const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
   const datum = req.body.datum;
-  const rezid = req.body.rezervacijaID;
   const jednokratnaID = req.body.id;
   try {
     // Verify user

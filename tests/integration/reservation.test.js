@@ -260,7 +260,24 @@ async function denyJednokratna(app, jednokratnaID){
   expect(res.status).toBe(200); // Assuming a successful response after denial
 }
 
-async function reserveJednokratnaCard(app){
+async function reserveSubscriptionCard(app,subscriptionID){
+  bodyrequest = {pretplata: {pretpCijena: 10, clubUsername: 'gaspar.kristijan'},
+   tipPlacanja: 'kartica', tipTermina: 'ponavljajuci'};
+  const res = await request(app)
+  .post('/terrain/' + subscriptionID)
+  .set('x-test-user', 'kristijan.gaspar')
+  .send(bodyrequest);
+  expect(res.status).toBe(200);
+  let SQLQueryCheck = 'SELECT * FROM PRETPLATA WHERE tipPretpID = ? AND username = ?';
+  const db = new sqlite3.Database(process.env.DB_PATH || "database.db");
+  const getOne = (sql, params = []) =>
+    new Promise((resolve, reject) => {
+      db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
+    });
+  let rowCheck = await getOne(SQLQueryCheck, [subscriptionID, 'kristijan.gaspar']);
+  expect(rowCheck).toBeDefined();
+  expect(rowCheck.pretpAktivna).toBe(0); // pendingPayment status
+  db.close();
 }
 
 
@@ -323,5 +340,12 @@ describe('Player-Club cash interactions', () => {
     expect(rowCheck.statusJednokratna).toBe('pendingPayment');
     db.close();
 
+  });
+  it('allows a player to add a subcription and pay with card', async () => {
+    const app = createAppWithOidcStub();
+    let subscriptionId = await setupSubscription(app);
+    expect(subscriptionId).toBeDefined();
+    await setupReservation(app,subscriptionId);
+    await reserveSubscriptionCard(app,subscriptionId);
   });
 });
